@@ -1,0 +1,48 @@
+name: Sakinah Beta Convergence Gate
+on:
+  push:
+    paths:
+      - 'src/**'
+      - 'Sakinah-RC4-AllFeatures-Showcase.jsx'
+      - '.github/workflows/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Production build
+        run: npm run build
+      - name: Feature integrity audit
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          s=Path('src/App.jsx').read_text()
+          required=[
+            'Quran','Prayer','Qibla','Tafsir','Dua','Adhkar','Kids','Zakat','Hajj','Umrah',
+            'Notebook','Ledger','Notification','Tasbih','Profiles','Quiz','Nasheed','Mosque',
+            'SakinahFeatureSuite','FeaturePreview'
+          ]
+          missing=[x for x in required if x.lower() not in s.lower()]
+          print('SAKINAH FEATURE AUDIT')
+          print('Required markers:', len(required))
+          print('Missing:', missing)
+          if missing:
+              raise SystemExit('Feature gate failed: '+', '.join(missing))
+          print('PASS: core showcase feature families present')
+          PY
+      - name: Forbidden broken route audit
+        run: |
+          if grep -R "routeData" src/App.jsx; then
+            echo "Broken stale routeData reference found" >&2
+            exit 1
+          fi
+          echo "PASS: no stale routeData reference"
