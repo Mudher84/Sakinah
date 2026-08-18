@@ -1,0 +1,56 @@
+name: Add Profiles and Kids Profile
+on:
+  push:
+    paths: ['.github/workflows/add-profiles-kids.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  patch-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - name: Add profile system and kids experience
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          for fn in ['Sakinah-RC4-AllFeatures-Showcase.jsx','src/App.jsx']:
+            p=Path(fn); s=p.read_text()
+            if 'function ProfilesCenter({' not in s:
+              marker='function ManasekCenter({' if 'function ManasekCenter({' in s else 'function FeaturePreview('
+              comp=r'''function ProfilesCenter({ lang, go }) {
+  const [profiles,setProfiles]=useState(()=>{try{return JSON.parse(localStorage.getItem("sakinah-profiles"))||[{id:"me",name:lang==="ar"?"حسابي":"My profile",type:"adult"},{id:"kids",name:lang==="ar"?"الأطفال":"Kids",type:"kids"}]}catch{return [{id:"me",name:"حسابي",type:"adult"},{id:"kids",name:"الأطفال",type:"kids"}]}});
+  const [active,setActive]=useState(()=>localStorage.getItem("sakinah-active-profile")||"me");
+  const select=p=>{setActive(p.id);try{localStorage.setItem("sakinah-active-profile",p.id);localStorage.setItem("sakinah-profile-type",p.type)}catch{}; if(p.type==="kids")go("kids-home");else go("home")};
+  return <SectionShell lang={lang} go={go} back="home" titleAr="من يشاهد؟" titleEn="Who's using Sakinah?" subtitleAr="لكل فرد تجربته وحفظه الخاص" subtitleEn="A personal experience for every family member">
+    <div style={{marginTop:28,display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:16}}>{profiles.map((p,i)=><button key={p.id} onClick={()=>select(p)} style={{border:active===p.id?`1px solid ${COLOR.gold}`:"1px solid rgba(16,16,15,.09)",borderRadius:24,padding:"22px 12px",background:active===p.id?"rgba(181,154,98,.09)":"rgba(255,255,255,.42)",fontFamily:"inherit",color:"inherit"}}><div style={{width:72,height:72,margin:"0 auto",borderRadius:24,display:"grid",placeItems:"center",fontSize:31,background:p.type==="kids"?"linear-gradient(145deg,#fff2d8,#dff5ff)":"linear-gradient(145deg,#eee8dc,#dce5e7)"}}>{p.type==="kids"?"☀":"◌"}</div><div className="font-editorial" style={{fontSize:18,marginTop:13}}>{p.name}</div><div style={{fontSize:9.5,opacity:.42,marginTop:5}}>{p.type==="kids"?(lang==="ar"?"وضع الأطفال":"Kids profile"):(lang==="ar"?"ملف شخصي":"Personal")}</div></button>)}</div>
+    <button onClick={()=>{const n={id:`p-${Date.now()}`,name:lang==="ar"?`ملف ${profiles.length+1}`:`Profile ${profiles.length+1}`,type:"adult"};const x=[...profiles,n];setProfiles(x);try{localStorage.setItem("sakinah-profiles",JSON.stringify(x))}catch{}}} style={{width:"100%",marginTop:18,padding:12,borderRadius:16,border:"1px dashed rgba(16,16,15,.2)",background:"transparent",fontFamily:"inherit",color:"inherit"}}>＋ {lang==="ar"?"إضافة ملف شخصي":"Add profile"}</button>
+  </SectionShell>;
+}
+function KidsHome({ lang, go }) {
+  const cards=[["تعلم الصلاة","Learn Prayer","☾","prayer-wudu-learning"],["قصص الأنبياء","Prophets' Stories","✦","feature-preview"],["حفظ القرآن","Memorize Quran","◈","quran-platform"],["أذكار الأطفال","Kids Adhkar","♡","dua-library"],["أناشيد بدون موسيقى","Nasheeds","♪","nasheed-player"],["اختبارات وجوائز","Quizzes & Rewards","★","feature-preview"]];
+  return <SectionShell lang={lang} go={go} back="profiles-center" titleAr="سكينة للأطفال" titleEn="Sakinah Kids" subtitleAr="نتعلم ونستمتع ونكبر على الخير" subtitleEn="Learn, enjoy and grow with goodness">
+    <div style={{marginTop:18,borderRadius:26,padding:22,background:"linear-gradient(135deg,#fff1cf,#dff5ff 55%,#f1e5ff)",color:"#263238"}}><div style={{fontSize:10,opacity:.5}}>{lang==="ar"?"مرحباً يا بطل ✨":"Welcome, superstar ✨"}</div><div className="font-editorial" style={{fontSize:27,marginTop:8}}>{lang==="ar"?"ماذا سنتعلم اليوم؟":"What shall we learn today?"}</div></div>
+    <div style={{marginTop:15,display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>{cards.map(([ar,en,icon,to])=><button key={en} onClick={()=>go(to,to==="feature-preview"?{ar,en,status:"verified",subAr:"محتوى تعليمي تفاعلي مناسب للأطفال.",subEn:"Interactive child-friendly learning content."}:undefined)} style={{minHeight:126,border:"1px solid rgba(16,16,15,.07)",borderRadius:22,background:"rgba(255,255,255,.56)",fontFamily:"inherit",color:"inherit",padding:15}}><div style={{fontSize:28}}>{icon}</div><div style={{fontSize:13,fontWeight:600,marginTop:11}}>{lang==="ar"?ar:en}</div></button>)}</div>
+    <div style={{marginTop:16,padding:14,borderRadius:16,border:"1px solid rgba(16,16,15,.08)",fontSize:10.5,lineHeight:1.7,opacity:.55}}>{lang==="ar"?"ملف الأطفال يفصل تقدمه ومفضلاته وملاحظاته عن ملفات الكبار، ويعرض محتوى مناسباً لعمره بواجهة أبسط وأوضح.":"Kids profiles keep progress, favorites and activity separate from adult profiles and use a simpler child-friendly experience."}</div>
+  </SectionShell>;
+}
+
+'''
+              s=s.replace(marker,comp+marker,1)
+            route='    "complete-vision": () => <CompleteVisionCenter lang={lang} go={go} />,'
+            if route in s and '"profiles-center":' not in s:s=s.replace(route,route+'\n    "profiles-center": () => <ProfilesCenter lang={lang} go={go} />,\n    "kids-home": () => <KidsHome lang={lang} go={go} />,',1)
+            p.write_text(s)
+          PY
+      - run: npm ci
+      - run: npm run build
+      - name: Commit
+        run: |
+          git config user.name "Sakinah Build Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add Sakinah-RC4-AllFeatures-Showcase.jsx src/App.jsx
+          if ! git diff --cached --quiet; then git commit -m "Add multi-profile system and dedicated kids profile" && git push; fi
