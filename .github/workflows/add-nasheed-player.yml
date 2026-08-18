@@ -1,0 +1,59 @@
+name: Add Nasheed Player
+on:
+  push:
+    paths: ['.github/workflows/add-nasheed-player.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  patch-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - name: Add premium vocals-only nasheed player
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          for fn in ['Sakinah-RC4-AllFeatures-Showcase.jsx','src/App.jsx']:
+            p=Path(fn); s=p.read_text()
+            if 'function NasheedPlayer({' not in s:
+              marker='function DailyReflectionJournal({' if 'function DailyReflectionJournal({' in s else 'function FeaturePreview('
+              comp=r'''function NasheedPlayer({ lang, go }) {
+  const [q,setQ]=useState(""),[playing,setPlaying]=useState(false),[track,setTrack]=useState(0),[favorite,setFavorite]=useState(false);
+  const tracks=[
+    {titleAr:"طمأنينة",titleEn:"Tranquility",artistAr:"أناشيد صوتية",artistEn:"Vocals Only",tag:"روحانية"},
+    {titleAr:"نور القلب",titleEn:"Light of the Heart",artistAr:"أناشيد صوتية",artistEn:"Vocals Only",tag:"تأمل"},
+    {titleAr:"طريق الخير",titleEn:"Path of Goodness",artistAr:"أناشيد صوتية",artistEn:"Vocals Only",tag:"إيمانيات"},
+    {titleAr:"يا رب",titleEn:"O Lord",artistAr:"أناشيد صوتية",artistEn:"Vocals Only",tag:"دعاء"},
+    {titleAr:"سكينة",titleEn:"Sakinah",artistAr:"أناشيد صوتية",artistEn:"Vocals Only",tag:"هدوء"}
+  ];
+  const shown=tracks.filter(x=>(x.titleAr+x.titleEn+x.tag).toLowerCase().includes(q.toLowerCase())); const now=tracks[track];
+  return <SectionShell lang={lang} go={go} back="discover" titleAr="الأناشيد" titleEn="Nasheeds" subtitleAr="أناشيد صوتية بدون موسيقى" subtitleEn="Vocals-only nasheeds without music">
+    <div style={{marginTop:18,borderRadius:28,padding:20,background:"linear-gradient(145deg,#17232a,#0b1418)",color:"white",boxShadow:"0 24px 60px rgba(0,0,0,.18)"}}><div style={{aspectRatio:"1.55",borderRadius:22,display:"grid",placeItems:"center",background:"radial-gradient(circle at 35% 30%,rgba(181,154,98,.30),rgba(255,255,255,.035) 58%)",border:"1px solid rgba(255,255,255,.09)"}}><div style={{textAlign:"center"}}><div style={{fontSize:42}}>◌</div><div style={{fontSize:9,letterSpacing:".18em",opacity:.5,marginTop:8}}>VOCALS ONLY</div></div></div><div style={{textAlign:"center",marginTop:17}}><div className="font-editorial" style={{fontSize:22}}>{lang==="ar"?now.titleAr:now.titleEn}</div><div style={{fontSize:10.5,opacity:.5,marginTop:5}}>{lang==="ar"?now.artistAr:now.artistEn} · {now.tag}</div></div><div style={{height:3,borderRadius:3,background:"rgba(255,255,255,.12)",marginTop:20}}><div style={{width:playing?"42%":"0%",height:"100%",borderRadius:3,background:"#d5bd83",transition:"width .4s"}}/></div><div style={{display:"grid",gridTemplateColumns:"1fr 44px 64px 44px 1fr",alignItems:"center",gap:7,marginTop:16}}><button style={{border:0,background:"none",color:"white",opacity:.5}}>↻</button><button onClick={()=>{setTrack(v=>(v-1+tracks.length)%tracks.length);setPlaying(false)}} style={{height:44,borderRadius:"50%",border:0,background:"rgba(255,255,255,.08)",color:"white",fontSize:20}}>‹</button><button onClick={()=>setPlaying(v=>!v)} style={{height:64,borderRadius:"50%",border:0,background:"#f4efe5",color:"#10100f",fontSize:21}}>{playing?"Ⅱ":"▶"}</button><button onClick={()=>{setTrack(v=>(v+1)%tracks.length);setPlaying(false)}} style={{height:44,borderRadius:"50%",border:0,background:"rgba(255,255,255,.08)",color:"white",fontSize:20}}>›</button><button onClick={()=>setFavorite(v=>!v)} style={{border:0,background:"none",color:favorite?"#d5bd83":"white",opacity:favorite?1:.5,fontSize:20}}>♡</button></div></div>
+    <input value={q} onChange={e=>setQ(e.target.value)} placeholder={lang==="ar"?"ابحث في الأناشيد…":"Search nasheeds…"} style={{marginTop:15,width:"100%",boxSizing:"border-box",padding:12,borderRadius:14,border:"1px solid rgba(16,16,15,.1)",background:"rgba(255,255,255,.45)",fontFamily:"inherit"}}/>
+    <div style={{marginTop:10}}>{shown.map((x,i)=><button key={x.titleEn} onClick={()=>{setTrack(tracks.indexOf(x));setPlaying(false)}} style={{width:"100%",display:"grid",gridTemplateColumns:"42px 1fr auto",gap:10,alignItems:"center",border:0,borderTop:"1px solid rgba(16,16,15,.07)",background:tracks.indexOf(x)===track?"rgba(181,154,98,.08)":"transparent",padding:"11px 2px",textAlign:lang==="ar"?"right":"left",fontFamily:"inherit"}}><div style={{width:38,height:38,borderRadius:11,display:"grid",placeItems:"center",background:"rgba(23,35,42,.08)"}}>♪</div><div><b style={{fontSize:12.5}}>{lang==="ar"?x.titleAr:x.titleEn}</b><small style={{display:"block",opacity:.44,marginTop:4}}>{lang==="ar"?x.artistAr:x.artistEn}</small></div><small style={{opacity:.4}}>{x.tag}</small></button>)}</div>
+    <div style={{marginTop:14,fontSize:10,opacity:.42,textAlign:"center"}}>{lang==="ar"?"المكتبة مخصصة للمحتوى الصوتي الخالي من الآلات الموسيقية":"Library reserved for vocals-only content without musical instruments"}</div>
+  </SectionShell>;
+}
+
+'''
+              s=s.replace(marker,comp+marker,1)
+            route='    "complete-vision": () => <CompleteVisionCenter lang={lang} go={go} />,'
+            if route in s and '"nasheed-player":' not in s:s=s.replace(route,route+'\n    "nasheed-player": () => <NasheedPlayer lang={lang} go={go} />,',1)
+            needle='{ id: "daily-reflection", label: lang === "ar" ? "تأمّل · آية اليوم" : "Reflect · Ayah of the Day", action: () => go("daily-reflection") },'
+            entry='{ id: "nasheed-player", label: lang === "ar" ? "أناشيد بدون موسيقى" : "Vocals-only Nasheeds", action: () => go("nasheed-player") },'
+            if needle in s and entry not in s:s=s.replace(needle,needle+'\n    '+entry,1)
+            p.write_text(s)
+          PY
+      - run: npm ci
+      - run: npm run build
+      - name: Commit
+        run: |
+          git config user.name "Sakinah Build Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add Sakinah-RC4-AllFeatures-Showcase.jsx src/App.jsx
+          if ! git diff --cached --quiet; then git commit -m "Add premium vocals-only nasheed player" && git push; fi
