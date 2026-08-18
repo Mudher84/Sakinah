@@ -1,0 +1,61 @@
+name: Add Daily Reflection Journal
+on:
+  push:
+    paths: ['.github/workflows/add-daily-reflection-journal.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  patch-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - name: Add daily ayah reflection and journal
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          for fn in ['Sakinah-RC4-AllFeatures-Showcase.jsx','src/App.jsx']:
+            p=Path(fn); s=p.read_text()
+            if 'function DailyReflectionJournal({' not in s:
+              marker='function PremiumQuranPlayer({' if 'function PremiumQuranPlayer({' in s else 'function FeaturePreview('
+              comp=r'''function DailyReflectionJournal({ lang, go }) {
+  const ayat=[
+    {ar:"فَإِنَّ مَعَ الْعُسْرِ يُسْرًا",en:"Indeed, with hardship comes ease.",ref:"الشرح · ٥"},
+    {ar:"وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ",en:"Whoever relies upon Allah — He is sufficient for him.",ref:"الطلاق · ٣"},
+    {ar:"أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",en:"Surely in the remembrance of Allah do hearts find comfort.",ref:"الرعد · ٢٨"},
+    {ar:"وَقُل رَّبِّ زِدْنِي عِلْمًا",en:"My Lord, increase me in knowledge.",ref:"طه · ١١٤"},
+    {ar:"إِنَّ اللَّهَ مَعَ الصَّابِرِينَ",en:"Indeed, Allah is with the patient.",ref:"البقرة · ١٥٣"},
+    {ar:"لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ",en:"Do not despair of the mercy of Allah.",ref:"الزمر · ٥٣"},
+    {ar:"إِنَّ مَعِيَ رَبِّي سَيَهْدِينِ",en:"Indeed, with me is my Lord; He will guide me.",ref:"الشعراء · ٦٢"}
+  ];
+  const day=Math.floor(Date.now()/86400000); const ayah=ayat[day%ayat.length]; const key=`sakinah-reflection-${day}`;
+  const [note,setNote]=useState(()=>{try{return localStorage.getItem(key)||""}catch{return ""}}); const [saved,setSaved]=useState(false);
+  const save=()=>{try{localStorage.setItem(key,note);setSaved(true);setTimeout(()=>setSaved(false),1600)}catch{}};
+  return <SectionShell lang={lang} go={go} back="home" titleAr="تأمّل" titleEn="Reflect" subtitleAr="آية كل يوم · ومساحتك الخاصة للعِبرة" subtitleEn="One ayah each day · your private reflection space">
+    <div style={{marginTop:20,borderRadius:26,padding:"28px 20px",background:"linear-gradient(145deg,rgba(181,154,98,.14),rgba(255,255,255,.46))",border:"1px solid rgba(181,154,98,.22)",textAlign:"center"}}><div style={{fontSize:9.5,letterSpacing:".15em",opacity:.42}}>{lang==="ar"?"آية اليوم":"AYAH OF THE DAY"}</div><div className="font-quran" style={{fontSize:29,lineHeight:2.05,direction:"rtl",marginTop:18}}>{ayah.ar}</div>{lang==="en"&&<div style={{fontSize:13,lineHeight:1.8,opacity:.62,marginTop:10,direction:"ltr"}}>{ayah.en}</div>}<div style={{fontSize:10.5,opacity:.42,marginTop:13}}>{ayah.ref}</div></div>
+    <div style={{marginTop:20}}><div className="font-editorial" style={{fontSize:20}}>{lang==="ar"?"دفتر التأمّل":"Reflection Journal"}</div><div style={{fontSize:11,opacity:.48,marginTop:5}}>{lang==="ar"?"ماذا تعلّمت من آية اليوم؟ اكتب العبرة أو ملاحظتك هنا.":"What did today's ayah teach you? Write your lesson or note here."}</div><textarea value={note} onChange={e=>setNote(e.target.value)} placeholder={lang==="ar"?"اكتب ما لامس قلبك…":"Write what touched your heart…"} style={{width:"100%",boxSizing:"border-box",minHeight:150,resize:"vertical",marginTop:12,border:"1px solid rgba(16,16,15,.10)",borderRadius:18,padding:15,background:"rgba(255,255,255,.48)",fontFamily:"inherit",fontSize:13,lineHeight:1.8,outline:"none",color:"inherit"}}/><button onClick={save} style={{width:"100%",marginTop:10,border:0,borderRadius:16,padding:13,background:COLOR.lapis,color:"white",fontFamily:"inherit",fontWeight:600}}>{saved?(lang==="ar"?"تم الحفظ ✓":"Saved ✓"):(lang==="ar"?"حفظ التأمّل":"Save reflection")}</button><div style={{fontSize:9.5,opacity:.38,textAlign:"center",marginTop:8}}>{lang==="ar"?"تُحفظ ملاحظتك على جهازك لهذا اليوم":"Your note is saved on this device for today"}</div></div>
+  </SectionShell>;
+}
+
+'''
+              s=s.replace(marker,comp+marker,1)
+            route='    "complete-vision": () => <CompleteVisionCenter lang={lang} go={go} />,'
+            if route in s and '"daily-reflection":' not in s:s=s.replace(route,route+'\n    "daily-reflection": () => <DailyReflectionJournal lang={lang} go={go} />,',1)
+            # Add prominent Discover entry
+            needle='{ id: "quran-platform", label: lang === "ar" ? "منصة القرآن" : "Quran Platform", action: () => go("quran-platform") },'
+            entry='{ id: "daily-reflection", label: lang === "ar" ? "تأمّل · آية اليوم" : "Reflect · Ayah of the Day", action: () => go("daily-reflection") },'
+            if needle in s and entry not in s:s=s.replace(needle,entry+'\n    '+needle,1)
+            p.write_text(s)
+          PY
+      - run: npm ci
+      - run: npm run build
+      - name: Commit verified build
+        run: |
+          git config user.name "Sakinah Build Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add Sakinah-RC4-AllFeatures-Showcase.jsx src/App.jsx
+          if ! git diff --cached --quiet; then git commit -m "Add daily ayah reflection journal" && git push; fi
