@@ -1,0 +1,62 @@
+name: Apply RC4 Full Showcase
+
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-rc4-showcase.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply-and-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Promote full showcase to app
+        run: cp Sakinah-RC4-AllFeatures-Showcase.jsx src/App.jsx
+
+      - name: Install dependencies
+        run: npm install lucide-react@^0.468.0 --save
+
+      - name: Verify production build
+        run: npm run build
+
+      - name: Add Codespaces defaults
+        run: |
+          mkdir -p .devcontainer
+          cat > .devcontainer/devcontainer.json <<'EOF'
+          {
+            "name": "Sakinah",
+            "image": "mcr.microsoft.com/devcontainers/javascript-node:1-20-bookworm",
+            "postCreateCommand": "npm install",
+            "forwardPorts": [5173],
+            "portsAttributes": {
+              "5173": {
+                "label": "Sakinah Preview",
+                "onAutoForward": "openPreview"
+              }
+            }
+          }
+          EOF
+
+      - name: Commit verified RC4
+        run: |
+          git config user.name "Sakinah Build Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add src/App.jsx package.json package-lock.json .devcontainer/devcontainer.json
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Promote RC4 full showcase and verify build"
+            git push
+          fi
