@@ -1,0 +1,58 @@
+name: Add Kids Quran Teacher and Nasheeds
+on:
+  push:
+    paths: ['.github/workflows/add-kids-quran-nasheeds.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  patch-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - name: Add kids Quran teacher and Islamic nasheeds
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          for fn in ['Sakinah-RC4-AllFeatures-Showcase.jsx','src/App.jsx']:
+            p=Path(fn); s=p.read_text()
+            if 'function KidsQuranTeacher({' not in s:
+              marker='function ProfilesCenter({' if 'function ProfilesCenter({' in s else 'function FeaturePreview('
+              comp=r'''function KidsQuranTeacher({ lang, go }) {
+  const [level,setLevel]=useState(0),[stars,setStars]=useState(12),[repeat,setRepeat]=useState(3);
+  const lessons=[["الحروف العربية","Arabic Letters"],["الحركات","Harakat"],["الكلمات القرآنية","Quranic Words"],["الفاتحة","Al-Fatihah"],["قصار السور","Short Surahs"],["الحفظ بالتكرار","Repeat & Memorize"],["التجويد المبسط","Easy Tajweed"],["اختبار الحفظ","Memory Quiz"]];
+  return <SectionShell lang={lang} go={go} back="kids-home" titleAr="معلّم القرآن" titleEn="Quran Teacher" subtitleAr="نتعلم ونقرأ ونحفظ خطوة بخطوة" subtitleEn="Learn, recite and memorize step by step">
+    <div style={{marginTop:18,borderRadius:26,padding:20,background:"linear-gradient(135deg,#fff0c9,#dff6ff 60%,#f4e7ff)",color:"#27343a"}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}><div><div style={{fontSize:10,opacity:.5}}>{lang==="ar"?"تقدم اليوم":"Today's progress"}</div><div className="font-editorial" style={{fontSize:25,marginTop:6}}>{lang==="ar"?"أحسنت يا بطل!":"Great job!"}</div></div><div style={{fontSize:20}}>★ {nDigits(stars,lang)}</div></div><div style={{height:8,borderRadius:8,background:"rgba(255,255,255,.65)",marginTop:16,overflow:"hidden"}}><div style={{height:"100%",width:`${((level+1)/lessons.length)*100}%`,background:"#d7b768",borderRadius:8}}/></div></div>
+    <div style={{marginTop:15}}>{lessons.map(([ar,en],i)=><button key={en} onClick={()=>{setLevel(i);setStars(v=>v+1)}} style={{width:"100%",display:"grid",gridTemplateColumns:"42px 1fr auto",alignItems:"center",gap:10,border:0,borderTop:"1px solid rgba(16,16,15,.07)",background:i===level?"rgba(181,154,98,.09)":"transparent",padding:"12px 2px",textAlign:lang==="ar"?"right":"left",fontFamily:"inherit",color:"inherit"}}><div style={{width:38,height:38,borderRadius:14,display:"grid",placeItems:"center",background:i<=level?"#fff0c9":"rgba(16,16,15,.05)"}}>{i<level?"✓":i+1}</div><div><b style={{fontSize:13}}>{lang==="ar"?ar:en}</b><small style={{display:"block",opacity:.42,marginTop:4}}>{lang==="ar"?"استماع · ترديد · تسجيل · اختبار":"Listen · Repeat · Record · Quiz"}</small></div><span style={{opacity:.3}}>›</span></button>)}</div>
+    <div style={{marginTop:16,border:"1px solid rgba(16,16,15,.08)",borderRadius:18,padding:15}}><div style={{fontSize:12,fontWeight:600}}>{lang==="ar"?"التكرار للحفظ":"Memorization repeats"}</div><div style={{display:"flex",gap:8,marginTop:10}}>{[1,3,5,7,10].map(x=><button key={x} onClick={()=>setRepeat(x)} style={{flex:1,padding:8,borderRadius:12,border:repeat===x?`1px solid ${COLOR.gold}`:"1px solid rgba(16,16,15,.09)",background:repeat===x?"rgba(181,154,98,.1)":"transparent",fontFamily:"inherit"}}>{x}×</button>)}</div></div>
+  </SectionShell>;
+}
+function KidsNasheeds({ lang, go }) {
+  const [track,setTrack]=useState(0),[playing,setPlaying]=useState(false);
+  const songs=[["أحب ربي","I Love My Lord"],["صلاتي نور","My Prayer is Light"],["الصدق جميل","Truth is Beautiful"],["بر الوالدين","Love Your Parents"],["بسم الله","Bismillah"],["الحمد لله","Alhamdulillah"],["أخلاق المسلم","Muslim Manners"],["رمضان فرحة","Ramadan Joy"]]; const now=songs[track];
+  return <SectionShell lang={lang} go={go} back="kids-home" titleAr="أناشيد الأطفال" titleEn="Kids Nasheeds" subtitleAr="أناشيد إسلامية صوتية بدون موسيقى" subtitleEn="Islamic vocals-only nasheeds for kids">
+    <div style={{marginTop:18,borderRadius:28,padding:20,background:"linear-gradient(135deg,#ffe9b7,#d8f5ff 52%,#efe1ff)",color:"#26343b",textAlign:"center"}}><div style={{width:150,height:150,margin:"0 auto",borderRadius:42,display:"grid",placeItems:"center",fontSize:55,background:"rgba(255,255,255,.55)",boxShadow:"0 15px 35px rgba(70,90,100,.12)"}}>♪</div><div className="font-editorial" style={{fontSize:24,marginTop:16}}>{lang==="ar"?now[0]:now[1]}</div><div style={{fontSize:10,opacity:.48,marginTop:5}}>VOCALS ONLY · KIDS</div><div style={{display:"grid",gridTemplateColumns:"44px 66px 44px",justifyContent:"center",gap:10,marginTop:18}}><button onClick={()=>{setTrack(v=>(v-1+songs.length)%songs.length);setPlaying(false)}} style={{border:0,borderRadius:"50%",background:"rgba(255,255,255,.6)",fontSize:20}}>‹</button><button onClick={()=>setPlaying(v=>!v)} style={{height:66,border:0,borderRadius:"50%",background:"#26343b",color:"white",fontSize:22}}>{playing?"Ⅱ":"▶"}</button><button onClick={()=>{setTrack(v=>(v+1)%songs.length);setPlaying(false)}} style={{border:0,borderRadius:"50%",background:"rgba(255,255,255,.6)",fontSize:20}}>›</button></div></div>
+    <div style={{marginTop:14}}>{songs.map((x,i)=><button key={x[1]} onClick={()=>{setTrack(i);setPlaying(false)}} style={{width:"100%",display:"grid",gridTemplateColumns:"38px 1fr",gap:10,alignItems:"center",border:0,borderTop:"1px solid rgba(16,16,15,.07)",background:i===track?"rgba(181,154,98,.08)":"transparent",padding:"11px 2px",fontFamily:"inherit",textAlign:lang==="ar"?"right":"left",color:"inherit"}}><div style={{width:36,height:36,borderRadius:12,display:"grid",placeItems:"center",background:"rgba(181,154,98,.10)"}}>♪</div><div><b style={{fontSize:12.5}}>{lang==="ar"?x[0]:x[1]}</b><small style={{display:"block",opacity:.42,marginTop:3}}>{lang==="ar"?"بدون موسيقى":"Vocals only"}</small></div></button>)}</div>
+  </SectionShell>;
+}
+
+'''
+              s=s.replace(marker,comp+marker,1)
+            route='    "complete-vision": () => <CompleteVisionCenter lang={lang} go={go} />,'
+            if route in s and '"kids-quran-teacher":' not in s:s=s.replace(route,route+'\n    "kids-quran-teacher": () => <KidsQuranTeacher lang={lang} go={go} />,\n    "kids-nasheeds": () => <KidsNasheeds lang={lang} go={go} />,',1)
+            s=s.replace('["حفظ القرآن","Memorize Quran","◈","quran-platform"]','["معلّم القرآن","Quran Teacher","◈","kids-quran-teacher"]')
+            s=s.replace('["أناشيد بدون موسيقى","Nasheeds","♪","nasheed-player"]','["أناشيد إسلامية","Islamic Nasheeds","♪","kids-nasheeds"]')
+            p.write_text(s)
+          PY
+      - run: npm ci
+      - run: npm run build
+      - name: Commit
+        run: |
+          git config user.name "Sakinah Build Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add Sakinah-RC4-AllFeatures-Showcase.jsx src/App.jsx
+          if ! git diff --cached --quiet; then git commit -m "Add kids Quran teacher and Islamic nasheeds" && git push; fi
