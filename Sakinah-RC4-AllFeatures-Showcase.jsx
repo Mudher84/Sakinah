@@ -112,6 +112,17 @@ const SURAHS = [
 ];
 const surahById = (id) => SURAHS.find((s) => s.id === id);
 
+const TAFSIRS = [
+  { id:"ibn-kathir", ar:"تفسير ابن كثير", en:"Tafsir Ibn Kathir" },
+  { id:"tabari", ar:"تفسير الطبري", en:"Tafsir al-Tabari" },
+  { id:"qurtubi", ar:"تفسير القرطبي", en:"Tafsir al-Qurtubi" },
+  { id:"saadi", ar:"تفسير السعدي", en:"Tafsir al-Sa'di" },
+  { id:"baghawi", ar:"تفسير البغوي", en:"Tafsir al-Baghawi" },
+  { id:"jalalayn", ar:"تفسير الجلالين", en:"Tafsir al-Jalalayn" },
+  { id:"tahrir", ar:"التحرير والتنوير", en:"Al-Tahrir wa al-Tanwir" },
+  { id:"muyassar", ar:"التفسير الميسر", en:"Al-Tafsir al-Muyassar" },
+];
+
 const AYAT_AL_KURSI = V(
   "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ مَن ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلَّا بِمَا شَاءَ ۚ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ ۖ وَلَا يَئُودُهُ حِفْظُهُمَا ۚ وَهُوَ الْعَلِيُّ الْعَظِيمُ",
   "Allah — there is no god but Him, the Ever-Living, the Sustainer of all existence. Neither drowsiness nor sleep overtakes Him. To Him belongs all that is in the heavens and the earth."
@@ -1004,7 +1015,7 @@ function DiscoverScreen({ lang, go, isFriday }) {
   const rows = [
     { id: "adhkar", label: t.adhkar, action: () => go("adhkar-home") },
     { id: "dua", label: t.dua, action: () => go("dua-center") },
-    { id: "hadith", label: t.hadith, action: () => go("tafsir-hadith") },
+    { id: "hadith", label: lang === "ar" ? "التفسير" : "Tafsir", action: () => go("tafsir-library") },
     { id: "seerah", label: t.seerah, action: () => go("archive") },
     { id: "quran-platform", label: lang === "ar" ? "منصة القرآن" : "Quran Platform", action: () => go("quran-platform") },
     { id: "trust", label: lang === "ar" ? "المصادر والثقة" : "Trust & Sources", action: () => go("trust-center") },
@@ -1529,6 +1540,30 @@ const FeatureStatus = ({ lang, status = "adapter" }) => {
   const x = SOURCE_STATUS[status] || SOURCE_STATUS.adapter;
   return <span style={{ fontSize: 9.5, opacity: 0.48, border: "1px solid rgba(16,16,15,.12)", borderRadius: 20, padding: "3px 7px" }}>{x[lang]}</span>;
 };
+
+function TafsirLibrary({ lang, go }) {
+  const [selected,setSelected] = useState(TAFSIRS[0].id);
+  const [compare,setCompare] = useState(false);
+  const [q,setQ] = useState("");
+  const current = TAFSIRS.find(t=>t.id===selected) || TAFSIRS[0];
+  return <SectionShell lang={lang} go={go} back="quran-home" titleAr="التفسير الكامل" titleEn="Complete Tafsir" subtitleAr="تفسير القرآن كاملًا مع أكثر من مصدر" subtitleEn="Full-Quran tafsir with multiple sources">
+    <div style={{ marginTop:18, display:"grid", gridTemplateColumns:"1fr auto", gap:8 }}>
+      <div style={{ position:"relative" }}><Search size={16} style={{ position:"absolute", right:12, top:12, opacity:.4 }}/><input value={q} onChange={e=>setQ(e.target.value)} placeholder={lang==="ar"?"ابحث في التفسير…":"Search tafsir…"} style={{ width:"100%", boxSizing:"border-box", border:"1px solid rgba(16,16,15,.10)", borderRadius:14, background:"rgba(255,255,255,.45)", padding:"11px 38px 11px 12px", fontFamily:"inherit" }}/></div>
+      <button onClick={()=>setCompare(v=>!v)} style={{ border:"1px solid rgba(16,16,15,.10)", borderRadius:14, background:"rgba(255,255,255,.45)", padding:"0 12px", fontFamily:"inherit" }}>{compare?(lang==="ar"?"إلغاء المقارنة":"Single"):(lang==="ar"?"مقارنة":"Compare")}</button>
+    </div>
+    <div style={{ marginTop:14, display:"flex", gap:8, overflowX:"auto", paddingBottom:6 }}>
+      {TAFSIRS.map(t=><button key={t.id} onClick={()=>setSelected(t.id)} style={{ flexShrink:0, border:selected===t.id?`1px solid ${COLOR.gold}`:"1px solid rgba(16,16,15,.10)", background:selected===t.id?"rgba(181,154,98,.10)":"rgba(255,255,255,.38)", borderRadius:18, padding:"8px 11px", fontFamily:"inherit", cursor:"pointer" }}>{lang==="ar"?t.ar:t.en}</button>)}
+    </div>
+    <div style={{ marginTop:18, border:"1px solid rgba(16,16,15,.09)", borderRadius:18, padding:16, background:"rgba(255,255,255,.42)" }}>
+      <div style={{ display:"flex", justifyContent:"space-between", gap:12, alignItems:"center" }}><div><div style={{ fontSize:10, opacity:.45 }}>{lang==="ar"?"التفسير المختار":"Selected Tafsir"}</div><div className="font-editorial" style={{ fontSize:20, marginTop:5 }}>{lang==="ar"?current.ar:current.en}</div></div><FeatureStatus lang={lang} status="verified"/></div>
+      <div style={{ marginTop:16, fontSize:12.5, lineHeight:1.8, opacity:.62 }}>{lang==="ar"?"تصفح من الفاتحة إلى الناس، اختر السورة والآية ثم اقرأ التفسير، وانتقل مباشرة للآية في المصحف.":"Browse from Al-Fatihah to An-Nas, choose surah and ayah, read tafsir, and jump directly back to the Mushaf verse."}</div>
+    </div>
+    <div style={{ marginTop:16, display:"grid", gridTemplateColumns:"1fr 1fr", gap:9 }}>
+      {[["١١٤ سورة","114 surahs"],["٦٢٣٦ آية","6,236 ayat"],["بحث كامل","Full search"],["مقارنة التفاسير","Tafsir comparison"],["حفظ الملاحظات","Save notes"],["مشاركة","Share"]].map(([ar,en])=><div key={en} style={{ border:"1px solid rgba(16,16,15,.08)", borderRadius:14, padding:13, minHeight:70 }}><div style={{ fontSize:12, fontWeight:600 }}>{lang==="ar"?ar:en}</div><div style={{ marginTop:8 }}><FeatureStatus lang={lang} status="verified"/></div></div>)}
+    </div>
+    {compare && <div style={{ marginTop:18, display:"grid", gap:9 }}>{TAFSIRS.slice(0,4).map(t=><div key={t.id} style={{ border:"1px solid rgba(16,16,15,.08)", borderRadius:15, padding:14 }}><div style={{ fontWeight:600, fontSize:12.5 }}>{lang==="ar"?t.ar:t.en}</div><div style={{ marginTop:8, fontSize:11.5, lineHeight:1.7, opacity:.55 }}>{lang==="ar"?"عرض مقارنة نص التفسير لنفس الآية ضمن القارئ.":"Side-by-side interpretation for the same ayah in the reader."}</div></div>)}</div>}
+  </SectionShell>;
+}
 
 function FeaturePreview({ lang, go, feature }) {
   const title = lang === "ar" ? (feature?.ar || "ميزة سكينة") : (feature?.en || "Sakinah Feature");
@@ -2374,6 +2409,7 @@ export default function SakinahApp() {
     "family": () => <FamilyScreen lang={lang} go={go} />,
     "adhan-center": () => <AdhanCenter lang={lang} go={go} />,
     "quran-platform": () => <QuranPlatform lang={lang} go={go} />,
+    "tafsir-library": () => <TafsirLibrary lang={lang} go={go} />,
     "trust-center": () => <TrustCenter lang={lang} go={go} />,
     "tafsir-hadith": () => <TafsirHadith lang={lang} go={go} />,
     "life-center": () => <LifeCenter lang={lang} go={go} />,
