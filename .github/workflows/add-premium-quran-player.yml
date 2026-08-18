@@ -1,0 +1,68 @@
+name: Add Premium Quran Player
+on:
+  push:
+    paths: ['.github/workflows/add-premium-quran-player.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  patch-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - name: Upgrade Quran player UI
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          for fn in ['Sakinah-RC4-AllFeatures-Showcase.jsx','src/App.jsx']:
+            p=Path(fn); s=p.read_text()
+            if 'function PremiumQuranPlayer({' not in s:
+              marker='function PrayerWuduLearning({' if 'function PrayerWuduLearning({' in s else 'function FeaturePreview('
+              comp=r'''function PremiumQuranPlayer({ lang, go }) {
+  const [reciters,setReciters]=useState([]),[selected,setSelected]=useState(null),[moshaf,setMoshaf]=useState(null),[surah,setSurah]=useState(1),[q,setQ]=useState(""),[playing,setPlaying]=useState(false),[progress,setProgress]=useState(0),[duration,setDuration]=useState(0),[speed,setSpeed]=useState(1),[repeat,setRepeat]=useState(false),[favorite,setFavorite]=useState(false);
+  const audio=useRef(null);
+  useEffect(()=>{fetch(`https://www.mp3quran.net/api/v3/reciters?language=${lang==="ar"?"ar":"eng"}`).then(r=>r.json()).then(d=>{const a=(d.reciters||[]).map(r=>({...r,moshaf:(r.moshaf||[]).filter(m=>Number(m.surah_total)===114)})).filter(r=>r.moshaf.length);setReciters(a);setSelected(a[0]||null);setMoshaf(a[0]?.moshaf?.[0]||null)}).catch(()=>{})},[lang]);
+  const src=moshaf?`${moshaf.server}${String(surah).padStart(3,"0")}.mp3`:"";
+  useEffect(()=>{if(audio.current){audio.current.playbackRate=speed}},[speed,src]);
+  const toggle=()=>{if(!audio.current)return;if(playing){audio.current.pause();setPlaying(false)}else{audio.current.play();setPlaying(true)}};
+  const seek=e=>{const v=Number(e.target.value);if(audio.current)audio.current.currentTime=v;setProgress(v)};
+  const fmt=n=>{if(!Number.isFinite(n))return "0:00";const m=Math.floor(n/60),x=Math.floor(n%60);return `${m}:${String(x).padStart(2,"0")}`};
+  const filtered=reciters.filter(r=>(r.name||"").toLowerCase().includes(q.toLowerCase()));
+  const choose=r=>{setSelected(r);setMoshaf(r.moshaf[0]);setPlaying(false);setProgress(0)};
+  return <SectionShell lang={lang} go={go} back="quran-home" titleAr="استمع للقرآن" titleEn="Listen to Quran" subtitleAr="مكتبة تلاوات وختمات كاملة" subtitleEn="Complete recitations library">
+    <audio ref={audio} src={src} loop={repeat} preload="metadata" onTimeUpdate={e=>setProgress(e.currentTarget.currentTime)} onLoadedMetadata={e=>setDuration(e.currentTarget.duration)} onEnded={()=>{setPlaying(false);if(!repeat&&surah<114)setSurah(v=>v+1)}}/>
+    <div style={{marginTop:16,borderRadius:28,padding:20,background:"linear-gradient(145deg,#17232a,#0c1419)",color:"white",boxShadow:"0 24px 60px rgba(0,0,0,.20)",overflow:"hidden",position:"relative"}}>
+      <div style={{position:"absolute",width:220,height:220,borderRadius:"50%",background:"radial-gradient(circle,rgba(181,154,98,.25),transparent 68%)",right:-70,top:-70}}/>
+      <div style={{width:"100%",aspectRatio:"1.35",borderRadius:22,display:"grid",placeItems:"center",background:"linear-gradient(135deg,rgba(181,154,98,.30),rgba(255,255,255,.04))",border:"1px solid rgba(255,255,255,.10)",position:"relative"}}><div style={{textAlign:"center"}}><div className="font-quran" style={{fontSize:44,lineHeight:1}}>ٱلْقُرْآن</div><div style={{fontSize:10,letterSpacing:".16em",opacity:.55,marginTop:12}}>SAKINAH · QURAN</div></div></div>
+      <div style={{marginTop:18,textAlign:"center"}}><div className="font-editorial" style={{fontSize:22}}>{selected?.name||(lang==="ar"?"اختر قارئاً":"Choose a reciter")}</div><div style={{fontSize:11,opacity:.55,marginTop:5}}>{moshaf?.name||""} · {lang==="ar"?`السورة ${nDigits(surah,lang)}`:`Surah ${surah}`}</div></div>
+      <input type="range" min="0" max={duration||1} value={Math.min(progress,duration||1)} onChange={seek} style={{width:"100%",marginTop:20,accentColor:"#d5bd83"}}/><div style={{display:"flex",justifyContent:"space-between",fontSize:9,opacity:.5}}><span>{fmt(progress)}</span><span>{fmt(duration)}</span></div>
+      <div style={{marginTop:13,display:"grid",gridTemplateColumns:"1fr 44px 64px 44px 1fr",alignItems:"center",gap:7}}><button onClick={()=>setRepeat(v=>!v)} style={{background:"none",border:0,color:repeat?"#d5bd83":"white",opacity:repeat?1:.55}}>↻</button><button onClick={()=>{setSurah(v=>Math.max(1,v-1));setPlaying(false)}} style={{height:44,borderRadius:"50%",border:0,background:"rgba(255,255,255,.08)",color:"white",fontSize:20}}>‹</button><button onClick={toggle} style={{height:64,borderRadius:"50%",border:0,background:"#f4efe5",color:"#10100f",fontSize:22,boxShadow:"0 10px 25px rgba(0,0,0,.25)"}}>{playing?"Ⅱ":"▶"}</button><button onClick={()=>{setSurah(v=>Math.min(114,v+1));setPlaying(false)}} style={{height:44,borderRadius:"50%",border:0,background:"rgba(255,255,255,.08)",color:"white",fontSize:20}}>›</button><button onClick={()=>setFavorite(v=>!v)} style={{background:"none",border:0,color:favorite?"#d5bd83":"white",opacity:favorite?1:.55,fontSize:20}}>♡</button></div>
+      <div style={{marginTop:15,display:"flex",justifyContent:"center",gap:7}}>{[.75,1,1.25,1.5].map(x=><button key={x} onClick={()=>setSpeed(x)} style={{border:"1px solid rgba(255,255,255,.12)",background:speed===x?"rgba(213,189,131,.18)":"transparent",color:"white",borderRadius:14,padding:"5px 8px",fontSize:9}}>{x}×</button>)}</div>
+    </div>
+    <div style={{marginTop:16,display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}><select value={surah} onChange={e=>{setSurah(Number(e.target.value));setPlaying(false)}} style={{padding:11,borderRadius:14,border:"1px solid rgba(16,16,15,.1)",background:"rgba(255,255,255,.45)",fontFamily:"inherit"}}>{Array.from({length:114},(_,i)=><option key={i+1} value={i+1}>{lang==="ar"?`السورة ${nDigits(i+1,lang)}`:`Surah ${i+1}`}</option>)}</select><select value={moshaf?.id||""} onChange={e=>{const m=selected?.moshaf.find(x=>String(x.id)===e.target.value);setMoshaf(m);setPlaying(false)}} style={{padding:11,borderRadius:14,border:"1px solid rgba(16,16,15,.1)",background:"rgba(255,255,255,.45)",fontFamily:"inherit"}}>{selected?.moshaf.map(m=><option key={m.id} value={m.id}>{m.name}</option>)}</select></div>
+    <input value={q} onChange={e=>setQ(e.target.value)} placeholder={lang==="ar"?"ابحث عن قارئ…":"Search reciter…"} style={{marginTop:12,width:"100%",boxSizing:"border-box",padding:12,borderRadius:14,border:"1px solid rgba(16,16,15,.1)",background:"rgba(255,255,255,.45)",fontFamily:"inherit"}}/>
+    <div style={{marginTop:10,maxHeight:250,overflowY:"auto"}}>{filtered.map(r=><button key={r.id} onClick={()=>choose(r)} style={{width:"100%",border:0,borderTop:"1px solid rgba(16,16,15,.07)",background:selected?.id===r.id?"rgba(181,154,98,.08)":"transparent",padding:"12px 2px",textAlign:lang==="ar"?"right":"left",fontFamily:"inherit"}}><b>{r.name}</b><small style={{display:"block",opacity:.45,marginTop:4}}>{r.moshaf.map(m=>m.name).join(" · ")}</small></button>)}</div>
+  </SectionShell>;
+}
+
+'''
+              s=s.replace(marker,comp+marker,1)
+            route='    "quran-platform": () => <QuranPlatform lang={lang} go={go} />,'
+            if route in s and '"premium-quran-player":' not in s:s=s.replace(route,route+'\n    "premium-quran-player": () => <PremiumQuranPlayer lang={lang} go={go} />,',1)
+            needle='{ id: "quran-platform", label: lang === "ar" ? "منصة القرآن" : "Quran Platform", action: () => go("quran-platform") },'
+            entry='{ id: "premium-quran-player", label: lang === "ar" ? "استمع للقرآن" : "Listen to Quran", action: () => go("premium-quran-player") },'
+            if needle in s and entry not in s:s=s.replace(needle,needle+'\n    '+entry,1)
+            p.write_text(s)
+          PY
+      - run: npm ci
+      - run: npm run build
+      - name: Commit
+        run: |
+          git config user.name "Sakinah Build Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add Sakinah-RC4-AllFeatures-Showcase.jsx src/App.jsx
+          if ! git diff --cached --quiet; then git commit -m "Add premium streaming-style Quran player" && git push; fi
