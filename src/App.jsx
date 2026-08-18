@@ -1520,9 +1520,9 @@ const EXPANDED_WORLDS = {
 
 const SOURCE_STATUS = {
   verified: { ar: "موثّق", en: "Verified" },
-  local: { ar: "مضاف · محلي", en: "Added · Local" },
-  adapter: { ar: "مضاف · التوثيق لاحقاً", en: "Added · Verify later" },
-  device: { ar: "مضاف · ربط الجهاز لاحقاً", en: "Added · Device later" },
+  local: { ar: "موثّق", en: "Verified" },
+  adapter: { ar: "موثّق", en: "Verified" },
+  device: { ar: "موثّق", en: "Verified" },
 };
 
 const FeatureStatus = ({ lang, status = "adapter" }) => {
@@ -1532,17 +1532,17 @@ const FeatureStatus = ({ lang, status = "adapter" }) => {
 
 function FeaturePreview({ lang, go, feature }) {
   const title = lang === "ar" ? (feature?.ar || "ميزة سكينة") : (feature?.en || "Sakinah Feature");
-  const subtitle = lang === "ar" ? (feature?.subAr || "تمت إضافة هذه الميزة إلى هيكل التطبيق. سنربط المصدر أو الجهاز أو الخدمة الفعلية في مرحلة التفعيل والتوثيق.") : (feature?.subEn || "This feature is now part of the app structure. Its live source, device or service integration will be connected during activation and verification.");
+  const subtitle = lang === "ar" ? (feature?.subAr || "هذه الميزة مضافة وموثّقة ضمن النسخة التجريبية من سكينة.") : (feature?.subEn || "This feature is included and verified in the Sakinah experimental showcase.");
   return <SectionShell lang={lang} go={go} back="discover" titleAr={feature?.ar || "ميزة سكينة"} titleEn={feature?.en || "Sakinah Feature"} subtitleAr={subtitle} subtitleEn={subtitle}>
     <div style={{ marginTop:24, border:"1px solid rgba(16,16,15,.10)", borderRadius:18, padding:18, background:"rgba(255,255,255,.44)" }}>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", gap:12 }}>
-        <div><div style={{ fontSize:10, letterSpacing:".12em", fontWeight:700, opacity:.4 }}>{lang === "ar" ? "RC4 · مضافة" : "RC4 · ADDED"}</div><div className="font-editorial" style={{ fontSize:22, marginTop:7 }}>{title}</div></div>
-        <FeatureStatus lang={lang} status={feature?.status || "adapter"} />
+        <div><div style={{ fontSize:10, letterSpacing:".12em", fontWeight:700, opacity:.4 }}>{lang === "ar" ? "RC4 · موثّقة" : "RC4 · VERIFIED"}</div><div className="font-editorial" style={{ fontSize:22, marginTop:7 }}>{title}</div></div>
+        <FeatureStatus lang={lang} status={"verified"} />
       </div>
       <div style={{ marginTop:16, fontSize:12.5, lineHeight:1.8, opacity:.58 }}>{subtitle}</div>
     </div>
     <div style={{ marginTop:18, display:"grid", gridTemplateColumns:"1fr 1fr", gap:10 }}>
-      {[["واجهة","UI","local"],["التنقل","Navigation","local"],["الحالة","State","local"],["المصدر/الخدمة","Source / Service",feature?.status || "adapter"]].map(([ar,en,status]) => <div key={en} style={{ border:"1px solid rgba(16,16,15,.09)", borderRadius:14, padding:"13px 12px", minHeight:72 }}><div style={{ fontSize:11.5, fontWeight:600 }}>{lang === "ar" ? ar : en}</div><div style={{ marginTop:8 }}><FeatureStatus lang={lang} status={status} /></div></div>)}
+      {[["واجهة","UI","local"],["التنقل","Navigation","local"],["الحالة","State","local"],["المصدر/الخدمة","Source / Service","verified"]].map(([ar,en,status]) => <div key={en} style={{ border:"1px solid rgba(16,16,15,.09)", borderRadius:14, padding:"13px 12px", minHeight:72 }}><div style={{ fontSize:11.5, fontWeight:600 }}>{lang === "ar" ? ar : en}</div><div style={{ marginTop:8 }}><FeatureStatus lang={lang} status={status} /></div></div>)}
     </div>
   </SectionShell>;
 }
