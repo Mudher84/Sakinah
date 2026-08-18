@@ -1,0 +1,57 @@
+name: Add Interactive Tasbeeh
+on:
+  push:
+    paths: ['.github/workflows/add-interactive-tasbeeh.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  patch-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - name: Add interactive tasbeeh
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          for fn in ['Sakinah-RC4-AllFeatures-Showcase.jsx','src/App.jsx']:
+            p=Path(fn); s=p.read_text()
+            if 'function InteractiveTasbeeh({' not in s:
+              marker='function NotificationCenter({' if 'function NotificationCenter({' in s else 'function FeaturePreview('
+              comp=r'''function InteractiveTasbeeh({lang,go}){
+  const profile=(()=>{try{return localStorage.getItem("sakinah-active-profile")||"me"}catch{return "me"}})();
+  const day=new Date().toISOString().slice(0,10), key=`sakinah-tasbeeh-${profile}-${day}`;
+  const adhkar=[{ar:"سبحان الله",en:"SubhanAllah"},{ar:"الحمد لله",en:"Alhamdulillah"},{ar:"الله أكبر",en:"Allahu Akbar"},{ar:"لا إله إلا الله",en:"La ilaha illa Allah"},{ar:"أستغفر الله",en:"Astaghfirullah"},{ar:"اللهم صلِّ على محمد",en:"Salawat"}];
+  const [idx,setIdx]=useState(0),[count,setCount]=useState(()=>{try{return Number(localStorage.getItem(key))||0}catch{return 0}}),[goal,setGoal]=useState(33),[vibrate,setVibrate]=useState(true),[custom,setCustom]=useState("");
+  const label=custom.trim()|| (lang==="ar"?adhkar[idx].ar:adhkar[idx].en); const inc=()=>{const n=count+1;setCount(n);try{localStorage.setItem(key,String(n))}catch{};if(vibrate&&navigator.vibrate)navigator.vibrate(n%goal===0?[60,40,60]:18)}; const reset=()=>{setCount(0);try{localStorage.setItem(key,"0")}catch{}};
+  const pct=Math.min(100,(count/goal)*100), cycles=Math.floor(count/goal);
+  return <SectionShell lang={lang} go={go} back="home" titleAr="المسبحة" titleEn="Tasbeeh" subtitleAr="مسبحة تفاعلية تحفظ تقدمك اليومي" subtitleEn="Interactive dhikr counter with daily progress">
+    <div style={{marginTop:18,borderRadius:30,padding:"26px 20px",textAlign:"center",background:"linear-gradient(145deg,rgba(181,154,98,.14),rgba(255,255,255,.50))",border:"1px solid rgba(181,154,98,.20)"}}><div style={{fontSize:10,opacity:.45}}>{lang==="ar"?"الذكر الحالي":"CURRENT DHIKR"}</div><div className="font-editorial" style={{fontSize:24,marginTop:8}}>{label}</div><button onClick={inc} aria-label={lang==="ar"?"تسبيح":"Count dhikr"} style={{width:210,height:210,borderRadius:"50%",border:"1px solid rgba(16,16,15,.09)",background:"radial-gradient(circle at 35% 30%,#ffffff,#e8dfce)",boxShadow:"0 18px 45px rgba(45,38,28,.12)",marginTop:20,fontFamily:"inherit",color:"#171714"}}><div className="font-editorial" style={{fontSize:54}}>{nDigits(count,lang)}</div><div style={{fontSize:10,opacity:.4,marginTop:4}}>{lang==="ar"?"اضغط للتسبيح":"TAP TO COUNT"}</div></button><div style={{marginTop:18,height:8,borderRadius:8,background:"rgba(16,16,15,.08)",overflow:"hidden"}}><div style={{width:`${pct}%`,height:"100%",background:COLOR.gold,borderRadius:8,transition:"width .18s"}}/></div><div style={{display:"flex",justifyContent:"space-between",fontSize:10,opacity:.45,marginTop:7}}><span>{lang==="ar"?`الدورة ${nDigits(cycles,lang)}`:`Cycle ${cycles}`}</span><span>{nDigits(count%goal,lang)} / {nDigits(goal,lang)}</span></div></div>
+    <div style={{marginTop:14,display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8}}>{[33,100,1000].map(x=><button key={x} onClick={()=>setGoal(x)} style={{padding:10,borderRadius:14,border:goal===x?`1px solid ${COLOR.gold}`:"1px solid rgba(16,16,15,.09)",background:goal===x?"rgba(181,154,98,.10)":"transparent",fontFamily:"inherit"}}>{nDigits(x,lang)}</button>)}</div>
+    <div style={{marginTop:18}}><div style={{fontSize:12,fontWeight:650}}>{lang==="ar"?"اختر الذكر":"Choose dhikr"}</div><div style={{display:"flex",gap:7,overflowX:"auto",padding:"9px 0 5px"}}>{adhkar.map((d,i)=><button key={d.en} onClick={()=>{setIdx(i);setCustom("")}} style={{flexShrink:0,padding:"8px 11px",borderRadius:14,border:idx===i&&!custom?`1px solid ${COLOR.gold}`:"1px solid rgba(16,16,15,.09)",background:idx===i&&!custom?"rgba(181,154,98,.10)":"transparent",fontFamily:"inherit",fontSize:11}}>{lang==="ar"?d.ar:d.en}</button>)}</div><input value={custom} onChange={e=>setCustom(e.target.value)} placeholder={lang==="ar"?"أو اكتب ذكراً مخصصاً…":"Or enter custom dhikr…"} style={{marginTop:8,width:"100%",boxSizing:"border-box",padding:11,borderRadius:14,border:"1px solid rgba(16,16,15,.09)",background:"rgba(255,255,255,.42)",fontFamily:"inherit"}}/></div>
+    <div style={{marginTop:14,display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}><label style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:12,border:"1px solid rgba(16,16,15,.08)",borderRadius:14,fontSize:11}}>{lang==="ar"?"الاهتزاز":"Vibration"}<input type="checkbox" checked={vibrate} onChange={e=>setVibrate(e.target.checked)}/></label><button onClick={reset} style={{border:"1px solid rgba(16,16,15,.08)",borderRadius:14,background:"transparent",fontFamily:"inherit"}}>{lang==="ar"?"تصفير العداد":"Reset"}</button></div>
+    <div style={{marginTop:14,padding:13,borderRadius:14,border:"1px solid rgba(16,16,15,.08)",fontSize:10.5,lineHeight:1.7,opacity:.5}}>{lang==="ar"?"يُحفظ عداد اليوم تلقائياً لكل بروفايل بشكل منفصل، ويبدأ سجل يوم جديد تلقائياً في اليوم التالي.":"Today's count is saved automatically per profile, with a fresh daily record starting the next day."}</div>
+  </SectionShell>;
+}
+
+'''
+              s=s.replace(marker,comp+marker,1)
+            route='    "complete-vision": () => <CompleteVisionCenter lang={lang} go={go} />,'
+            if route in s and '"interactive-tasbeeh":' not in s:s=s.replace(route,route+'\n    "interactive-tasbeeh": () => <InteractiveTasbeeh lang={lang} go={go} />,',1)
+            needle='{ id: "notification-center", label: lang === "ar" ? "تنبيهات الصلاة والأذكار" : "Prayer & Dhikr Alerts", action: () => go("notification-center") },'
+            entry='{ id: "interactive-tasbeeh", label: lang === "ar" ? "المسبحة التفاعلية" : "Interactive Tasbeeh", action: () => go("interactive-tasbeeh") },'
+            if needle in s and entry not in s:s=s.replace(needle,needle+'\n    '+entry,1)
+            p.write_text(s)
+          PY
+      - run: npm ci
+      - run: npm run build
+      - name: Commit
+        run: |
+          git config user.name "Sakinah Build Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add Sakinah-RC4-AllFeatures-Showcase.jsx src/App.jsx
+          if ! git diff --cached --quiet; then git commit -m "Add interactive tasbeeh with daily progress" && git push; fi
