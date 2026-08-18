@@ -1,0 +1,44 @@
+name: Add Quran Arabic English Toggle
+on:
+  push:
+    paths: ['.github/workflows/add-quran-language-toggle.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  patch-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - name: Add reader language toggle
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          for fn in ['Sakinah-RC4-AllFeatures-Showcase.jsx','src/App.jsx']:
+            p=Path(fn); s=p.read_text()
+            # Reader gets its own Arabic/English content toggle, independent of app language.
+            sig='function QuranReader({ lang, surahId, go, bookmarked, onBookmark, onLastRead }) {'
+            if sig in s and 'const [quranLang, setQuranLang]' not in s:
+              s=s.replace(sig, sig+'\n  const [quranLang, setQuranLang] = useState("ar");',1)
+              # place segmented toggle beneath reader header
+              anchor='<div style={{ textAlign: "center", margin: "10px 0 16px", fontSize: 11, opacity: 0.5 }}>{s.en} · {s.verses.length} {t.verses}</div>'
+              toggle='''<div style={{ display:"flex", justifyContent:"center", margin:"8px 0 18px" }}><div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", padding:3, border:"1px solid rgba(16,16,15,.10)", borderRadius:18, background:"rgba(255,255,255,.42)", minWidth:170 }}><button onClick={()=>setQuranLang("ar")} style={{ border:0, borderRadius:15, padding:"7px 13px", background:quranLang==="ar"?"rgba(181,154,98,.18)":"transparent", fontFamily:"inherit", fontWeight:quranLang==="ar"?700:500, cursor:"pointer" }}>العربية</button><button onClick={()=>setQuranLang("en")} style={{ border:0, borderRadius:15, padding:"7px 13px", background:quranLang==="en"?"rgba(181,154,98,.18)":"transparent", fontFamily:"inherit", fontWeight:quranLang==="en"?700:500, cursor:"pointer" }}>English</button></div></div>'''
+              if anchor in s: s=s.replace(anchor,anchor+toggle,1)
+              # Arabic = Mushaf text only; English = Arabic ayah plus English meaning emphasized.
+              old='<div className="font-quran" style={{ fontSize: 25, lineHeight: 2.05, direction: "rtl" }}>{v.ar}</div>\n              <div style={{ fontSize: 11.5, lineHeight: 1.65, opacity: 0.5, marginTop: 8 }}>{v.en}</div>'
+              new='<div className="font-quran" style={{ fontSize: quranLang === "ar" ? 27 : 21, lineHeight: 2.05, direction: "rtl", opacity:quranLang === "ar" ? 1 : .68 }}>{v.ar}</div>\n              {quranLang === "en" && <div style={{ fontSize: 13.5, lineHeight: 1.8, opacity: 0.78, marginTop: 10, direction:"ltr", textAlign:"left" }}>{v.en}</div>}'
+              s=s.replace(old,new,1)
+            p.write_text(s)
+          PY
+      - run: npm ci
+      - run: npm run build
+      - name: Commit verified build
+        run: |
+          git config user.name "Sakinah Build Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add Sakinah-RC4-AllFeatures-Showcase.jsx src/App.jsx
+          if ! git diff --cached --quiet; then git commit -m "Add Arabic English Quran reader toggle" && git push; fi
