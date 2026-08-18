@@ -898,6 +898,15 @@ function AudioScreen({ lang, go, surahId }) {
 /* ════════════════════════════════════════════════════════════════
    QIBLA — compass-ready with graceful simulation fallback
 ════════════════════════════════════════════════════════════════ */
+const KAABA = { lat: 21.422487, lon: 39.826206 };
+function calcQiblaBearing(lat, lon) {
+  const toRad = d => d * Math.PI / 180, toDeg = r => r * 180 / Math.PI;
+  const phi1 = toRad(lat), phi2 = toRad(KAABA.lat), dLon = toRad(KAABA.lon - lon);
+  const y = Math.sin(dLon) * Math.cos(phi2);
+  const x = Math.cos(phi1) * Math.sin(phi2) - Math.sin(phi1) * Math.cos(phi2) * Math.cos(dLon);
+  return (toDeg(Math.atan2(y, x)) + 360) % 360;
+}
+
 function QiblaDial({ lang, onDegChange }) {
   const t = STRINGS[lang];
   const QIBLA_BEARING = 136; // demo bearing; real build derives this from device geolocation.
