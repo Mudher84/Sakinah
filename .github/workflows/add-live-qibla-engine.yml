@@ -1,0 +1,48 @@
+name: Add Live Qibla Engine
+on:
+  push:
+    paths: ['.github/workflows/add-live-qibla-engine.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  patch-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - name: Inject live GPS plus compass qibla engine
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          for fn in ['Sakinah-RC4-AllFeatures-Showcase.jsx','src/App.jsx']:
+            p=Path(fn); s=p.read_text()
+            if 'function calcQiblaBearing(' not in s:
+              anchor='function QiblaDial('
+              helper='''const KAABA = { lat: 21.422487, lon: 39.826206 };\nfunction calcQiblaBearing(lat, lon) {\n  const toRad = d => d * Math.PI / 180, toDeg = r => r * 180 / Math.PI;\n  const phi1 = toRad(lat), phi2 = toRad(KAABA.lat), dLon = toRad(KAABA.lon - lon);\n  const y = Math.sin(dLon) * Math.cos(phi2);\n  const x = Math.cos(phi1) * Math.sin(phi2) - Math.sin(phi1) * Math.cos(phi2) * Math.cos(dLon);\n  return (toDeg(Math.atan2(y, x)) + 360) % 360;\n}\n\n'''
+              s=s.replace(anchor,helper+anchor,1)
+            # replace fixed bearing use with live state inside QiblaDial
+            sig='function QiblaDial({ lang, onDegChange, size = 230 }) {'
+            if sig in s and 'const [liveBearing, setLiveBearing]' not in s:
+              s=s.replace(sig,sig+'\n  const [liveBearing, setLiveBearing] = useState(QIBLA_BEARING);\n  const [geo, setGeo] = useState({ status:"idle", lat:null, lon:null, accuracy:null });',1)
+              s=s.replace('const relative = mode === "compass" ? QIBLA_BEARING - heading : heading;','const relative = mode === "compass" ? liveBearing - heading : heading;',1)
+              inject='''\n  const enableLocation = () => {\n    if (!navigator.geolocation) { setGeo(g=>({...g,status:"unsupported"})); return; }\n    setGeo(g=>({...g,status:"loading"}));\n    navigator.geolocation.getCurrentPosition((pos)=>{\n      const { latitude, longitude, accuracy } = pos.coords;\n      setLiveBearing(calcQiblaBearing(latitude, longitude));\n      setGeo({ status:"ready", lat:latitude, lon:longitude, accuracy });\n    },()=>setGeo(g=>({...g,status:"denied"})),{ enableHighAccuracy:true, timeout:10000, maximumAge:30000 });\n  };\n  useEffect(()=>{ enableLocation(); },[]);\n'''
+              pos='  const enableCompass = async () => {'
+              s=s.replace(pos,inject+'\n'+pos,1)
+              # replace bottom controls with GPS/compass status line and refresh
+              old='{mode === "compass" && <span style={{ fontSize: 10, opacity: 0.4 }}>{t.compassMode}</span>}'
+              new='''{mode === "compass" && <span style={{ fontSize: 10, opacity: 0.4 }}>{t.compassMode}</span>}\n          <div style={{ marginTop:8, display:"flex", gap:8, justifyContent:"center", flexWrap:"wrap", fontSize:9.5, opacity:.48 }}>\n            <span>{lang === "ar" ? "زاوية القبلة" : "Qibla"}: {nDigits(Math.round(liveBearing), lang)}°</span>\n            <span>·</span>\n            <span>{geo.status === "ready" ? (lang === "ar" ? "الموقع فعّال" : "GPS active") : geo.status === "loading" ? (lang === "ar" ? "تحديد الموقع…" : "Locating…") : (lang === "ar" ? "الموقع غير متاح" : "GPS unavailable")}</span>\n          </div>\n          <button onClick={enableLocation} style={{ marginTop:8, background:"none", border:"1px dashed rgba(16,16,15,.20)", borderRadius:20, padding:"5px 11px", fontSize:9.5, opacity:.52, cursor:"pointer", color:"inherit" }}>{lang === "ar" ? "تحديث الموقع" : "Refresh location"}</button>'''
+              s=s.replace(old,new,1)
+            p.write_text(s)
+          PY
+      - run: npm ci
+      - run: npm run build
+      - name: Commit verified build
+        run: |
+          git config user.name "Sakinah Build Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add Sakinah-RC4-AllFeatures-Showcase.jsx src/App.jsx
+          if ! git diff --cached --quiet; then git commit -m "Add live GPS compass qibla engine" && git push; fi
