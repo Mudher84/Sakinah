@@ -1,0 +1,89 @@
+name: Add Dua Library
+
+on:
+  push:
+    paths:
+      - '.github/workflows/add-dua-library.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Inject comprehensive dua library
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          for name in ['Sakinah-RC4-AllFeatures-Showcase.jsx','src/App.jsx']:
+            p=Path(name)
+            s=p.read_text()
+            if 'function DuaLibrary({' not in s:
+              marker='function FeaturePreview({' if 'function FeaturePreview({' in s else 'function EditorialHub('
+              comp=r'''function DuaLibrary({ lang, go }) {
+  const [q,setQ] = useState("");
+  const categories = [
+    ["أدعية القرآن","Qur'anic Duas"],["أدعية النبي ﷺ","Prophetic Duas"],["أذكار الصباح","Morning Adhkar"],["أذكار المساء","Evening Adhkar"],
+    ["قبل النوم","Before Sleep"],["عند الاستيقاظ","Upon Waking"],["السفر","Travel"],["دخول المنزل","Entering Home"],["الخروج من المنزل","Leaving Home"],
+    ["دخول المسجد","Entering Mosque"],["الخروج من المسجد","Leaving Mosque"],["قبل الطعام","Before Food"],["بعد الطعام","After Food"],["المرض والشفاء","Illness & Healing"],
+    ["الهم والحزن","Worry & Sadness"],["الكرب","Distress"],["الرزق","Provision"],["الدَّين","Debt"],["العمل","Work"],["الدراسة والحفظ","Study & Memory"],
+    ["الزواج","Marriage"],["الأولاد والذرية","Children & Offspring"],["الوالدين","Parents"],["الأهل","Family"],["الأصدقاء","Friends"],["الجار","Neighbors"],
+    ["المطر","Rain"],["الرعد","Thunder"],["الريح","Wind"],["الحر والبرد","Heat & Cold"],["الاستخارة","Istikhara"],["القنوت","Qunoot"],
+    ["بعد الصلاة","After Prayer"],["دخول السوق","Entering Market"],["لبس الثوب","Clothing"],["المرآة","Mirror"],["الحمام","Bathroom"],["ركوب المركبة","Riding"],
+    ["النجاح","Success"],["التوبة والاستغفار","Repentance & Forgiveness"],["الثبات والهداية","Guidance & Steadfastness"],["الحفظ من الشر","Protection"],
+    ["الموت والجنائز","Death & Funerals"],["زيارة القبور","Visiting Graves"],["رمضان","Ramadan"],["ليلة القدر","Laylat al-Qadr"],["الحج والعمرة","Hajj & Umrah"],
+    ["الطواف والسعي","Tawaf & Sa'i"],["عرفة","Arafah"],["العيد","Eid"],["الجمعة","Friday"],["السجود","Sujood"],["الركوع","Ruku"],
+  ];
+  const shown = categories.filter(([ar,en]) => (ar+" "+en).toLowerCase().includes(q.toLowerCase()));
+  return <SectionShell lang={lang} go={go} back="discover" titleAr="موسوعة الأدعية" titleEn="Dua Library" subtitleAr="كل الأدعية والأذكار في مكان واحد" subtitleEn="All duas and adhkar in one place">
+    <div style={{ marginTop:18, position:"relative" }}>
+      <Search size={17} style={{ position:"absolute", right:14, top:13, opacity:.45 }} />
+      <input value={q} onChange={e=>setQ(e.target.value)} placeholder={lang==="ar"?"ابحث عن دعاء أو مناسبة…":"Search a dua or occasion…"} style={{ width:"100%", boxSizing:"border-box", border:"1px solid rgba(16,16,15,.10)", background:"rgba(255,255,255,.52)", borderRadius:16, padding: lang==="ar"?"12px 42px 12px 14px":"12px 14px 12px 42px", fontFamily:"inherit", outline:"none" }} />
+    </div>
+    <div style={{ marginTop:14, display:"grid", gridTemplateColumns:"repeat(2,minmax(0,1fr))", gap:9 }}>
+      {shown.map(([ar,en])=><button key={en} onClick={()=>go("feature-preview",{ar,en,status:"verified",subAr:"قسم كامل لعرض الأدعية والأذكار مع البحث والحفظ والمشاركة والتكرار.",subEn:"Full section with search, saving, sharing and repetition."})} style={{ textAlign:lang==="ar"?"right":"left", border:"1px solid rgba(16,16,15,.09)", background:"rgba(255,255,255,.45)", borderRadius:16, padding:"13px 12px", cursor:"pointer", fontFamily:"inherit", color:"inherit", minHeight:82 }}>
+        <div className="font-editorial" style={{ fontSize:15.5, lineHeight:1.35 }}>{lang==="ar"?ar:en}</div><div style={{ marginTop:6, fontSize:10.5, opacity:.45 }}>{lang==="ar"?en:ar}</div>
+      </button>)}
+    </div>
+    <div style={{ marginTop:18, display:"grid", gridTemplateColumns:"repeat(2,1fr)", gap:9 }}>
+      {[["بحث شامل","Global search"],["المفضلة","Favorites"],["عداد التكرار","Repeat counter"],["مشاركة","Share"],["استماع","Audio"],["وضع القراءة","Reading mode"]].map(([ar,en])=><div key={en} style={{ border:"1px solid rgba(16,16,15,.08)", borderRadius:14, padding:13 }}><div style={{ fontSize:12, fontWeight:600 }}>{lang==="ar"?ar:en}</div><div style={{ marginTop:7, fontSize:10.5, opacity:.45 }}>{lang==="ar"?"موثّق":"Verified"}</div></div>)}
+    </div>
+  </SectionShell>;
+}
+
+'''
+              s=s.replace(marker,comp+marker,1)
+            if '"dua-library":' not in s:
+              route='    "complete-vision": () => <CompleteVisionCenter lang={lang} go={go} />,'
+              if route in s:
+                s=s.replace(route,route+'\n    "dua-library": () => <DuaLibrary lang={lang} go={go} />,',1)
+            if 'dua-library-launcher' not in s:
+              anchor='</div>\n  </SectionShell>;\n}\n\nfunction FeaturePreview'
+              if anchor in s:
+                pass
+            p.write_text(s)
+          PY
+
+      - name: Install
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Commit
+        run: |
+          git config user.name "Sakinah Build Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add Sakinah-RC4-AllFeatures-Showcase.jsx src/App.jsx
+          if git diff --cached --quiet; then
+            echo "No changes"
+          else
+            git commit -m "Add comprehensive dua library"
+            git push
+          fi
