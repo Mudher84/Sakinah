@@ -1,0 +1,55 @@
+name: Add Personal Notebook
+on:
+  push:
+    paths: ['.github/workflows/add-notebook.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  patch-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - name: Add notebook
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          for fn in ['Sakinah-RC4-AllFeatures-Showcase.jsx','src/App.jsx']:
+            p=Path(fn); s=p.read_text()
+            if 'function SakinahNotebook({' not in s:
+              marker='function IslamicQuizCenter({' if 'function IslamicQuizCenter({' in s else 'function FeaturePreview('
+              comp=r'''function SakinahNotebook({lang,go}){
+  const profile=(()=>{try{return localStorage.getItem("sakinah-active-profile")||"me"}catch{return "me"}})(); const key=`sakinah-notes-${profile}`;
+  const [notes,setNotes]=useState(()=>{try{return JSON.parse(localStorage.getItem(key))||[]}catch{return []}}),[q,setQ]=useState(""),[edit,setEdit]=useState(null),[title,setTitle]=useState(""),[body,setBody]=useState("");
+  const persist=x=>{setNotes(x);try{localStorage.setItem(key,JSON.stringify(x))}catch{}};
+  const save=()=>{if(!title.trim()&&!body.trim())return;const now=new Date().toISOString();if(edit){persist(notes.map(n=>n.id===edit?{...n,title,body,updated:now}:n))}else persist([{id:Date.now(),title:title|| (lang==="ar"?"ملاحظة جديدة":"New note"),body,updated:now,pinned:false},...notes]);setTitle("");setBody("");setEdit(null)};
+  const open=n=>{setEdit(n.id);setTitle(n.title);setBody(n.body)}; const del=id=>{persist(notes.filter(n=>n.id!==id));if(edit===id){setEdit(null);setTitle("");setBody("")}}; const pin=id=>persist(notes.map(n=>n.id===id?{...n,pinned:!n.pinned}:n));
+  const shown=notes.filter(n=>(n.title+" "+n.body).toLowerCase().includes(q.toLowerCase())).sort((a,b)=>Number(b.pinned)-Number(a.pinned));
+  return <SectionShell lang={lang} go={go} back="home" titleAr="دفتر ملاحظاتي" titleEn="My Notebook" subtitleAr="مساحتك الخاصة للأفكار والعِبر والملاحظات" subtitleEn="Your private space for thoughts, lessons and notes">
+    <div style={{marginTop:18,border:"1px solid rgba(16,16,15,.09)",borderRadius:20,padding:14,background:"rgba(255,255,255,.46)"}}><input value={title} onChange={e=>setTitle(e.target.value)} placeholder={lang==="ar"?"عنوان الملاحظة":"Note title"} style={{width:"100%",boxSizing:"border-box",border:0,borderBottom:"1px solid rgba(16,16,15,.08)",background:"transparent",padding:"8px 2px 11px",fontFamily:"inherit",fontSize:15,fontWeight:600,outline:"none",color:"inherit"}}/><textarea value={body} onChange={e=>setBody(e.target.value)} placeholder={lang==="ar"?"اكتب ملاحظتك…":"Write your note…"} style={{width:"100%",boxSizing:"border-box",border:0,background:"transparent",minHeight:130,padding:"12px 2px",fontFamily:"inherit",fontSize:13,lineHeight:1.8,resize:"vertical",outline:"none",color:"inherit"}}/><div style={{display:"flex",gap:8}}><button onClick={save} style={{flex:1,border:0,borderRadius:14,padding:11,background:COLOR.lapis,color:"white",fontFamily:"inherit",fontWeight:600}}>{edit?(lang==="ar"?"حفظ التعديل":"Save changes"):(lang==="ar"?"حفظ الملاحظة":"Save note")}</button>{edit&&<button onClick={()=>{setEdit(null);setTitle("");setBody("")}} style={{border:"1px solid rgba(16,16,15,.1)",borderRadius:14,padding:"0 13px",background:"transparent",fontFamily:"inherit"}}>{lang==="ar"?"إلغاء":"Cancel"}</button>}</div></div>
+    <input value={q} onChange={e=>setQ(e.target.value)} placeholder={lang==="ar"?"ابحث في ملاحظاتك…":"Search your notes…"} style={{marginTop:14,width:"100%",boxSizing:"border-box",padding:11,borderRadius:14,border:"1px solid rgba(16,16,15,.09)",background:"rgba(255,255,255,.4)",fontFamily:"inherit"}}/>
+    <div style={{marginTop:10}}>{shown.length===0?<div style={{padding:"32px 10px",textAlign:"center",fontSize:11,opacity:.4}}>{lang==="ar"?"دفترك ينتظر أول ملاحظة":"Your notebook is waiting for its first note"}</div>:shown.map(n=><div key={n.id} style={{padding:"14px 2px",borderTop:"1px solid rgba(16,16,15,.07)"}}><div style={{display:"flex",justifyContent:"space-between",gap:10}}><button onClick={()=>open(n)} style={{flex:1,border:0,background:"transparent",padding:0,textAlign:lang==="ar"?"right":"left",fontFamily:"inherit",color:"inherit"}}><div style={{fontSize:13.5,fontWeight:650}}>{n.pinned?"★ ":""}{n.title}</div><div style={{fontSize:11,opacity:.5,marginTop:6,lineHeight:1.6,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"}}>{n.body}</div></button><div style={{display:"flex",gap:4,alignItems:"start"}}><button onClick={()=>pin(n.id)} style={{border:0,background:"transparent",opacity:.5}}>☆</button><button onClick={()=>del(n.id)} style={{border:0,background:"transparent",opacity:.4}}>×</button></div></div></div>)}</div>
+  </SectionShell>;
+}
+
+'''
+              s=s.replace(marker,comp+marker,1)
+            route='    "complete-vision": () => <CompleteVisionCenter lang={lang} go={go} />,'
+            if route in s and '"notebook":' not in s:s=s.replace(route,route+'\n    "notebook": () => <SakinahNotebook lang={lang} go={go} />,',1)
+            needle='{ id: "daily-reflection", label: lang === "ar" ? "تأمّل · آية اليوم" : "Reflect · Ayah of the Day", action: () => go("daily-reflection") },'
+            entry='{ id: "notebook", label: lang === "ar" ? "دفتر ملاحظاتي" : "My Notebook", action: () => go("notebook") },'
+            if needle in s and entry not in s:s=s.replace(needle,needle+'\n    '+entry,1)
+            p.write_text(s)
+          PY
+      - run: npm ci
+      - run: npm run build
+      - name: Commit
+        run: |
+          git config user.name "Sakinah Build Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add Sakinah-RC4-AllFeatures-Showcase.jsx src/App.jsx
+          if ! git diff --cached --quiet; then git commit -m "Add personal notebook with profile storage" && git push; fi
