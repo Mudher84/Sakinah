@@ -1,0 +1,56 @@
+name: Add Prayer and Dhikr Notifications
+on:
+  push:
+    paths: ['.github/workflows/add-prayer-dhikr-notifications.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  patch-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - name: Add notification center
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          for fn in ['Sakinah-RC4-AllFeatures-Showcase.jsx','src/App.jsx']:
+            p=Path(fn); s=p.read_text()
+            if 'function NotificationCenter({' not in s:
+              marker='function PersonalLedger({' if 'function PersonalLedger({' in s else 'function FeaturePreview('
+              comp=r'''function NotificationCenter({lang,go}){
+  const profile=(()=>{try{return localStorage.getItem("sakinah-active-profile")||"me"}catch{return "me"}})(),key=`sakinah-alerts-${profile}`;
+  const defaults={prayers:{fajr:true,dhuhr:true,asr:true,maghrib:true,isha:true},before:0,adhan:true,vibrate:true,dhikr:[{id:"morning",ar:"أذكار الصباح",en:"Morning Adhkar",time:"07:00",on:true},{id:"evening",ar:"أذكار المساء",en:"Evening Adhkar",time:"17:30",on:true},{id:"salawat",ar:"الصلاة على النبي ﷺ",en:"Salawat",time:"20:30",on:false},{id:"istighfar",ar:"الاستغفار",en:"Istighfar",time:"12:30",on:false}]};
+  const [cfg,setCfg]=useState(()=>{try{return JSON.parse(localStorage.getItem(key))||defaults}catch{return defaults}});const save=x=>{setCfg(x);try{localStorage.setItem(key,JSON.stringify(x))}catch{}};
+  const prayer=[['fajr','الفجر','Fajr'],['dhuhr','الظهر','Dhuhr'],['asr','العصر','Asr'],['maghrib','المغرب','Maghrib'],['isha','العشاء','Isha']];
+  return <SectionShell lang={lang} go={go} back="home" titleAr="التنبيهات والأذكار" titleEn="Prayer & Dhikr Alerts" subtitleAr="تنبيه كل صلاة في وقتها وأذكار في الأوقات التي تختارها" subtitleEn="Prayer-time alerts and scheduled adhkar">
+    <div style={{marginTop:18,padding:15,borderRadius:18,border:"1px solid rgba(16,16,15,.08)",background:"rgba(181,154,98,.08)"}}><div style={{fontSize:13,fontWeight:650}}>{lang==="ar"?"تنبيهات الصلاة":"Prayer alerts"}</div><div style={{fontSize:10.5,opacity:.48,marginTop:5,lineHeight:1.6}}>{lang==="ar"?"تتبع مواقيت الصلاة المحسوبة لموقع المستخدم، ويمكن تخصيص كل صلاة.":"Follows prayer times calculated for the user's location; each prayer can be customized."}</div></div>
+    <div style={{marginTop:8}}>{prayer.map(([id,ar,en])=><label key={id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"13px 2px",borderBottom:"1px solid rgba(16,16,15,.07)"}}><div><b style={{fontSize:13}}>{lang==="ar"?ar:en}</b><small style={{display:"block",opacity:.42,marginTop:4}}>{cfg.prayers[id]?(lang==="ar"?"التنبيه مفعّل":"Alert enabled"):(lang==="ar"?"متوقف":"Off")}</small></div><input type="checkbox" checked={!!cfg.prayers[id]} onChange={e=>save({...cfg,prayers:{...cfg.prayers,[id]:e.target.checked}})}/></label>)}</div>
+    <div style={{marginTop:16,display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}><label style={{fontSize:10.5,opacity:.65}}>{lang==="ar"?"التنبيه قبل الصلاة":"Alert before prayer"}<select value={cfg.before} onChange={e=>save({...cfg,before:Number(e.target.value)})} style={{display:"block",width:"100%",marginTop:6,padding:10,borderRadius:12,border:"1px solid rgba(16,16,15,.09)",background:"transparent",fontFamily:"inherit"}}><option value="0">{lang==="ar"?"عند الوقت":"At time"}</option><option value="5">5 min</option><option value="10">10 min</option><option value="15">15 min</option><option value="30">30 min</option></select></label><div style={{display:"grid",gap:6}}><label style={{display:"flex",justifyContent:"space-between",fontSize:11}}>{lang==="ar"?"صوت الأذان":"Adhan sound"}<input type="checkbox" checked={cfg.adhan} onChange={e=>save({...cfg,adhan:e.target.checked})}/></label><label style={{display:"flex",justifyContent:"space-between",fontSize:11}}>{lang==="ar"?"اهتزاز":"Vibration"}<input type="checkbox" checked={cfg.vibrate} onChange={e=>save({...cfg,vibrate:e.target.checked})}/></label></div></div>
+    <div style={{marginTop:22,fontSize:13,fontWeight:650}}>{lang==="ar"?"تسابيح وأذكار مجدولة":"Scheduled Dhikr"}</div><div style={{marginTop:7}}>{cfg.dhikr.map((d,i)=><div key={d.id} style={{display:"grid",gridTemplateColumns:"1fr 96px auto",gap:8,alignItems:"center",padding:"11px 0",borderBottom:"1px solid rgba(16,16,15,.07)"}}><div><b style={{fontSize:12}}>{lang==="ar"?d.ar:d.en}</b></div><input type="time" value={d.time} onChange={e=>{const x=[...cfg.dhikr];x[i]={...d,time:e.target.value};save({...cfg,dhikr:x})}} style={{width:"100%",boxSizing:"border-box",border:"1px solid rgba(16,16,15,.09)",borderRadius:10,padding:7,background:"transparent"}}/><input type="checkbox" checked={d.on} onChange={e=>{const x=[...cfg.dhikr];x[i]={...d,on:e.target.checked};save({...cfg,dhikr:x})}}/></div>)}</div>
+    <button onClick={()=>{const x=[...cfg.dhikr,{id:`custom-${Date.now()}`,ar:"تسبيح مخصص",en:"Custom Dhikr",time:"09:00",on:true}];save({...cfg,dhikr:x})}} style={{width:"100%",marginTop:12,padding:11,borderRadius:14,border:"1px dashed rgba(16,16,15,.18)",background:"transparent",fontFamily:"inherit"}}>＋ {lang==="ar"?"إضافة تذكير ذكر جديد":"Add dhikr reminder"}</button>
+    <div style={{marginTop:14,fontSize:10,lineHeight:1.7,opacity:.45}}>{lang==="ar"?"في نسخة Android النهائية تُربط هذه الإعدادات بإذن الإشعارات وجدولة النظام حتى تصل التنبيهات حتى عند إغلاق التطبيق.":"In the final Android build these preferences connect to notification permission and OS scheduling so alerts can arrive while the app is closed."}</div>
+  </SectionShell>;
+}
+
+'''
+              s=s.replace(marker,comp+marker,1)
+            route='    "complete-vision": () => <CompleteVisionCenter lang={lang} go={go} />,'
+            if route in s and '"notification-center":' not in s:s=s.replace(route,route+'\n    "notification-center": () => <NotificationCenter lang={lang} go={go} />,',1)
+            needle='{ id: "nearest-mosque", label: lang === "ar" ? "أقرب مسجد" : "Nearest Mosque", action: () => go("nearest-mosque") },'
+            entry='{ id: "notification-center", label: lang === "ar" ? "تنبيهات الصلاة والأذكار" : "Prayer & Dhikr Alerts", action: () => go("notification-center") },'
+            if needle in s and entry not in s:s=s.replace(needle,needle+'\n    '+entry,1)
+            p.write_text(s)
+          PY
+      - run: npm ci
+      - run: npm run build
+      - name: Commit
+        run: |
+          git config user.name "Sakinah Build Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add Sakinah-RC4-AllFeatures-Showcase.jsx src/App.jsx
+          if ! git diff --cached --quiet; then git commit -m "Add prayer and scheduled dhikr notification center" && git push; fi
