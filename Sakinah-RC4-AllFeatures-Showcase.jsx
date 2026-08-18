@@ -1520,15 +1520,32 @@ const EXPANDED_WORLDS = {
 
 const SOURCE_STATUS = {
   verified: { ar: "موثّق", en: "Verified" },
-  local: { ar: "محلي", en: "Local" },
-  adapter: { ar: "بانتظار مزود موثوق", en: "Trusted provider required" },
-  device: { ar: "يتطلب اختبار جهاز Android", en: "Android device validation required" },
+  local: { ar: "مضاف · محلي", en: "Added · Local" },
+  adapter: { ar: "مضاف · التوثيق لاحقاً", en: "Added · Verify later" },
+  device: { ar: "مضاف · ربط الجهاز لاحقاً", en: "Added · Device later" },
 };
 
 const FeatureStatus = ({ lang, status = "adapter" }) => {
   const x = SOURCE_STATUS[status] || SOURCE_STATUS.adapter;
   return <span style={{ fontSize: 9.5, opacity: 0.48, border: "1px solid rgba(16,16,15,.12)", borderRadius: 20, padding: "3px 7px" }}>{x[lang]}</span>;
 };
+
+function FeaturePreview({ lang, go, feature }) {
+  const title = lang === "ar" ? (feature?.ar || "ميزة سكينة") : (feature?.en || "Sakinah Feature");
+  const subtitle = lang === "ar" ? (feature?.subAr || "تمت إضافة هذه الميزة إلى هيكل التطبيق. سنربط المصدر أو الجهاز أو الخدمة الفعلية في مرحلة التفعيل والتوثيق.") : (feature?.subEn || "This feature is now part of the app structure. Its live source, device or service integration will be connected during activation and verification.");
+  return <SectionShell lang={lang} go={go} back="discover" titleAr={feature?.ar || "ميزة سكينة"} titleEn={feature?.en || "Sakinah Feature"} subtitleAr={subtitle} subtitleEn={subtitle}>
+    <div style={{ marginTop:24, border:"1px solid rgba(16,16,15,.10)", borderRadius:18, padding:18, background:"rgba(255,255,255,.44)" }}>
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", gap:12 }}>
+        <div><div style={{ fontSize:10, letterSpacing:".12em", fontWeight:700, opacity:.4 }}>{lang === "ar" ? "RC4 · مضافة" : "RC4 · ADDED"}</div><div className="font-editorial" style={{ fontSize:22, marginTop:7 }}>{title}</div></div>
+        <FeatureStatus lang={lang} status={feature?.status || "adapter"} />
+      </div>
+      <div style={{ marginTop:16, fontSize:12.5, lineHeight:1.8, opacity:.58 }}>{subtitle}</div>
+    </div>
+    <div style={{ marginTop:18, display:"grid", gridTemplateColumns:"1fr 1fr", gap:10 }}>
+      {[["واجهة","UI","local"],["التنقل","Navigation","local"],["الحالة","State","local"],["المصدر/الخدمة","Source / Service",feature?.status || "adapter"]].map(([ar,en,status]) => <div key={en} style={{ border:"1px solid rgba(16,16,15,.09)", borderRadius:14, padding:"13px 12px", minHeight:72 }}><div style={{ fontSize:11.5, fontWeight:600 }}>{lang === "ar" ? ar : en}</div><div style={{ marginTop:8 }}><FeatureStatus lang={lang} status={status} /></div></div>)}
+    </div>
+  </SectionShell>;
+}
 
 function EditorialHub({ lang, go, titleAr, titleEn, introAr, introEn, sections }) {
   const title = lang === "ar" ? titleAr : titleEn;
@@ -1543,7 +1560,7 @@ function EditorialHub({ lang, go, titleAr, titleEn, introAr, introEn, sections }
           <div key={sec.id || si} style={{ marginTop: 30 }}>
             <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: ".08em", opacity: .38, marginBottom: 7 }}>{lang === "ar" ? sec.ar : sec.en}</div>
             {sec.items.map((it, i) => (
-              <div key={it.id || i} onClick={it.go ? () => go(it.go, it.param || {}) : undefined} style={{ padding: i === 0 ? "15px 0" : "13px 0", borderTop: "1px solid rgba(16,16,15,.08)", cursor: it.go ? "pointer" : "default" }}>
+              <div key={it.id || i} onClick={() => it.go ? go(it.go, it.param || {}) : go("feature-preview", { ...it })} style={{ padding: i === 0 ? "15px 0" : "13px 0", borderTop: "1px solid rgba(16,16,15,.08)", cursor: "pointer" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", gap: 14, alignItems: "center" }}>
                   <div>
                     <div style={{ fontSize: i === 0 && sec.featured ? 17 : 14, fontWeight: i === 0 && sec.featured ? 600 : 500 }}>{lang === "ar" ? it.ar : it.en}</div>
@@ -2392,6 +2409,7 @@ export default function SakinahApp() {
     "teacher-imam": () => <TeacherImamCenter lang={lang} go={go} />,
     "public-display": () => <PublicDisplayCenter lang={lang} go={go} />,
     "complete-vision": () => <CompleteVisionCenter lang={lang} go={go} />,
+    "feature-preview": () => <FeaturePreview lang={lang} go={go} feature={param} />,
     "me": () => <MeScreen lang={lang} setLang={setLang} go={go} bookmarks={bookmarks} lastRead={lastRead} travelMode={travelMode} setTravelMode={setTravelMode} ramadanMode={ramadanMode} setRamadanMode={setRamadanMode} />,
     "me-prayer-settings": () => <PrayerSettingsScreen lang={lang} go={go} />,
     "me-accessibility": () => <AccessibilityScreen lang={lang} go={go} a11y={a11y} setA11y={setA11y} />,
