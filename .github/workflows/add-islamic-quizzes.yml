@@ -1,0 +1,56 @@
+name: Add Islamic Quizzes
+on:
+  push:
+    paths: ['.github/workflows/add-islamic-quizzes.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  patch-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - name: Add adult and age-based kids quizzes
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          for fn in ['Sakinah-RC4-AllFeatures-Showcase.jsx','src/App.jsx']:
+            p=Path(fn); s=p.read_text()
+            if 'function IslamicQuizCenter({' not in s:
+              marker='function KidsQuranTeacher({' if 'function KidsQuranTeacher({' in s else 'function FeaturePreview('
+              comp=r'''const QUIZ_BANK={
+ adult:[
+  {q:"كم عدد أركان الإسلام؟",a:["ثلاثة","أربعة","خمسة","ستة"],c:2,cat:"العقيدة"},{q:"ما أول سورة في المصحف؟",a:["البقرة","الفاتحة","الإخلاص","الناس"],c:1,cat:"القرآن"},{q:"كم عدد الصلوات المفروضة في اليوم والليلة؟",a:["ثلاث","أربع","خمس","ست"],c:2,cat:"الفقه"},{q:"في أي شهر يصوم المسلمون؟",a:["محرم","رجب","شعبان","رمضان"],c:3,cat:"العبادات"},{q:"إلى أي جهة يتجه المسلم في الصلاة؟",a:["المسجد النبوي","الكعبة","المسجد الأقصى","عرفات"],c:1,cat:"الصلاة"}
+ ],
+ kidsYoung:[{q:"من خلقنا؟",a:["الله","الناس","النجوم"],c:0},{q:"كم صلاة نصلي كل يوم؟",a:["٣","٥","٧"],c:1},{q:"ما كتاب المسلمين؟",a:["القرآن","كتاب الحساب","القاموس"],c:0}],
+ kidsMid:[{q:"ما اسم أول سورة في القرآن؟",a:["الفاتحة","الفلق","الناس"],c:0},{q:"أين توجد الكعبة؟",a:["مكة","المدينة","بغداد"],c:0},{q:"ماذا نقول قبل الأكل؟",a:["بسم الله","مع السلامة","صباح الخير"],c:0}],
+ kidsTeen:[{q:"كم عدد أركان الإيمان؟",a:["٥","٦","٧","٨"],c:1},{q:"ما الصلاة التي تكون عند غروب الشمس؟",a:["الفجر","الظهر","المغرب","العشاء"],c:2},{q:"ما الشهر الذي فيه ليلة القدر؟",a:["رمضان","شوال","محرم","رجب"],c:0}]
+};
+function QuizGame({lang,go,kids=false}){const [age,setAge]=useState("mid"),[i,setI]=useState(0),[score,setScore]=useState(0),[picked,setPicked]=useState(null);const bank=kids?(age==="young"?QUIZ_BANK.kidsYoung:age==="teen"?QUIZ_BANK.kidsTeen:QUIZ_BANK.kidsMid):QUIZ_BANK.adult;const x=bank[i%bank.length];const answer=j=>{if(picked!==null)return;setPicked(j);if(j===x.c)setScore(v=>v+1)};const next=()=>{setI(v=>(v+1)%bank.length);setPicked(null)};return <SectionShell lang={lang} go={go} back={kids?"kids-home":"discover"} titleAr={kids?"مسابقات الأطفال":"المسابقات الإسلامية"} titleEn={kids?"Kids Quizzes":"Islamic Quizzes"} subtitleAr={kids?"أسئلة مناسبة لعمر الطفل":"اختبر معلوماتك الإسلامية"} subtitleEn={kids?"Questions matched to the child's age":"Test your Islamic knowledge"}>{kids&&<div style={{marginTop:16,display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:7}}>{[["young","٤–٦"],["mid","٧–٩"],["teen","١٠–١٣"]].map(([id,label])=><button key={id} onClick={()=>{setAge(id);setI(0);setScore(0);setPicked(null)}} style={{padding:10,borderRadius:14,border:age===id?`1px solid ${COLOR.gold}`:"1px solid rgba(16,16,15,.1)",background:age===id?"rgba(181,154,98,.1)":"transparent",fontFamily:"inherit"}}>{label} {lang==="ar"?"سنة":"yrs"}</button>)}</div>}<div style={{marginTop:20,borderRadius:24,padding:20,background:kids?"linear-gradient(135deg,#fff0c9,#dff6ff 65%,#f2e5ff)":"rgba(181,154,98,.09)",border:"1px solid rgba(181,154,98,.16)"}}><div style={{display:"flex",justifyContent:"space-between",fontSize:10,opacity:.5}}><span>{lang==="ar"?`السؤال ${nDigits(i+1,lang)}`:`Question ${i+1}`}</span><span>★ {nDigits(score,lang)}</span></div><div className="font-editorial" style={{fontSize:22,lineHeight:1.6,marginTop:17}}>{x.q}</div><div style={{display:"grid",gap:8,marginTop:18}}>{x.a.map((a,j)=><button key={a} onClick={()=>answer(j)} style={{padding:13,borderRadius:15,border:"1px solid rgba(16,16,15,.09)",background:picked===null?"rgba(255,255,255,.55)":j===x.c?"rgba(79,145,92,.16)":j===picked?"rgba(190,76,65,.12)":"rgba(255,255,255,.35)",fontFamily:"inherit",fontSize:13,textAlign:lang==="ar"?"right":"left"}}>{a}</button>)}</div>{picked!==null&&<button onClick={next} style={{width:"100%",marginTop:14,padding:12,border:0,borderRadius:15,background:COLOR.lapis,color:"white",fontFamily:"inherit",fontWeight:600}}>{lang==="ar"?"السؤال التالي":"Next question"}</button>}</div><div style={{marginTop:14,display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>{(kids?[["نجوم ومكافآت","Stars & rewards"],["مستوى حسب العمر","Age level"],["بدون إعلانات","No ads"],["تقدم الطفل","Progress"]]:[["القرآن","Quran"],["السيرة","Seerah"],["الحديث","Hadith"],["الفقه","Fiqh"],["العقيدة","Aqeedah"],["التاريخ الإسلامي","Islamic history"]]).map(([ar,en])=><div key={en} style={{padding:12,border:"1px solid rgba(16,16,15,.07)",borderRadius:13,fontSize:11,fontWeight:600}}>{lang==="ar"?ar:en}</div>)}</div></SectionShell>}
+function IslamicQuizCenter({lang,go}){return <QuizGame lang={lang} go={go} kids={false}/>}
+function KidsQuizCenter({lang,go}){return <QuizGame lang={lang} go={go} kids={true}/>}
+
+'''
+              s=s.replace(marker,comp+marker,1)
+            route='    "complete-vision": () => <CompleteVisionCenter lang={lang} go={go} />,'
+            if route in s and '"islamic-quizzes":' not in s:s=s.replace(route,route+'\n    "islamic-quizzes": () => <IslamicQuizCenter lang={lang} go={go} />,\n    "kids-quizzes": () => <KidsQuizCenter lang={lang} go={go} />,',1)
+            # adult discover entry
+            needle='{ id: "manasek-center", label: lang === "ar" ? "مناسك · الحج والعمرة" : "Manasek · Hajj & Umrah", action: () => go("manasek-center") },'
+            entry='{ id: "islamic-quizzes", label: lang === "ar" ? "مسابقات وأسئلة إسلامية" : "Islamic Quizzes", action: () => go("islamic-quizzes") },'
+            if needle in s and entry not in s:s=s.replace(needle,needle+'\n    '+entry,1)
+            # kids existing quiz card
+            s=s.replace('["اختبارات وجوائز","Quizzes & Rewards","★","feature-preview"]','["مسابقات وأسئلة","Quizzes & Rewards","★","kids-quizzes"]')
+            p.write_text(s)
+          PY
+      - run: npm ci
+      - run: npm run build
+      - name: Commit
+        run: |
+          git config user.name "Sakinah Build Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add Sakinah-RC4-AllFeatures-Showcase.jsx src/App.jsx
+          if ! git diff --cached --quiet; then git commit -m "Add Islamic quizzes for adults and age-based kids quizzes" && git push; fi
