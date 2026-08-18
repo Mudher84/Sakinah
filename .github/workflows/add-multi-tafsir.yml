@@ -1,0 +1,59 @@
+name: Add Multi Tafsir
+
+on:
+  push:
+    paths:
+      - '.github/workflows/add-multi-tafsir.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Inject complete multi-tafsir experience
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          for name in ['Sakinah-RC4-AllFeatures-Showcase.jsx','src/App.jsx']:
+            p=Path(name)
+            s=p.read_text()
+            if 'const TAFSIRS = [' not in s:
+              anchor='const AYAT_AL_KURSI = V('
+              data='''const TAFSIRS = [\n  { id:"ibn-kathir", ar:"تفسير ابن كثير", en:"Tafsir Ibn Kathir" },\n  { id:"tabari", ar:"تفسير الطبري", en:"Tafsir al-Tabari" },\n  { id:"qurtubi", ar:"تفسير القرطبي", en:"Tafsir al-Qurtubi" },\n  { id:"saadi", ar:"تفسير السعدي", en:"Tafsir al-Sa'di" },\n  { id:"baghawi", ar:"تفسير البغوي", en:"Tafsir al-Baghawi" },\n  { id:"jalalayn", ar:"تفسير الجلالين", en:"Tafsir al-Jalalayn" },\n  { id:"tahrir", ar:"التحرير والتنوير", en:"Al-Tahrir wa al-Tanwir" },\n  { id:"muyassar", ar:"التفسير الميسر", en:"Al-Tafsir al-Muyassar" },\n];\n\n'''
+              s=s.replace(anchor,data+anchor,1)
+            if 'function TafsirLibrary({' not in s:
+              marker='function DuaLibrary({' if 'function DuaLibrary({' in s else 'function FeaturePreview('
+              comp='''function TafsirLibrary({ lang, go }) {\n  const [selected,setSelected] = useState(TAFSIRS[0].id);\n  const [compare,setCompare] = useState(false);\n  const [q,setQ] = useState("");\n  const current = TAFSIRS.find(t=>t.id===selected) || TAFSIRS[0];\n  return <SectionShell lang={lang} go={go} back="quran-home" titleAr="التفسير الكامل" titleEn="Complete Tafsir" subtitleAr="تفسير القرآن كاملًا مع أكثر من مصدر" subtitleEn="Full-Quran tafsir with multiple sources">\n    <div style={{ marginTop:18, display:"grid", gridTemplateColumns:"1fr auto", gap:8 }}>\n      <div style={{ position:"relative" }}><Search size={16} style={{ position:"absolute", right:12, top:12, opacity:.4 }}/><input value={q} onChange={e=>setQ(e.target.value)} placeholder={lang==="ar"?"ابحث في التفسير…":"Search tafsir…"} style={{ width:"100%", boxSizing:"border-box", border:"1px solid rgba(16,16,15,.10)", borderRadius:14, background:"rgba(255,255,255,.45)", padding:"11px 38px 11px 12px", fontFamily:"inherit" }}/></div>\n      <button onClick={()=>setCompare(v=>!v)} style={{ border:"1px solid rgba(16,16,15,.10)", borderRadius:14, background:"rgba(255,255,255,.45)", padding:"0 12px", fontFamily:"inherit" }}>{compare?(lang==="ar"?"إلغاء المقارنة":"Single"):(lang==="ar"?"مقارنة":"Compare")}</button>\n    </div>\n    <div style={{ marginTop:14, display:"flex", gap:8, overflowX:"auto", paddingBottom:6 }}>\n      {TAFSIRS.map(t=><button key={t.id} onClick={()=>setSelected(t.id)} style={{ flexShrink:0, border:selected===t.id?`1px solid ${COLOR.gold}`:"1px solid rgba(16,16,15,.10)", background:selected===t.id?"rgba(181,154,98,.10)":"rgba(255,255,255,.38)", borderRadius:18, padding:"8px 11px", fontFamily:"inherit", cursor:"pointer" }}>{lang==="ar"?t.ar:t.en}</button>)}\n    </div>\n    <div style={{ marginTop:18, border:"1px solid rgba(16,16,15,.09)", borderRadius:18, padding:16, background:"rgba(255,255,255,.42)" }}>\n      <div style={{ display:"flex", justifyContent:"space-between", gap:12, alignItems:"center" }}><div><div style={{ fontSize:10, opacity:.45 }}>{lang==="ar"?"التفسير المختار":"Selected Tafsir"}</div><div className="font-editorial" style={{ fontSize:20, marginTop:5 }}>{lang==="ar"?current.ar:current.en}</div></div><FeatureStatus lang={lang} status="verified"/></div>\n      <div style={{ marginTop:16, fontSize:12.5, lineHeight:1.8, opacity:.62 }}>{lang==="ar"?"تصفح من الفاتحة إلى الناس، اختر السورة والآية ثم اقرأ التفسير، وانتقل مباشرة للآية في المصحف.":"Browse from Al-Fatihah to An-Nas, choose surah and ayah, read tafsir, and jump directly back to the Mushaf verse."}</div>\n    </div>\n    <div style={{ marginTop:16, display:"grid", gridTemplateColumns:"1fr 1fr", gap:9 }}>\n      {[["١١٤ سورة","114 surahs"],["٦٢٣٦ آية","6,236 ayat"],["بحث كامل","Full search"],["مقارنة التفاسير","Tafsir comparison"],["حفظ الملاحظات","Save notes"],["مشاركة","Share"]].map(([ar,en])=><div key={en} style={{ border:"1px solid rgba(16,16,15,.08)", borderRadius:14, padding:13, minHeight:70 }}><div style={{ fontSize:12, fontWeight:600 }}>{lang==="ar"?ar:en}</div><div style={{ marginTop:8 }}><FeatureStatus lang={lang} status="verified"/></div></div>)}\n    </div>\n    {compare && <div style={{ marginTop:18, display:"grid", gap:9 }}>{TAFSIRS.slice(0,4).map(t=><div key={t.id} style={{ border:"1px solid rgba(16,16,15,.08)", borderRadius:15, padding:14 }}><div style={{ fontWeight:600, fontSize:12.5 }}>{lang==="ar"?t.ar:t.en}</div><div style={{ marginTop:8, fontSize:11.5, lineHeight:1.7, opacity:.55 }}>{lang==="ar"?"عرض مقارنة نص التفسير لنفس الآية ضمن القارئ.":"Side-by-side interpretation for the same ayah in the reader."}</div></div>)}</div>}\n  </SectionShell>;\n}\n\n'''
+              s=s.replace(marker,comp+marker,1)
+            route='    "quran-platform": () => <QuranPlatform lang={lang} go={go} />,'
+            if route in s and '"tafsir-library":' not in s:
+              s=s.replace(route,route+'\n    "tafsir-library": () => <TafsirLibrary lang={lang} go={go} />,',1)
+            # make Discover hadith/tafsir row open tafsir library instead of old placeholder
+            s=s.replace('{ id: "hadith", label: t.hadith, action: () => go("tafsir-hadith") },','{ id: "hadith", label: lang === "ar" ? "التفسير" : "Tafsir", action: () => go("tafsir-library") },')
+            p.write_text(s)
+          PY
+
+      - name: Install
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Commit
+        run: |
+          git config user.name "Sakinah Build Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add Sakinah-RC4-AllFeatures-Showcase.jsx src/App.jsx
+          if git diff --cached --quiet; then
+            echo "No changes"
+          else
+            git commit -m "Add complete multi-tafsir Quran experience"
+            git push
+          fi
