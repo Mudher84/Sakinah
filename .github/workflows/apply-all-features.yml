@@ -1,0 +1,62 @@
+name: Apply All Features Showcase
+
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-all-features.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch-build-promote:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Make every registered feature visible and openable
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('Sakinah-RC4-AllFeatures-Showcase.jsx')
+          s=p.read_text()
+          s=s.replace('''const SOURCE_STATUS = {\n  verified: { ar: "موثّق", en: "Verified" },\n  local: { ar: "محلي", en: "Local" },\n  adapter: { ar: "بانتظار مزود موثوق", en: "Trusted provider required" },\n  device: { ar: "يتطلب اختبار جهاز Android", en: "Android device validation required" },\n};''','''const SOURCE_STATUS = {\n  verified: { ar: "موثّق", en: "Verified" },\n  local: { ar: "مضاف · محلي", en: "Added · Local" },\n  adapter: { ar: "مضاف · التوثيق لاحقاً", en: "Added · Verify later" },\n  device: { ar: "مضاف · ربط الجهاز لاحقاً", en: "Added · Device later" },\n};''')
+          marker='function EditorialHub({ lang, go, titleAr, titleEn, introAr, introEn, sections }) {'
+          if 'function FeaturePreview({' not in s:
+            feature='''function FeaturePreview({ lang, go, feature }) {\n  const title = lang === "ar" ? (feature?.ar || "ميزة سكينة") : (feature?.en || "Sakinah Feature");\n  const subtitle = lang === "ar" ? (feature?.subAr || "تمت إضافة هذه الميزة إلى هيكل التطبيق. سنربط المصدر أو الجهاز أو الخدمة الفعلية في مرحلة التفعيل والتوثيق.") : (feature?.subEn || "This feature is now part of the app structure. Its live source, device or service integration will be connected during activation and verification.");\n  return <SectionShell lang={lang} go={go} back="discover" titleAr={feature?.ar || "ميزة سكينة"} titleEn={feature?.en || "Sakinah Feature"} subtitleAr={subtitle} subtitleEn={subtitle}>\n    <div style={{ marginTop:24, border:"1px solid rgba(16,16,15,.10)", borderRadius:18, padding:18, background:"rgba(255,255,255,.44)" }}>\n      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", gap:12 }}>\n        <div><div style={{ fontSize:10, letterSpacing:".12em", fontWeight:700, opacity:.4 }}>{lang === "ar" ? "RC4 · مضافة" : "RC4 · ADDED"}</div><div className="font-editorial" style={{ fontSize:22, marginTop:7 }}>{title}</div></div>\n        <FeatureStatus lang={lang} status={feature?.status || "adapter"} />\n      </div>\n      <div style={{ marginTop:16, fontSize:12.5, lineHeight:1.8, opacity:.58 }}>{subtitle}</div>\n    </div>\n    <div style={{ marginTop:18, display:"grid", gridTemplateColumns:"1fr 1fr", gap:10 }}>\n      {[["واجهة","UI","local"],["التنقل","Navigation","local"],["الحالة","State","local"],["المصدر/الخدمة","Source / Service",feature?.status || "adapter"]].map(([ar,en,status]) => <div key={en} style={{ border:"1px solid rgba(16,16,15,.09)", borderRadius:14, padding:"13px 12px", minHeight:72 }}><div style={{ fontSize:11.5, fontWeight:600 }}>{lang === "ar" ? ar : en}</div><div style={{ marginTop:8 }}><FeatureStatus lang={lang} status={status} /></div></div>)}\n    </div>\n  </SectionShell>;\n}\n\n'''
+            s=s.replace(marker, feature+marker, 1)
+          old='<div key={it.id || i} onClick={it.go ? () => go(it.go, it.param || {}) : undefined} style={{ padding: i === 0 ? "15px 0" : "13px 0", borderTop: "1px solid rgba(16,16,15,.08)", cursor: it.go ? "pointer" : "default" }}>'
+          new='<div key={it.id || i} onClick={() => it.go ? go(it.go, it.param || {}) : go("feature-preview", { ...it })} style={{ padding: i === 0 ? "15px 0" : "13px 0", borderTop: "1px solid rgba(16,16,15,.08)", cursor: "pointer" }}>'
+          s=s.replace(old,new,1)
+          screen='    "complete-vision": () => <CompleteVisionCenter lang={lang} go={go} />,'
+          if '"feature-preview":' not in s:
+            s=s.replace(screen, screen+'\n    "feature-preview": () => <FeaturePreview lang={lang} go={go} feature={param} />,',1)
+          p.write_text(s)
+          PY
+
+      - name: Promote patched showcase
+        run: cp Sakinah-RC4-AllFeatures-Showcase.jsx src/App.jsx
+
+      - name: Install
+        run: npm ci
+
+      - name: Build verification
+        run: npm run build
+
+      - name: Commit only after successful build
+        run: |
+          git config user.name "Sakinah Build Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add Sakinah-RC4-AllFeatures-Showcase.jsx src/App.jsx
+          if git diff --cached --quiet; then
+            echo "No changes"
+          else
+            git commit -m "Expose all Sakinah features in RC4 showcase"
+            git push
+          fi
