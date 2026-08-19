@@ -1,10 +1,77 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widgetRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="#F6F3EC">
-    <TextView android:id="@+id/widgetTitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="سكينة" android:textColor="#173B57" android:textStyle="bold" android:textSize="18sp"/>
-    <TextView android:id="@+id/widgetPrayer" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="الصلاة القادمة" android:textColor="#10100F" android:textSize="15sp"/>
-    <TextView android:id="@+id/widgetTime" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="--:--" android:textColor="#B59A62" android:textSize="24sp" android:textStyle="bold"/>
+    android:gravity="center_vertical"
+    android:background="#173B57">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+        <TextView
+            android:id="@+id/widgetTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="سكينة"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:textSize="13sp"/>
+        <TextView
+            android:id="@+id/widgetHijri"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="#FFFFFF"
+            android:alpha="0.72"
+            android:textSize="10sp"/>
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="الصلاة القادمة"
+        android:textColor="#FFFFFF"
+        android:alpha="0.60"
+        android:textSize="9sp"/>
+
+    <TextView
+        android:id="@+id/widgetPrayer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="1dp"
+        android:text="الفجر"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:textSize="22sp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+        <TextView
+            android:id="@+id/widgetTime"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="--:--"
+            android:textColor="#F0D58F"
+            android:textSize="28sp"
+            android:textStyle="bold"/>
+        <Chronometer
+            android:id="@+id/widgetCountdown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="متبقي --:--"
+            android:textColor="#FFFFFF"
+            android:alpha="0.78"
+            android:textSize="11sp"/>
+    </LinearLayout>
 </LinearLayout>
