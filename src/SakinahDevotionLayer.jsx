@@ -1,6 +1,7 @@
 import React,{useEffect,useState} from "react";
 import SakinahCompletionLayer from "./SakinahCompletionLayer.jsx";
-import {DevotionHub,AdhanReminderCenter,SmartTasbeeh,UnifiedProfiles,PrayerWuduGuide} from "./devotionSuite.jsx";
+import {DevotionHub,AdhanReminderCenter,UnifiedProfiles,PrayerWuduGuide} from "./devotionSuite.jsx";
+import ModernTasbeeh from "./ModernTasbeeh.jsx";
 
 export default function SakinahDevotionLayer(){
  const [tool,setTool]=useState(null);
@@ -13,6 +14,6 @@ export default function SakinahDevotionLayer(){
   window.addEventListener("sakinah:global-root",root);
   return()=>{window.removeEventListener("sakinah:devotion",h);window.removeEventListener("sakinah:global-root",root)};
  },[]);
- const screens={hub:<DevotionHub lang={lang} go={go}/>,adhan:<AdhanReminderCenter lang={lang} go={()=>go("hub")}/>,tasbeeh:<SmartTasbeeh lang={lang} go={()=>go("hub")}/>,profiles:<UnifiedProfiles lang={lang} go={()=>go("hub")}/>,guide:<PrayerWuduGuide lang={lang} go={()=>go("hub")}/>};
+ const screens={hub:<DevotionHub lang={lang} go={go}/>,adhan:<AdhanReminderCenter lang={lang} go={()=>go("hub")}/>,tasbeeh:<ModernTasbeeh lang={lang} go={()=>go("hub")}/>,profiles:<UnifiedProfiles lang={lang} go={()=>go("hub")}/>,guide:<PrayerWuduGuide lang={lang} go={()=>go("hub")}/>};
  return <div style={{minHeight:"100vh"}}>{!tool&&<SakinahCompletionLayer/>}{tool&&screens[tool]}</div>;
 }
