@@ -1,0 +1,52 @@
+name: Wire Smart Quran Analytics
+on:
+  push:
+    paths: ['.github/workflows/wire-quran-analytics.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  wire-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - name: Wire Quran analytics without deleting existing features
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('src/MergedSakinah.jsx'); s=p.read_text()
+          imp='import {SmartQuranAnalytics} from "./quranAnalytics.jsx";'
+          if imp not in s:
+            anchor='import {UniversalIslamicSearch,SavedLibrary} from "./searchLibrary.jsx";'
+            s=s.replace(anchor,anchor+'\n'+imp)
+          s=s.replace('"islamic-search","saved-library"]);','"islamic-search","saved-library","quran-analytics"]);')
+          if '"quran-analytics":<SmartQuranAnalytics' not in s:
+            anchor='  "saved-library":<SavedLibrary lang={lang} go={go}/>, '
+            if anchor not in s: anchor='  "saved-library":<SavedLibrary lang={lang} go={go}/>,\n'
+            s=s.replace(anchor,anchor+'  "quran-analytics":<SmartQuranAnalytics lang={lang} go={go}/>,\n')
+          p.write_text(s)
+
+          p=Path('src/searchLibrary.jsx'); s=p.read_text()
+          old='const shortcuts=[["quranic-duas","الأدعية القرآنية","Quranic Duas"],["smart-quranic-adhkar","الأذكار الذكية","Smart Adhkar"],["sourced-seerah","السيرة وقصص الأنبياء","Seerah & Prophets"],["trusted-daily","المحتوى الموثق","Sourced Content"]];'
+          new='const shortcuts=[["quran-analytics","إحصاءات القرآن الذكية","Smart Quran Analytics"],["quranic-duas","الأدعية القرآنية","Quranic Duas"],["smart-quranic-adhkar","الأذكار الذكية","Smart Adhkar"],["sourced-seerah","السيرة وقصص الأنبياء","Seerah & Prophets"],["trusted-daily","المحتوى الموثق","Sourced Content"]];'
+          if old in s:s=s.replace(old,new)
+          p.write_text(s)
+          PY
+      - run: npm ci
+      - run: npm run build
+      - name: Verify routes
+        run: |
+          grep -q 'SmartQuranAnalytics' src/MergedSakinah.jsx
+          grep -q 'quran-analytics' src/MergedSakinah.jsx
+          grep -q 'quran-analytics' src/searchLibrary.jsx
+          grep -q 'normalizeArabic' src/quranAnalytics.jsx
+      - name: Commit verified wiring
+        run: |
+          git config user.name "Sakinah Build Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add src/MergedSakinah.jsx src/searchLibrary.jsx
+          if ! git diff --cached --quiet; then git commit -m "Wire smart Quran analytics into Sakinah" && git push; fi
