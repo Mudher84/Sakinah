@@ -1,0 +1,27 @@
+name: Verify Worship Utilities
+on:
+  push:
+    paths:
+      - 'src/worshipUtilities.jsx'
+      - 'src/SakinahCompletionLayer.jsx'
+      - 'src/main.jsx'
+      - '.github/workflows/verify-worship-utilities.yml'
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Verify routes and features
+        run: |
+          grep -q 'QiblaCompass' src/worshipUtilities.jsx
+          grep -q 'NearbyMosques' src/worshipUtilities.jsx
+          grep -q 'ZakatCenter' src/worshipUtilities.jsx
+          grep -q 'ManasikCenter' src/worshipUtilities.jsx
+          grep -q 'SakinahCompletionLayer' src/main.jsx
