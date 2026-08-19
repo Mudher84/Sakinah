@@ -2,6 +2,7 @@ import React,{useRef,useState} from "react";
 import MergedSakinah from "./MergedSakinah.jsx";
 import {LiveQuranAudio} from "./liveAudio.jsx";
 import {LiveHadithHub} from "./liveHadith.jsx";
+import QuranCenter from "./QuranCenter.jsx";
 
 const C={ivory:"#F6F3EC",ink:"#10100F",lapis:"#173B57",gold:"#B59A62"};
 const OLD_INDEX={home:0,quran:1,myday:2,discover:3,profile:4};
@@ -30,10 +31,10 @@ export default function SakinahSevenDock(){
    @media(max-width:430px){.sakinah-seven-shell .sakinah-seven-dock{bottom:max(7px,env(safe-area-inset-bottom))!important;width:calc(100vw - 10px)}.sakinah-seven-dock{padding:6px 4px}.sakinah-seven-dock button{padding:8px 1px;min-height:50px}.sakinah-seven-dock .dockIcon{font-size:30px}}
   `}</style>
   <div className="sakinah-seven-page">
-   {panel==="quran-player"?<LiveQuranAudio lang={lang} go={()=>openOld("quran")}/>:panel==="hadith"?<LiveHadithHub go={()=>openOld("discover")}/>:<div ref={baseRef} className="sakinah-seven-base"><MergedSakinah/></div>}
+   {panel==="quran"?<QuranCenter/>:panel==="quran-player"?<LiveQuranAudio lang={lang} go={()=>setPanel("quran")}/>:panel==="hadith"?<LiveHadithHub go={()=>openOld("discover")}/>:<div ref={baseRef} className="sakinah-seven-base"><MergedSakinah/></div>}
   </div>
   <nav className="sakinah-seven-dock" aria-label="Sakinah seven primary">
-   {items.map(([id,icon,label])=>{const active=panel===id;return <button key={id} aria-label={label} title={label} className={active?"active":""} onClick={()=>id==="quran-player"||id==="hadith"?setPanel(id):openOld(id)}><span className="dockIcon">{icon}</span></button>})}
+   {items.map(([id,icon,label])=>{const active=panel===id;return <button key={id} aria-label={label} title={label} className={active?"active":""} onClick={()=>id==="quran"||id==="quran-player"||id==="hadith"?setPanel(id):openOld(id)}><span className="dockIcon">{icon}</span></button>})}
   </nav>
  </div>;
 }
