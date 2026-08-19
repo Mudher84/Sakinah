@@ -3,18 +3,15 @@ import React,{useMemo,useState} from "react";
 const C={ivory:"#F6F3EC",ink:"#10100F",lapis:"#173B57",gold:"#B59A62"};
 const btn={border:"1px solid rgba(16,16,15,.10)",borderRadius:14,padding:11,background:"rgba(255,255,255,.48)",fontFamily:"inherit",color:"inherit"};
 const PHOTOS=[
- {id:"madinah",label:"المدينة",url:"https://unsplash.com/photos/7kJZsqb68Lk/download?force=true&w=1400",position:"center 58%",shade:"linear-gradient(180deg,rgba(8,17,28,.10),rgba(8,17,28,.68))"},
- {id:"isfahan",label:"زخرفة إسلامية",url:"https://unsplash.com/photos/FS_khrflD7Y/download?force=true&w=1400",position:"center",shade:"linear-gradient(180deg,rgba(8,13,23,.16),rgba(8,13,23,.64))"},
- {id:"mosque",label:"مسجد",url:"https://unsplash.com/photos/L7J4ytEFRCg/download?force=true&w=1400",position:"center",shade:"linear-gradient(180deg,rgba(10,24,20,.08),rgba(7,20,19,.64))"},
- {id:"kaaba",label:"الكعبة",url:"https://images.unsplash.com/photo-1564769625392-651b6c33ebf1?auto=format&fit=crop&w=1400&q=88",position:"center",shade:"linear-gradient(180deg,rgba(8,8,8,.08),rgba(8,8,8,.60))"},
- {id:"arches",label:"أقواس إسلامية",url:"https://images.unsplash.com/photo-1519817650390-64a93db51149?auto=format&fit=crop&w=1400&q=88",position:"center",shade:"linear-gradient(180deg,rgba(15,18,18,.10),rgba(15,18,18,.58))"},
- {id:"courtyard",label:"باحة مسجد",url:"https://images.unsplash.com/photo-1542816417-0983c9c9ad53?auto=format&fit=crop&w=1400&q=88",position:"center",shade:"linear-gradient(180deg,rgba(18,14,10,.08),rgba(18,14,10,.56))"},
- {id:"minaret",label:"مئذنة",url:"https://images.unsplash.com/photo-1577702312706-e23ff063064f?auto=format&fit=crop&w=1400&q=88",position:"center",shade:"linear-gradient(180deg,rgba(8,17,28,.06),rgba(8,17,28,.58))"},
- {id:"golden-mosque",label:"نور ذهبي",url:"https://images.unsplash.com/photo-1591604466107-ec97de577aff?auto=format&fit=crop&w=1400&q=88",position:"center",shade:"linear-gradient(180deg,rgba(25,14,7,.04),rgba(25,14,7,.58))"},
- {id:"desert-mosque",label:"مسجد الصحراء",url:"https://images.unsplash.com/photo-1565552645632-d725f8bfc19a?auto=format&fit=crop&w=1400&q=88",position:"center",shade:"linear-gradient(180deg,rgba(25,18,10,.04),rgba(25,18,10,.55))"},
- {id:"blue-ornament",label:"زخارف زرقاء",url:"https://images.unsplash.com/photo-1564769662533-4f00a87b4056?auto=format&fit=crop&w=1400&q=88",position:"center",shade:"linear-gradient(180deg,rgba(4,20,35,.08),rgba(4,20,35,.60))"},
- {id:"dome",label:"قبة وسماء",url:"https://images.unsplash.com/photo-1585036156171-384164a8c675?auto=format&fit=crop&w=1400&q=88",position:"center",shade:"linear-gradient(180deg,rgba(5,18,30,.06),rgba(5,18,30,.58))"},
- {id:"lantern",label:"فانوس رمضان",url:"https://images.unsplash.com/photo-1616432043562-3671ea2e5242?auto=format&fit=crop&w=1400&q=88",position:"center",shade:"linear-gradient(180deg,rgba(20,10,5,.04),rgba(20,10,5,.62))"},
+ {id:"madinah-minaret",label:"مئذنة المدينة",url:"https://unsplash.com/photos/QS7L9bud090/download?force=true&w=1400",position:"center",shade:"linear-gradient(180deg,rgba(8,17,28,.06),rgba(8,17,28,.58))"},
+ {id:"najaf-minaret",label:"زخارف النجف",url:"https://unsplash.com/photos/ee3gy8B4bXQ/download?force=true&w=1400",position:"center",shade:"linear-gradient(180deg,rgba(8,13,23,.08),rgba(8,13,23,.58))"},
+ {id:"erbil-mosque",label:"مسجد أربيل",url:"https://unsplash.com/photos/360TwcUpVVc/download?force=true&w=1400",position:"center",shade:"linear-gradient(180deg,rgba(18,14,10,.06),rgba(18,14,10,.54))"},
+ {id:"mardin-mosque",label:"مسجد تاريخي",url:"https://unsplash.com/photos/B9x7rhrt07A/download?force=true&w=1400",position:"center",shade:"linear-gradient(180deg,rgba(16,14,10,.06),rgba(16,14,10,.58))"},
+ {id:"mosul-mosque",label:"مسجد الموصل",url:"https://unsplash.com/photos/hYT5ghG0xsY/download?force=true&w=1400",position:"center",shade:"linear-gradient(180deg,rgba(5,18,30,.05),rgba(5,18,30,.55))"},
+ {id:"brick-minaret",label:"مئذنة قديمة",url:"https://unsplash.com/photos/jle_1duVIMg/download?force=true&w=1400",position:"center",shade:"linear-gradient(180deg,rgba(12,15,18,.08),rgba(12,15,18,.58))"},
+ {id:"green-minaret",label:"مئذنة وخضرة",url:"https://unsplash.com/photos/E5zMQ8qrxyA/download?force=true&w=1400",position:"center",shade:"linear-gradient(180deg,rgba(5,18,20,.04),rgba(5,18,20,.56))"},
+ {id:"oman-arches",label:"أقواس مسجد",url:"https://unsplash.com/photos/1Oc1RdFUxmc/download?force=true&w=1400",position:"center",shade:"linear-gradient(180deg,rgba(5,18,30,.05),rgba(5,18,30,.56))"},
+ {id:"white-minaret",label:"مئذنة وسماء",url:"https://unsplash.com/photos/TToTboHWGQM/download?force=true&w=1400",position:"center",shade:"linear-gradient(180deg,rgba(5,18,30,.04),rgba(5,18,30,.54))"},
  {id:"night",label:"ليلة هادئة",gradient:"radial-gradient(circle at 72% 18%,rgba(181,154,98,.38),transparent 24%),linear-gradient(145deg,#0B1521,#173B57 52%,#081019)",shade:"linear-gradient(180deg,transparent,rgba(0,0,0,.22))"},
  {id:"sand",label:"نور الصحراء",gradient:"radial-gradient(circle at 25% 20%,#FFF7DE 0 8%,transparent 28%),linear-gradient(145deg,#D7B985,#9B704B 55%,#3B2B27)",shade:"linear-gradient(180deg,rgba(40,22,12,.04),rgba(40,22,12,.42))"},
  {id:"emerald",label:"زمرد",gradient:"radial-gradient(circle at 50% -10%,rgba(221,199,137,.55),transparent 28%),linear-gradient(155deg,#173D37,#0D2928 55%,#071918)",shade:"linear-gradient(180deg,transparent,rgba(0,0,0,.25))"}
@@ -24,7 +21,7 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"
 function wrapSvgText(text,max=24){const words=text.trim().split(/\s+/),lines=[];let line="";for(const word of words){const next=(line+" "+word).trim();if(next.length>max&&line){lines.push(line);line=word}else line=next}if(line)lines.push(line);return lines.slice(0,6)}
 
 export default function PremiumCardMaker({lang="ar",go}){
- const [text,setText]=useState(PRESETS[0]),[source,setSource]=useState("سورة الشرح • ٥"),[bgId,setBgId]=useState("madinah"),[size,setSize]=useState(34),[align,setAlign]=useState("center"),[tone,setTone]=useState("light");
+ const [text,setText]=useState(PRESETS[0]),[source,setSource]=useState("سورة الشرح • ٥"),[bgId,setBgId]=useState("madinah-minaret"),[size,setSize]=useState(34),[align,setAlign]=useState("center"),[tone,setTone]=useState("light");
  const bg=useMemo(()=>PHOTOS.find(x=>x.id===bgId)||PHOTOS[0],[bgId]);
  const fg=tone==="light"?"#FFFDF8":"#10100F";
  const cardBackground=bg.url?`${bg.shade},url(${bg.url})`:`${bg.shade},${bg.gradient}`;
@@ -64,7 +61,7 @@ export default function PremiumCardMaker({lang="ar",go}){
    </div>
    <div style={{display:"flex",gap:7,marginTop:8}}>{[["right","يمين"],["center","وسط"],["left","يسار"]].map(([id,label])=><button key={id} onClick={()=>setAlign(id)} style={{...btn,flex:1,background:align===id?"rgba(181,154,98,.16)":"rgba(255,255,255,.45)"}}>{label}</button>)}</div>
    <button onClick={download} style={{...btn,width:"100%",marginTop:12,background:C.lapis,color:"white",border:0,fontWeight:700}}>حفظ البطاقة بدقة عالية</button>
-   <div style={{fontSize:9,opacity:.42,lineHeight:1.7,marginTop:9,textAlign:"center"}}>الصور المختارة من Unsplash. عند كتابة آية قرآنية، راجع النص والمصدر قبل المشاركة.</div>
+   <div style={{fontSize:9,opacity:.42,lineHeight:1.7,marginTop:9,textAlign:"center"}}>الخلفيات الفوتوغرافية مخصصة للعمارة الإسلامية والمناظر الخالية من صور النساء. عند كتابة آية قرآنية، راجع النص والمصدر قبل المشاركة.</div>
   </div>
  </div>
 }
