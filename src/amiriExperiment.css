@@ -30,6 +30,12 @@ body,
 /* Keep the +2px readability lift for the whole UI. */
 .sakinahResponsiveShell { font-size: calc(1em + 2px); }
 
+/* Slightly larger Quran section headline. */
+.sakinah-live-content > section:first-of-type > div:first-child > div:first-child > div:nth-child(2) {
+  font-size: 28px !important;
+  line-height: 1.25;
+}
+
 /* Quran verses/Mushaf are the only typography exception. */
 #root .quranMini,
 #root .quranMini *,
