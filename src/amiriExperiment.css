@@ -1,5 +1,5 @@
 /* Temporary typography experiment.
-   Every Sakinah UI glyph => user's HT Roznameh Medium when installed.
+   Every visible Sakinah UI glyph => user's HT Roznameh Medium when installed.
    Quran/ayah text alone preserves the Quran-specific typography.
    Amiri remains the safe Arabic fallback. */
 @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
@@ -12,7 +12,12 @@
   font-display: swap;
 }
 
-/* Force the experiment across every text-bearing element in Sakinah. */
+/* Force the experiment across the entire rendered app, including text that
+   sits outside older Sakinah wrapper classes or has an inline font-family. */
+html,
+body,
+#root,
+#root *,
 .sakinahResponsiveShell,
 .sakinahResponsiveShell *,
 .sakinah-live-home,
@@ -26,20 +31,20 @@
 .sakinahResponsiveShell { font-size: calc(1em + 2px); }
 
 /* Quran verses/Mushaf are the only typography exception. */
-.quranMini,
-.quranMini *,
-.quranHero,
-.quranHero *,
-.ayah span,
-.ayah span *,
-.quranAudioText,
-.quranAudioText *,
-.quranMemo,
-.quranMemo *,
-.mushaf .ayah span,
-.mushaf .ayah span *,
-[style*="Amiri Quran"],
-[style*="Amiri Quran"] * {
+#root .quranMini,
+#root .quranMini *,
+#root .quranHero,
+#root .quranHero *,
+#root .ayah span,
+#root .ayah span *,
+#root .quranAudioText,
+#root .quranAudioText *,
+#root .quranMemo,
+#root .quranMemo *,
+#root .mushaf .ayah span,
+#root .mushaf .ayah span *,
+#root [style*="Amiri Quran"],
+#root [style*="Amiri Quran"] * {
   font-family: "Amiri Quran", "Noto Naskh Arabic", serif !important;
 }
 
