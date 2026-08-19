@@ -6,6 +6,7 @@ import {OfflineBackupCenter} from "./offlineBackup.jsx";
 import {DailyReflection} from "./dailyReflection.jsx";
 import {LiveNamesOfAllah} from "./verifiedIslamic.jsx";
 import {MyDayCenter,DailyToolsHub,IslamicCalendar,FastingCenter,RamadanCenter,SmartKhatmah,MemorizationCenter,HisnCenter,JumuahCenter,WorshipTimes,ParentalControls,PrivacyLock,CardMaker} from "./dailySuite.jsx";
+import {SmartMyDay} from "./smartMyDay.jsx";
 
 const C={ivory:"#F6F3EC",ink:"#10100F",lapis:"#173B57",gold:"#B59A62"};
 
@@ -53,7 +54,7 @@ export default function MergedSakinah(){
  const known=new Set(["app","my-day","daily-tools","daily-reflection","trusted-daily","quranic-duas","smart-quranic-adhkar","sourced-seerah","kids-sourced-stories","kids-world","kids-home","kids-quran-live","kids-quiz-live","kids-nasheeds","offline-backup","islamic-calendar","fasting-center","ramadan-center","smart-khatmah","memorization-center","names-live","hisn-center","jumuah-center","worship-times","parental-controls","privacy-lock","card-maker"]);
  const go=(to)=>setPanel(known.has(to)?to:"app");
  const screens={
-  "my-day":<MyDayCenter lang={lang} go={go}/>,
+  "my-day":<SmartMyDay lang={lang} go={go}/>,
   "daily-tools":<DailyToolsHub lang={lang} go={go}/>,
   "daily-reflection":<DailyReflection lang={lang} go={go}/>,
   "trusted-daily":<TrustedDailyHub lang={lang} go={go}/>,
