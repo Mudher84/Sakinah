@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
+import { LiveQuranAudio } from "./liveAudio.jsx";
 import { LivePrayerCenter, LiveQuranReader, LiveSurahList } from "./liveCore.jsx";
 import {
   Compass, BookOpen, Home, User, Bookmark, Share2, Languages,
@@ -2408,7 +2409,7 @@ export default function SakinahApp() {
     "surah-list": () => <LiveSurahList lang={lang} go={go} />,
     "reader": () => <LiveQuranReader lang={lang} surahId={param.surahId || 1} go={go} />,
     "memorize": () => <MemorizeScreen lang={lang} go={go} initialSurahId={param.surahId} />,
-    "audio": () => <AudioScreen lang={lang} go={go} surahId={param.surahId} />,
+    "audio": () => <LiveQuranAudio lang={lang} go={go} initialSurah={param.surahId || 1} />,
     "prayer": () => <LivePrayerCenter lang={lang} go={go} />,
     "discover": () => <DiscoverScreen lang={lang} go={go} isFriday={isFriday} />,
     "adhkar-home": () => <AdhkarHome lang={lang} go={go} />,
