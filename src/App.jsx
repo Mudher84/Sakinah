@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
+import { LiveTafsirCenter, HadithNineBooksGate } from "./liveStudy.jsx";
 import { LiveQuranAudio } from "./liveAudio.jsx";
 import { LivePrayerCenter, LiveQuranReader, LiveSurahList } from "./liveCore.jsx";
 import {
@@ -2420,9 +2421,10 @@ export default function SakinahApp() {
     "family": () => <FamilyScreen lang={lang} go={go} />,
     "adhan-center": () => <AdhanCenter lang={lang} go={go} />,
     "quran-platform": () => <QuranPlatform lang={lang} go={go} />,
-    "tafsir-library": () => <TafsirLibrary lang={lang} go={go} />,
+    "tafsir-library": () => <LiveTafsirCenter lang={lang} go={go} />,
     "trust-center": () => <TrustCenter lang={lang} go={go} />,
     "tafsir-hadith": () => <TafsirHadith lang={lang} go={go} />,
+    "hadith-nine": () => <HadithNineBooksGate lang={lang} go={go} />,
     "life-center": () => <LifeCenter lang={lang} go={go} />,
     "mosque": () => <MosqueCenter lang={lang} go={go} />,
     "kids": () => <KidsCenter lang={lang} go={go} />,
