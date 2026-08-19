@@ -12,8 +12,6 @@
   font-display: swap;
 }
 
-/* Force the experiment across the entire rendered app, including text that
-   sits outside older Sakinah wrapper classes or has an inline font-family. */
 html,
 body,
 #root,
@@ -27,21 +25,30 @@ body,
   font-family: "Sakinah Roznameh", "HT Roznameh Medium", "Amiri", "Noto Naskh Arabic", serif !important;
 }
 
-/* Keep the +2px readability lift for the whole UI. */
 .sakinahResponsiveShell { font-size: calc(1em + 2px); }
 
-/* Slightly larger Quran section headline. */
 .sakinah-live-content > section:first-of-type > div:first-child > div:first-child > div:nth-child(2) {
   font-size: 28px !important;
   line-height: 1.25;
 }
 
-/* Center the complete daily-ayah block in the home hero. */
-.sakinah-live-hero > div:nth-of-type(4) {
+/* Daily ayah: center the real ayah element and its containing block. */
+.sakinah-live-hero div:has(> [style*="Amiri Quran"]) {
+  width: 100% !important;
+  max-width: 540px !important;
   margin-left: auto !important;
   margin-right: auto !important;
   text-align: center !important;
-  width: 100%;
+}
+.sakinah-live-hero [style*="Amiri Quran"] {
+  display: block !important;
+  width: 100% !important;
+  text-align: center !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+.sakinah-live-hero div:has(> [style*="Amiri Quran"]) > div {
+  text-align: center !important;
 }
 
 /* Quran verses/Mushaf are the only typography exception. */
