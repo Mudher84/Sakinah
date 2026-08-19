@@ -102,6 +102,9 @@ public class MainActivity extends Activity {
                 JSONObject j=new JSONObject(value);
                 if(j.has("nextPrayer")) e.putString("next_prayer",j.optString("nextPrayer","الصلاة القادمة"));
                 if(j.has("nextPrayerTime")) e.putString("next_prayer_time",j.optString("nextPrayerTime","--:--"));
+                if(j.has("nextPrayerAt")) e.putLong("next_prayer_at",j.optLong("nextPrayerAt",0L));
+                if(j.has("hijriDate")) e.putString("hijri_date",j.optString("hijriDate",""));
+                if(j.has("widgetTheme")) e.putString("widget_theme",j.optString("widgetTheme","lapis"));
             }catch(Exception ignored){}
             e.apply();
         }
