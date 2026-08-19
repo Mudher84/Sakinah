@@ -36,7 +36,7 @@ function ensureMarker() {
     placeItems: 'center',
     pointerEvents: 'none',
     transform: 'translate(-50%,-50%)',
-    transition: 'left .45s ease, top .45s ease, color .45s ease, filter .45s ease',
+    transition: 'left .45s ease, color .45s ease, filter .45s ease',
     fontFamily: 'Georgia, serif',
     fontSize: '27px',
     lineHeight: '1'
@@ -65,10 +65,11 @@ function updateMarker() {
   const day = isDay(hour);
   const t = markerT(hour);
 
+  // Horizontal movement follows time; vertical level remains fixed.
   const vx = qBezier(t, 20, 210, 400);
-  const vy = qBezier(t, 88, -14, 88);
   const x = rect.left + (vx / 420) * rect.width;
-  const y = rect.top + (vy / 110) * rect.height;
+  const fixedVy = 37;
+  const y = rect.top + (fixedVy / 110) * rect.height;
 
   marker.style.display = 'grid';
   marker.style.left = `${x}px`;
