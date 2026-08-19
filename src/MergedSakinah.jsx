@@ -9,6 +9,7 @@ import {MyDayCenter,DailyToolsHub,IslamicCalendar,FastingCenter,RamadanCenter,Sm
 import {SmartMyDay} from "./smartMyDay.jsx";
 import {UniversalIslamicSearch,SavedLibrary} from "./searchLibrary.jsx";
 import {SmartQuranAnalytics} from "./quranAnalytics.jsx";
+import {QuranIntelligenceHub,QuranTopicExplorer,QuranWordCompare,QuranEntityMap,QuranRootExplorer,TadabburAyah} from "./quranInsights.jsx";
 
 const C={ivory:"#F6F3EC",ink:"#10100F",lapis:"#173B57",gold:"#B59A62"};
 
@@ -44,7 +45,8 @@ function UnifiedNav({lang,panel,go,setLang}){
   ["offline-backup","بياناتي","Data","◫"],
  ];
  const daily=new Set(["daily-tools","islamic-calendar","fasting-center","ramadan-center","smart-khatmah","memorization-center","names-live","hisn-center","jumuah-center","worship-times","parental-controls","privacy-lock","card-maker"]);
- const active=panel.startsWith("kids-")?"kids-world":["quranic-duas","smart-quranic-adhkar","sourced-seerah"].includes(panel)?"trusted-daily":daily.has(panel)?"my-day":panel;
+ const quranIntel=new Set(["quran-intelligence","quran-analytics","quran-topics","quran-compare","quran-entities","quran-roots","tadabbur-ayah"]);
+ const active=panel.startsWith("kids-")?"kids-world":["quranic-duas","smart-quranic-adhkar","sourced-seerah"].includes(panel)?"trusted-daily":daily.has(panel)?"my-day":quranIntel.has(panel)?"islamic-search":panel;
  return <>
   <button onClick={()=>setLang(lang==="ar"?"en":"ar")} aria-label="language" style={{position:"fixed",top:14,right:14,zIndex:10001,width:38,height:38,borderRadius:13,border:"1px solid rgba(16,16,15,.08)",background:"rgba(246,243,236,.92)",backdropFilter:"blur(14px)",fontFamily:"inherit",fontWeight:700,color:C.ink}}>{lang==="ar"?"EN":"ع"}</button>
   <nav aria-label="Sakinah primary" style={{position:"fixed",left:"50%",transform:"translateX(-50%)",bottom:12,zIndex:10000,width:"min(560px,calc(100vw - 18px))",padding:5,borderRadius:23,border:"1px solid rgba(16,16,15,.09)",background:"rgba(246,243,236,.94)",backdropFilter:"blur(18px)",boxShadow:"0 12px 36px rgba(0,0,0,.14)",display:"grid",gridTemplateColumns:"repeat(8,1fr)",gap:1}}>
@@ -55,7 +57,7 @@ function UnifiedNav({lang,panel,go,setLang}){
 
 export default function MergedSakinah(){
  const [panel,setPanel]=useState("app"),[lang,setLang]=useState("ar");
- const known=new Set(["app","my-day","daily-tools","daily-reflection","trusted-daily","quranic-duas","smart-quranic-adhkar","sourced-seerah","kids-sourced-stories","kids-world","kids-home","kids-quran-live","kids-quiz-live","kids-nasheeds","offline-backup","islamic-calendar","fasting-center","ramadan-center","smart-khatmah","memorization-center","names-live","hisn-center","jumuah-center","worship-times","parental-controls","privacy-lock","card-maker","islamic-search","saved-library","quran-analytics"]);
+ const known=new Set(["app","my-day","daily-tools","daily-reflection","trusted-daily","quranic-duas","smart-quranic-adhkar","sourced-seerah","kids-sourced-stories","kids-world","kids-home","kids-quran-live","kids-quiz-live","kids-nasheeds","offline-backup","islamic-calendar","fasting-center","ramadan-center","smart-khatmah","memorization-center","names-live","hisn-center","jumuah-center","worship-times","parental-controls","privacy-lock","card-maker","islamic-search","saved-library","quran-analytics","quran-intelligence","quran-topics","quran-compare","quran-entities","quran-roots","tadabbur-ayah"]);
  const go=(to)=>setPanel(known.has(to)?to:"app");
  const screens={
   "my-day":<SmartMyDay lang={lang} go={go}/>,
@@ -87,6 +89,12 @@ export default function MergedSakinah(){
   "islamic-search":<UniversalIslamicSearch lang={lang} go={go}/>,
   "saved-library":<SavedLibrary lang={lang} go={go}/>,
   "quran-analytics":<SmartQuranAnalytics lang={lang} go={go}/>,
+  "quran-intelligence":<QuranIntelligenceHub lang={lang} go={go}/>,
+  "quran-topics":<QuranTopicExplorer lang={lang} go={go}/>,
+  "quran-compare":<QuranWordCompare lang={lang} go={go}/>,
+  "quran-entities":<QuranEntityMap lang={lang} go={go}/>,
+  "quran-roots":<QuranRootExplorer lang={lang} go={go}/>,
+  "tadabbur-ayah":<TadabburAyah lang={lang} go={go}/>,
  };
  return <div style={{position:"relative",minHeight:"100vh",background:C.ivory}}>
   {panel==="app"?<App/>:(screens[panel]||screens["trusted-daily"])}
