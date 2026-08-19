@@ -1,0 +1,35 @@
+name: Verify Daily Suite
+on:
+  push:
+    paths:
+      - 'src/dailySuite.jsx'
+      - 'src/MergedSakinah.jsx'
+      - '.github/workflows/verify-daily-suite.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Audit new routes
+        run: |
+          grep -q 'MyDayCenter' src/MergedSakinah.jsx
+          grep -q 'IslamicCalendar' src/MergedSakinah.jsx
+          grep -q 'FastingCenter' src/MergedSakinah.jsx
+          grep -q 'RamadanCenter' src/MergedSakinah.jsx
+          grep -q 'SmartKhatmah' src/MergedSakinah.jsx
+          grep -q 'MemorizationCenter' src/MergedSakinah.jsx
+          grep -q 'HisnCenter' src/MergedSakinah.jsx
+          grep -q 'JumuahCenter' src/MergedSakinah.jsx
+          grep -q 'WorshipTimes' src/MergedSakinah.jsx
+          grep -q 'ParentalControls' src/MergedSakinah.jsx
+          grep -q 'PrivacyLock' src/MergedSakinah.jsx
+          grep -q 'CardMaker' src/MergedSakinah.jsx
