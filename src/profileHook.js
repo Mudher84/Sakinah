@@ -44,26 +44,26 @@ function ensureProfileHook() {
   wrap.className = 'sakinah-profile-hook';
   Object.assign(wrap.style, {
     position: 'absolute',
-    top: '-28px',
-    left: '22px',
+    top: '18px',
+    left: '18px',
     zIndex: '18',
-    width: '74px',
-    height: '74px',
+    width: '46px',
+    height: '46px',
     pointerEvents: 'auto'
   });
 
   const tail = document.createElement('div');
   Object.assign(tail.style, {
     position: 'absolute',
-    left: '36px',
-    top: '41px',
-    width: '34px',
-    height: '24px',
-    borderLeft: '2px solid rgba(184,148,67,.58)',
-    borderBottom: '2px solid rgba(184,148,67,.58)',
-    borderBottomLeftRadius: '22px',
+    left: '25px',
+    top: '26px',
+    width: '22px',
+    height: '16px',
+    borderLeft: '1.5px solid rgba(184,148,67,.58)',
+    borderBottom: '1.5px solid rgba(184,148,67,.58)',
+    borderBottomLeftRadius: '16px',
     transform: 'rotate(-18deg)',
-    opacity: '.9',
+    opacity: '.85',
     pointerEvents: 'none'
   });
 
@@ -73,14 +73,14 @@ function ensureProfileHook() {
   Object.assign(button.style, {
     position: 'absolute',
     inset: '0 auto auto 0',
-    width: '58px',
-    height: '58px',
+    width: '42px',
+    height: '42px',
     padding: '0',
-    border: '2px solid rgba(255,255,255,.72)',
-    borderRadius: '22px 22px 22px 8px',
+    border: '1px solid rgba(255,255,255,.72)',
+    borderRadius: '14px 14px 14px 6px',
     overflow: 'hidden',
     background: 'rgba(255,255,255,.74)',
-    boxShadow: '0 10px 26px rgba(37,31,20,.14)',
+    boxShadow: '0 7px 18px rgba(37,31,20,.12)',
     backdropFilter: 'blur(10px)',
     WebkitBackdropFilter: 'blur(10px)',
     cursor: 'pointer'
