@@ -36,13 +36,9 @@ export function SmartMyDay({lang,go}){
  if(isWhite)contextual.push({id:"fasting-center",ar:"اليوم من الأيام البيض",en:"White Day fasting",icon:"☽",track:true});
  const items=[...contextual,...base];
  const services=[
-  {id:"tasbeeh",ar:"المسبحة",en:"Tasbeeh",icon:"○",subAr:"ذكر سريع في أي وقت",subEn:"Quick remembrance"},
   {id:"quranic-duas",ar:"الأدعية",en:"Duas",icon:"♡",subAr:"أدعية يومية موثوقة",subEn:"Daily sourced duas"},
   {id:"qibla",ar:"القبلة",en:"Qibla",icon:"⌖",subAr:"اتجاه القبلة بسرعة",subEn:"Quick direction"},
   {id:"mosques",ar:"أقرب مسجد",en:"Nearby mosque",icon:"⌂",subAr:"المساجد القريبة منك",subEn:"Mosques near you"},
-  {id:"notes",ar:"ملاحظاتي",en:"My notes",icon:"✎",subAr:"تدوين سريع",subEn:"Quick notes"},
-  {id:"accounts",ar:"حساباتي",en:"My accounts",icon:"＋",subAr:"دفتر الحسابات الشخصي",subEn:"Personal ledger"},
-  {id:"alerts",ar:"التنبيهات",en:"Alerts",icon:"◉",subAr:"الصلاة والأذكار",subEn:"Prayer & dhikr alerts"},
   {id:"hisn-center",ar:"حصن المسلم",en:"Hisn al-Muslim",icon:"◇",subAr:"أذكار اليوم والليلة",subEn:"Daily adhkar"}
  ];
  const mark=id=>{const x={...done,[id]:!done[id]};setDone(x);write(doneKey,x)};
@@ -55,8 +51,8 @@ export function SmartMyDay({lang,go}){
   {(isFriday||isRamadan||isWhite)&&<div style={{marginTop:12,padding:13,borderRadius:17,background:"rgba(79,145,92,.09)",border:"1px solid rgba(79,145,92,.14)",fontSize:11.5,lineHeight:1.7}}>{lang==="ar"?(isFriday?"اليوم الجمعة · أظهرنا برنامج الجمعة ضمن خطتك.":isRamadan?"رمضان · أظهرنا برنامج رمضان ضمن خطتك.":"اليوم من الأيام البيض · ظهر تذكير الصيام ضمن خطتك."):(isFriday?"It is Friday · your Jumu'ah plan is included.":isRamadan?"It is Ramadan · your Ramadan plan is included.":"It is a White Day · fasting is surfaced in your plan.")}</div>}
   <div style={{marginTop:16}}><Progress value={count?complete/count*100:0}/></div>
   <div style={{marginTop:10}}>{items.map(item=><div key={item.id} style={{display:"grid",gridTemplateColumns:"42px 1fr auto",gap:10,alignItems:"center",padding:"12px 0",borderTop:"1px solid rgba(16,16,15,.07)"}}><button onClick={()=>mark(item.id)} aria-label={lang==="ar"?"تحديد كمكتمل":"Mark complete"} style={{width:36,height:36,borderRadius:13,border:"1px solid rgba(16,16,15,.08)",background:done[item.id]?"rgba(79,145,92,.14)":"transparent",fontFamily:"inherit"}}>{done[item.id]?"✓":item.icon}</button><button onClick={()=>go(item.id)} style={{border:0,background:"transparent",fontFamily:"inherit",textAlign:lang==="ar"?"right":"left",color:"inherit",fontSize:13,fontWeight:650}}>{lang==="ar"?item.ar:item.en}</button><span style={{opacity:.28}}>›</span></div>)}</div>
-  <div style={{display:"flex",justifyContent:"space-between",alignItems:"end",marginTop:22,marginBottom:10}}><div><div style={{fontSize:15,fontWeight:700}}>{lang==="ar"?"استخدام يومي":"Daily essentials"}</div><div style={{fontSize:10,opacity:.42,marginTop:3}}>{lang==="ar"?"الخدمات التي تحتاجها غالباً، بدون زحام":"Frequently used services, kept simple"}</div></div></div>
+  <div style={{display:"flex",justifyContent:"space-between",alignItems:"end",marginTop:22,marginBottom:10}}><div><div style={{fontSize:15,fontWeight:700}}>{lang==="ar"?"استخدام يومي":"Daily essentials"}</div><div style={{fontSize:10,opacity:.42,marginTop:3}}>{lang==="ar"?"الخدمات اليومية فقط، بدون تكرار محتوى أنا أو القرآن":"Daily-only services without duplicating Me or Quran"}</div></div></div>
   <div style={{display:"grid",gridTemplateColumns:"repeat(2,minmax(0,1fr))",gap:8}}>{services.map(item=><ServiceCard key={item.id} item={item} lang={lang} go={go}/>)}</div>
-  <button onClick={()=>go("daily-tools")} style={{...btn,width:"100%",marginTop:10,padding:"13px 14px",display:"flex",justifyContent:"space-between",alignItems:"center",textAlign:lang==="ar"?"right":"left"}}><span><span style={{display:"block",fontSize:12.5,fontWeight:700}}>{lang==="ar"?"كل الأدوات اليومية":"All daily tools"}</span><span style={{display:"block",fontSize:9.5,opacity:.42,marginTop:3}}>{lang==="ar"?"باقي الخدمات في مكان واحد":"Everything else in one place"}</span></span><span style={{opacity:.35}}>›</span></button>
+  <button onClick={()=>go("daily-tools")} style={{...btn,width:"100%",marginTop:10,padding:"13px 14px",display:"flex",justifyContent:"space-between",alignItems:"center",textAlign:lang==="ar"?"right":"left"}}><span><span style={{display:"block",fontSize:12.5,fontWeight:700}}>{lang==="ar"?"كل الأدوات اليومية":"All daily tools"}</span><span style={{display:"block",fontSize:9.5,opacity:.42,marginTop:3}}>{lang==="ar"?"باقي الخدمات اليومية في مكان واحد":"All remaining daily tools"}</span></span><span style={{opacity:.35}}>›</span></button>
  </Shell>;
 }
