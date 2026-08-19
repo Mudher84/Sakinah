@@ -7,6 +7,7 @@ import { installHeroAtmosphere } from './heroAtmosphere.js'
 import { installTimeFormatToggle } from './timeFormatToggle.js'
 import { installPreviewToggle } from './previewToggle.js'
 import { installProfileHook } from './profileHook.js'
+import { installGlobalBackButtons } from './globalBackButtons.js'
 import './index.css'
 import './amiriExperiment.css'
 
@@ -22,6 +23,7 @@ installHeroAtmosphere()
 installTimeFormatToggle()
 installPreviewToggle()
 installProfileHook()
+installGlobalBackButtons()
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch(()=>{}));
