@@ -1,0 +1,51 @@
+name: Activate Verified Islamic Content
+on:
+  push:
+    paths:
+      - 'src/verifiedIslamic.jsx'
+      - 'server/quranFoundationProxy.mjs'
+      - '.github/workflows/activate-verified-content.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  wire-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - name: Wire routes
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('src/App.jsx'); s=p.read_text()
+          imp='import { VerifiedContentHub, LiveNamesOfAllah, NineBooksHub, HadithBookPlaceholder } from "./verifiedIslamic.jsx";\n'
+          if imp not in s:
+              first=s.find('\n'); s=s[:first+1]+imp+s[first+1:]
+          anchor='    "complete-vision": () => <CompleteVisionCenter lang={lang} go={go} />,'
+          routes='''    "verified-content": () => <VerifiedContentHub lang={lang} go={go} />,\n    "live-names": () => <LiveNamesOfAllah lang={lang} go={go} />,\n    "nine-books": () => <NineBooksHub lang={lang} go={go} />,\n    "hadith-book": () => <HadithBookPlaceholder lang={lang} go={go} data={param} />,'''
+          if '"verified-content":' not in s and anchor in s:
+              s=s.replace(anchor,anchor+'\n'+routes,1)
+          # Replace any old Names route if present.
+          s=s.replace('"names": () => <NamesCenter lang={lang} go={go} />,','"names": () => <LiveNamesOfAllah lang={lang} go={go} />,')
+          p.write_text(s)
+          PY
+      - run: npm ci
+      - run: npm run build
+      - name: Audit verified providers
+        run: |
+          grep -q 'VerifiedContentHub' src/App.jsx
+          grep -q 'LiveNamesOfAllah' src/App.jsx
+          grep -q 'NineBooksHub' src/App.jsx
+          grep -q 'api.aladhan.com/v1/asmaAlHusna' src/verifiedIslamic.jsx
+          grep -q 'QF_CLIENT_SECRET' server/quranFoundationProxy.mjs
+          if grep -R 'QF_CLIENT_SECRET' src; then echo 'Secret leaked to frontend' >&2; exit 1; fi
+      - name: Commit wiring
+        run: |
+          git config user.name "Sakinah Build Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add src/App.jsx
+          if ! git diff --cached --quiet; then git commit -m "Activate verified Islamic content routes" && git push; fi
