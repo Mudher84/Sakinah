@@ -9,37 +9,40 @@ function epoch(v,dayOffset=0){const [h,m]=clean(v).split(":").map(Number);const 
 function nextPrayer(t){if(!t)return null;const now=Date.now();for(const p of PR){const at=epoch(t[p]);if(at>now)return {id:p,time:clean(t[p]),at}}return {id:"Fajr",time:clean(t.Fajr),at:epoch(t.Fajr,1)}}
 function remaining(ms){if(ms<=0)return "٠ ساعة و ٠ دقيقة";const m=Math.floor(ms/60000),h=Math.floor(m/60),mm=m%60;return `${h} ساعة و ${mm} دقيقة`}
 function emit(id){window.dispatchEvent(new CustomEvent("sakinah:feature",{detail:id}))}
+function dayOfYear(d=new Date()){const s=new Date(d.getFullYear(),0,0);return Math.floor((d-s)/86400000)}
+function dailyAyahNumber(){return ((dayOfYear(new Date())*37+83)%6236)+1}
 function stageFor(t){
  const now=new Date(),x=now.getHours()+now.getMinutes()/60;
- if(!t)return {from:"#F6E9C8",to:"#F6F3EC",dark:false};
+ if(!t)return {id:"morning",from:"#F1E6C9",via:"#F5EFDF",to:"#F6F3EC",dark:false,glow:"rgba(181,154,98,.16)"};
  const fajr=hm(t.Fajr),sun=hm(t.Sunrise),dhuhr=hm(t.Dhuhr),asr=hm(t.Asr),mag=hm(t.Maghrib),isha=hm(t.Isha);
- if(x<fajr||x>=isha)return {from:"#0D1118",to:"#151D2C",dark:true};
- if(x<sun)return {from:"#19293B",to:"#526A7A",dark:true};
- if(x<dhuhr)return {from:"#F0E3BF",to:"#F6F3EC",dark:false};
- if(x<asr)return {from:"#FAF8F2",to:"#ECE3CF",dark:false};
- if(x<mag)return {from:"#F4E7D2",to:"#DDBD96",dark:false};
- return {from:"#D59B70",to:"#3A2630",dark:true};
+ if(x<fajr||x>=isha)return {id:"isha",from:"#100C15",via:"#141A2A",to:"#0B0910",dark:true,glow:"rgba(92,74,124,.18)"};
+ if(x<sun)return {id:"fajr",from:"#0B0C10",via:"#16283A",to:"#33566E",dark:true,glow:"rgba(114,159,190,.18)"};
+ if(x<dhuhr)return {id:"morning",from:"#F1E6C9",via:"#F5EFDF",to:"#F6F3EC",dark:false,glow:"rgba(218,180,99,.20)"};
+ if(x<asr)return {id:"dhuhr",from:"#FAF8F2",via:"#F4F0E4",to:"#EEE6D1",dark:false,glow:"rgba(255,255,255,.28)"};
+ if(x<mag)return {id:"asr",from:"#F5EEE0",via:"#EDDCC0",to:"#DFC4A1",dark:false,glow:"rgba(199,142,80,.16)"};
+ return {id:"maghrib",from:"#D9A776",via:"#6B4438",to:"#1C0F12",dark:true,glow:"rgba(255,173,104,.20)"};
 }
 function DayArc({next,dark}){
  const points=["Fajr","Dhuhr","Asr","Maghrib","Isha"];
- return <div style={{position:"relative",height:96,marginTop:22,flex:"0 0 auto"}}><svg viewBox="0 0 420 110" style={{display:"block",width:"100%",height:"100%",overflow:"visible"}}><path d="M20 88 Q210 -14 400 88" fill="none" stroke={dark?"rgba(246,243,236,.25)":"rgba(16,16,15,.16)"} strokeWidth="1.2"/><path d="M20 88 Q210 -14 400 88" fill="none" stroke={C.gold} strokeWidth="1.8" strokeDasharray="205 400" strokeLinecap="round"/>{points.map((p,i)=>{const x=[20,120,210,300,400][i],y=[88,42,22,42,88][i],on=next?.id===p;return <circle key={p} cx={x} cy={y} r={on?6:3} fill={on?C.gold:(dark?"rgba(246,243,236,.55)":"rgba(16,16,15,.42)")}/>})}</svg></div>
+ return <div style={{position:"relative",height:96,marginTop:18,flex:"0 0 auto"}}><svg viewBox="0 0 420 110" style={{display:"block",width:"100%",height:"100%",overflow:"visible"}}><path d="M20 88 Q210 -14 400 88" fill="none" stroke={dark?"rgba(246,243,236,.25)":"rgba(16,16,15,.16)"} strokeWidth="1.2"/><path d="M20 88 Q210 -14 400 88" fill="none" stroke={C.gold} strokeWidth="1.8" strokeDasharray="205 400" strokeLinecap="round"/>{points.map((p,i)=>{const x=[20,120,210,300,400][i],y=[88,42,22,42,88][i],on=next?.id===p;return <circle key={p} cx={x} cy={y} r={on?6:3} fill={on?C.gold:(dark?"rgba(246,243,236,.55)":"rgba(16,16,15,.42)")}/>})}</svg></div>
 }
 const cardStyle={border:0,borderRadius:24,padding:17,background:"rgba(255,255,255,.58)",boxShadow:"0 12px 30px rgba(16,16,15,.05)",fontFamily:"inherit",textAlign:"right",color:C.ink};
 export default function SakinahLiveHome(){
- const [data,setData]=useState(null),[status,setStatus]=useState(""),[tick,setTick]=useState(Date.now());
+ const [data,setData]=useState(null),[status,setStatus]=useState(""),[tick,setTick]=useState(Date.now()),[ayah,setAyah]=useState(null);
  const load=()=>{setStatus("جاري تحديد الموقع…");if(!navigator.geolocation){setStatus("الموقع غير مدعوم على هذا الجهاز");return}navigator.geolocation.getCurrentPosition(async p=>{try{const {latitude,longitude}=p.coords;const r=await fetch(`https://api.aladhan.com/v1/timings?latitude=${latitude}&longitude=${longitude}&method=4`);if(!r.ok)throw new Error();const j=await r.json();setData(j?.data||null);setStatus("")}catch{setStatus("تعذر تحميل مواقيت الصلاة الآن")}},()=>setStatus("فعّل الموقع واسمح لسكينة بالوصول إليه"),{enableHighAccuracy:true,timeout:12000})};
- useEffect(()=>{try{if("scrollRestoration" in history)history.scrollRestoration="manual";window.scrollTo({top:0,left:0,behavior:"instant"})}catch{}load();const id=setInterval(()=>setTick(Date.now()),30000);return()=>clearInterval(id)},[]);
+ useEffect(()=>{try{if("scrollRestoration" in history)history.scrollRestoration="manual";window.scrollTo({top:0,left:0,behavior:"instant"})}catch{}load();const n=dailyAyahNumber();fetch(`https://api.alquran.cloud/v1/ayah/${n}/quran-uthmani`).then(r=>r.ok?r.json():Promise.reject()).then(j=>setAyah(j?.data||null)).catch(()=>setAyah(null));const id=setInterval(()=>setTick(Date.now()),30000);return()=>clearInterval(id)},[]);
  const next=useMemo(()=>nextPrayer(data?.timings),[data,tick]);
  const stage=stageFor(data?.timings);
  const fg=stage.dark?C.ivory:C.ink;
  const date=new Intl.DateTimeFormat("ar-IQ",{weekday:"long",day:"numeric",month:"long"}).format(new Date());
  const hijri=data?.date?.hijri?.date?`${data.date.hijri.day} ${data.date.hijri.month?.ar||""} ${data.date.hijri.year}`:"";
  return <div className="sakinah-live-home" style={{position:"relative",display:"block",isolation:"isolate",minHeight:"100vh",width:"100%",overflowX:"hidden",background:C.ivory,color:C.ink,paddingBottom:118}} dir="rtl">
-  <section className="sakinah-live-hero" style={{position:"relative",zIndex:2,display:"block",boxSizing:"border-box",width:"100%",minHeight:500,padding:"18px 20px 22px",background:`linear-gradient(180deg,${stage.from},${stage.to})`,color:fg,transition:"background 1s ease,color .5s ease"}}>
+  <section className="sakinah-live-hero" style={{position:"relative",zIndex:2,display:"block",boxSizing:"border-box",width:"100%",minHeight:560,padding:"18px 20px 22px",background:`radial-gradient(circle at 74% 10%,${stage.glow},transparent 34%),linear-gradient(180deg,${stage.from} 0%,${stage.via} 55%,${stage.to} 100%)`,color:fg,transition:"background 1.4s ease,color .7s ease"}}>
    <header style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:12}}><div><div style={{fontSize:9,letterSpacing:1.4,opacity:.4}}>SAKINAH</div><div style={{fontFamily:"Fraunces,serif",fontSize:29,marginTop:2}}>سكينة</div><div style={{fontSize:10,opacity:.46,marginTop:5}}>{date}{hijri?` · ${hijri}`:""}</div></div><button onClick={load} style={{width:42,height:42,borderRadius:15,border:`1px solid ${stage.dark?"rgba(246,243,236,.18)":"rgba(16,16,15,.08)"}`,background:stage.dark?"rgba(255,255,255,.07)":"rgba(255,255,255,.38)",color:fg,fontSize:17}}>↻</button></header>
-   <div style={{marginTop:94}}><div style={{fontSize:11,letterSpacing:1,opacity:.52}}>{next?AR[next.id]:"الصلاة القادمة"}</div><div style={{fontSize:64,lineHeight:1,fontWeight:600,marginTop:9,fontFamily:"'IBM Plex Sans Arabic',sans-serif"}}>{next?.time||"--:--"}</div><div style={{fontSize:12.5,opacity:.56,marginTop:8}}>متبقي · {next?remaining(next.at-tick):"بانتظار المواقيت"}</div></div>
+   <div style={{marginTop:82}}><div style={{fontSize:11,letterSpacing:1,opacity:.52}}>{next?AR[next.id]:"الصلاة القادمة"}</div><div style={{fontSize:64,lineHeight:1,fontWeight:600,marginTop:9,fontFamily:"'IBM Plex Sans Arabic',sans-serif"}}>{next?.time||"--:--"}</div><div style={{fontSize:12.5,opacity:.56,marginTop:8}}>متبقي · {next?remaining(next.at-tick):"بانتظار المواقيت"}</div></div>
+   {ayah&&<div style={{marginTop:22,maxWidth:540,padding:"12px 0 2px",borderTop:`1px solid ${stage.dark?"rgba(246,243,236,.12)":"rgba(16,16,15,.09)"}`}}><div style={{fontSize:9.5,opacity:.42,marginBottom:5}}>آية اليوم</div><div style={{fontFamily:"'Amiri Quran','Noto Naskh Arabic',serif",fontSize:17.5,lineHeight:1.95}}>{ayah.text}</div><div style={{fontSize:9,opacity:.38,marginTop:4}}>{ayah.surah?.name} · الآية {ayah.numberInSurah}</div></div>}
    <DayArc next={next} dark={stage.dark}/>
-   <div style={{display:"grid",gridTemplateColumns:"repeat(5,minmax(0,1fr))",gap:5,marginTop:7,paddingTop:16,borderTop:`1px solid ${stage.dark?"rgba(246,243,236,.14)":"rgba(16,16,15,.10)"}`}}>{PR.map(p=><div key={p} style={{textAlign:"center",minWidth:0}}><div style={{fontSize:8.5,opacity:.48}}>{AR[p]}</div><div style={{fontSize:12.5,marginTop:6,fontWeight:next?.id===p?700:500,color:next?.id===p?C.gold:fg}}>{clean(data?.timings?.[p])||"--:--"}</div></div>)}</div>
+   <div style={{display:"grid",gridTemplateColumns:"repeat(5,minmax(0,1fr))",gap:5,marginTop:4,paddingTop:14,borderTop:`1px solid ${stage.dark?"rgba(246,243,236,.14)":"rgba(16,16,15,.10)"}`}}>{PR.map(p=><div key={p} style={{textAlign:"center",minWidth:0}}><div style={{fontSize:8.5,opacity:.48}}>{AR[p]}</div><div style={{fontSize:12.5,marginTop:6,fontWeight:next?.id===p?700:500,color:next?.id===p?C.gold:fg}}>{clean(data?.timings?.[p])||"--:--"}</div></div>)}</div>
    {status&&<div style={{fontSize:10,opacity:.58,marginTop:12}}>{status}</div>}
   </section>
 
