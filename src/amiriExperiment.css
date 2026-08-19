@@ -1,0 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
+
+/* Temporary typography experiment.
+   UI text => Amiri.
+   Quran/ayah text => preserve the existing Quran typography. */
+.sakinahResponsiveShell,
+.sakinahResponsiveShell button,
+.sakinahResponsiveShell input,
+.sakinahResponsiveShell textarea,
+.sakinahResponsiveShell select,
+.sakinah-live-home,
+.sakinah-live-home button,
+.sakinah-live-home input,
+.sakinah-live-home textarea,
+.sakinah-live-home select,
+.appShell,
+.appShell button,
+.appShell input,
+.appShell textarea,
+.appShell select {
+  font-family: "Amiri", "Noto Naskh Arabic", serif !important;
+}
+
+/* Keep Quran verses and Mushaf text exactly on their Quran-specific stack. */
+.quranMini,
+.quranHero,
+.ayah span,
+.quranAudioText,
+.quranMemo,
+.mushaf .ayah span,
+[dir="rtl"][style*="Amiri Quran"],
+.sakinah-live-home [style*="Amiri Quran"] {
+  font-family: "Amiri Quran", "Noto Naskh Arabic", serif !important;
+}
+
+/* Preserve Latin branding/technical labels where they are intentionally English. */
+.sakinah-live-home [style*="letterSpacing"],
+.railBrand small {
+  letter-spacing: normal;
+}
