@@ -13,8 +13,8 @@ function ensureStyles(){
  s.textContent=`
  .${HIDDEN_CLASS}{display:none!important}
  .${TITLE_CLASS}{display:block!important;width:100%!important;max-width:none!important;box-sizing:border-box!important;text-align:center!important;margin-left:auto!important;margin-right:auto!important;margin-inline:auto!important;transform:none!important}
- button[aria-label="أنا"],button[aria-label="تغيير صورة البروفايل"],button[aria-label="Change profile image"]{border-radius:50%!important;border-width:1px!important;border-style:solid!important;border-color:rgba(255,255,255,.72)!important;box-shadow:none!important;overflow:hidden!important}
- button[aria-label="أنا"] img,button[aria-label="تغيير صورة البروفايل"] img,button[aria-label="Change profile image"] img{width:100%!important;height:100%!important;object-fit:cover!important;border-radius:50%!important;display:block!important}
+ button[aria-label="أنا"],button[aria-label="تغيير صورة البروفايل"],button[aria-label="Change profile image"]{border-radius:50%!important;border:0!important;outline:0!important;box-shadow:none!important;filter:none!important;overflow:hidden!important;padding:0!important}
+ button[aria-label="أنا"] img,button[aria-label="تغيير صورة البروفايل"] img,button[aria-label="Change profile image"] img{width:100%!important;height:100%!important;object-fit:cover!important;border-radius:50%!important;display:block!important;border:0!important;outline:0!important;box-shadow:none!important;filter:none!important}
  #${BAR_ID}{position:fixed!important;top:0!important;left:0!important;right:0!important;height:54px!important;z-index:2147483595!important;display:flex!important;align-items:center!important;padding:0 12px!important;box-sizing:border-box!important;background:rgba(246,243,236,.88)!important;border-bottom:1px solid rgba(16,16,15,.07)!important;box-shadow:0 5px 18px rgba(16,16,15,.045)!important;backdrop-filter:blur(18px) saturate(130%)!important;-webkit-backdrop-filter:blur(18px) saturate(130%)!important}
  #${BAR_ID}.${HIDDEN_CLASS}{display:none!important}
  #${BAR_BUTTON_ID}{height:36px!important;min-width:42px!important;padding:0 12px!important;border:1px solid rgba(16,16,15,.08)!important;border-radius:12px!important;background:rgba(255,255,255,.62)!important;color:#26343B!important;box-shadow:0 3px 10px rgba(16,16,15,.04)!important;font-family:inherit!important;font-size:12px!important;font-weight:600!important;line-height:1!important;cursor:pointer!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:7px!important}
@@ -67,6 +67,36 @@ function ensureBar(){
  return bar;
 }
 
+function activeProfileData(){
+ try{
+  const id=localStorage.getItem('sakinah-active-profile')||'me';
+  const avatar=localStorage.getItem(`sakinah-profile-avatar-${id}`)||'';
+  const name=localStorage.getItem(`sakinah-profile-display-name-${id}`)||'أنا';
+  return {id,avatar,name};
+ }catch{return {id:'me',avatar:'',name:'أنا'}}
+}
+
+function syncProfileAvatars(){
+ const {avatar,name}=activeProfileData();
+ const buttons=[...document.querySelectorAll('button[aria-label="أنا"],button[aria-label="تغيير صورة البروفايل"],button[aria-label="Change profile image"]')];
+ for(const button of buttons){
+  button.style.border='0';
+  button.style.boxShadow='none';
+  button.style.borderRadius='50%';
+  button.style.overflow='hidden';
+  if(avatar){
+   let img=button.querySelector('img');
+   if(!img){img=document.createElement('img');button.replaceChildren(img)}
+   if(img.getAttribute('src')!==avatar)img.setAttribute('src',avatar);
+   img.alt='';
+   img.style.width='100%';img.style.height='100%';img.style.objectFit='cover';img.style.borderRadius='50%';img.style.border='0';img.style.boxShadow='none';
+  }else if(!button.querySelector('img')){
+   const fallback=(name||'أ').trim().slice(0,1)||'أ';
+   if((button.textContent||'').trim()!==fallback)button.textContent=fallback;
+  }
+ }
+}
+
 function centerPrimaryTitles(){
  document.querySelectorAll(`.${TITLE_CLASS}`).forEach(el=>el.classList.remove(TITLE_CLASS));
  const nodes=[...document.querySelectorAll('h1,h2,h3,div')];
@@ -88,6 +118,7 @@ function depth(el){let d=0;while(el?.parentElement){d++;el=el.parentElement}retu
 
 function reconcile(){
  ensureStyles();
+ syncProfileAvatars();
  centerPrimaryTitles();
  const bar=ensureBar();
  const candidates=[...document.querySelectorAll('button')].filter(isBackButton).filter(b=>b.id!==BAR_BUTTON_ID);
@@ -112,6 +143,7 @@ export function installGlobalBackButtons(){
   requestAnimationFrame(()=>{queued=false;reconcile()});
  };
  new MutationObserver(run).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class','style','aria-label','title']});
- ['sakinah:feature','sakinah:native','sakinah:devotion','sakinah:global-root','popstate','resize'].forEach(n=>window.addEventListener(n,run));
+ ['sakinah:feature','sakinah:native','sakinah:devotion','sakinah:global-root','sakinah-profile-change','storage','popstate','resize'].forEach(n=>window.addEventListener(n,run));
  document.addEventListener('click',run,true);
+ setInterval(run,500);
 }
