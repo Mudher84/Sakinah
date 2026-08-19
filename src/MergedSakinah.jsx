@@ -8,6 +8,14 @@ const activeProfile=()=>{try{return localStorage.getItem("sakinah-active-profile
 function openFeature(id){window.dispatchEvent(new CustomEvent("sakinah:feature",{detail:id}))}
 function profileAvatarKey(id){return `sakinah-profile-avatar-${id||activeProfile()}`}
 function profileNameKey(id){return `sakinah-profile-display-name-${id||activeProfile()}`}
+function readSharedProfile(lang="ar"){
+ const id=activeProfile();
+ const profiles=read("sakinah-profiles",[{id:"me",nameAr:"أنا",nameEn:"Me",kind:"adult",age:""}]);
+ const current=profiles.find(p=>p.id===id)||profiles[0]||{id:"me",nameAr:"أنا",nameEn:"Me",kind:"adult"};
+ let avatar="",name=lang==="ar"?current.nameAr:current.nameEn;
+ try{avatar=localStorage.getItem(profileAvatarKey(id))||"";name=localStorage.getItem(profileNameKey(id))||name||"أنا"}catch{}
+ return {id,avatar,name,current};
+}
 function compressAvatar(file){
  return new Promise((resolve,reject)=>{
   const reader=new FileReader();
@@ -38,9 +46,7 @@ function DiscoverSection({title,rows,lang,go}){
 }
 
 function DiscoverHub({lang,go}){
- const featured=[
-  ["trusted-daily","✦","المحتوى الموثق","Sourced Content","محتوى إسلامي موثوق بالمصادر","Sourced Islamic content"]
- ];
+ const featured=[["trusted-daily","✦","المحتوى الموثق","Sourced Content","محتوى إسلامي موثوق بالمصادر","Sourced Islamic content"]];
  const knowledge=[
   ["names-live","◉","أسماء الله الحسنى","Names of Allah","الأسماء الحسنى ومعانيها","The Beautiful Names and meanings"],
   ["sourced-seerah","▤","السيرة والقصص الموثقة","Sourced Seerah & Stories","السيرة والقصص الإسلامية من مصادر موثوقة","Sourced Seerah and Islamic stories"],
@@ -68,21 +74,14 @@ function ProfileGroup({title,rows,lang,go}){
  </section>
 }
 
-function ProfileHub({lang,go}){
+function ProfileHub({lang,go,profile,onProfileChange}){
  const fileRef=useRef(null);
- const [profileId,setProfileId]=useState(activeProfile());
- const profiles=read("sakinah-profiles",[{id:"me",nameAr:"أنا",nameEn:"Me",kind:"adult",age:""}]);
- const current=profiles.find(p=>p.id===profileId)||profiles[0]||{id:"me",nameAr:"أنا",nameEn:"Me",kind:"adult"};
- const avatarKey=profileAvatarKey(profileId);
- const nameKey=profileNameKey(profileId);
- const [avatar,setAvatar]=useState(()=>localStorage.getItem(avatarKey)||"");
- const [displayName,setDisplayName]=useState(()=>localStorage.getItem(nameKey)||(lang==="ar"?current.nameAr:current.nameEn)||"أنا");
  const [editing,setEditing]=useState(false);
+ const [draftName,setDraftName]=useState(profile.name||"أنا");
  const [avatarError,setAvatarError]=useState("");
- useEffect(()=>{const h=()=>{const id=activeProfile();setProfileId(id);const ps=read("sakinah-profiles",[]);const p=ps.find(x=>x.id===id)||ps[0]||{nameAr:"أنا",nameEn:"Me"};setAvatar(localStorage.getItem(profileAvatarKey(id))||"");setDisplayName(localStorage.getItem(profileNameKey(id))||(lang==="ar"?p.nameAr:p.nameEn)||"أنا")};window.addEventListener("sakinah-profile-change",h);window.addEventListener("storage",h);return()=>{window.removeEventListener("sakinah-profile-change",h);window.removeEventListener("storage",h)}},[lang]);
- const notifyProfileChange=()=>window.dispatchEvent(new CustomEvent("sakinah-profile-change",{detail:{profileId}}));
- const saveName=()=>{const n=displayName.trim()||"أنا";localStorage.setItem(nameKey,n);setDisplayName(n);setEditing(false);notifyProfileChange()};
- const chooseAvatar=async e=>{const f=e.target.files?.[0];e.target.value="";if(!f||!f.type.startsWith("image/"))return;setAvatarError("");try{const v=await compressAvatar(f);localStorage.setItem(avatarKey,v);setAvatar(v);notifyProfileChange()}catch{setAvatarError(lang==="ar"?"تعذر حفظ الصورة. اختر صورة أخرى أو أصغر حجماً.":"Could not save the image. Choose another or smaller image.")}};
+ useEffect(()=>setDraftName(profile.name||"أنا"),[profile.name]);
+ const saveName=()=>{const n=draftName.trim()||"أنا";try{localStorage.setItem(profileNameKey(profile.id),n)}catch{};onProfileChange({name:n});setEditing(false)};
+ const chooseAvatar=async e=>{const f=e.target.files?.[0];e.target.value="";if(!f||!f.type.startsWith("image/"))return;setAvatarError("");try{const v=await compressAvatar(f);localStorage.setItem(profileAvatarKey(profile.id),v);onProfileChange({avatar:v})}catch{setAvatarError(lang==="ar"?"تعذر حفظ الصورة. اختر صورة أخرى أو أصغر حجماً.":"Could not save the image. Choose another or smaller image.")}};
  const familyRows=[
   ["kids-world","☀","عالم الأطفال","Kids World","كل محتوى الأطفال من مكان واحد","All kids content in one place"],
   ["kids-quran-live","▥","معلم القرآن للأطفال","Kids Quran Teacher","تعلم القرآن ومتابعة الطفل","Quran learning for children"],
@@ -105,12 +104,13 @@ function ProfileHub({lang,go}){
   ["privacy-lock","◎","قفل الخصوصية","Privacy Lock","حماية بيانات البروفايل","Protect profile data"],
   ["offline-backup","◫","البيانات والنسخ الاحتياطي","Data & Backup","بياناتك ونسختك الاحتياطية","Your data and backup"]
  ];
+ const current=profile.current||{kind:"adult"};
  return <div style={{position:"absolute",inset:0,background:C.ivory,color:C.ink,overflowY:"auto",padding:"28px 22px 130px"}} dir={lang==="ar"?"rtl":"ltr"}>
   <input ref={fileRef} type="file" accept="image/*" onChange={chooseAvatar} style={{display:"none"}}/>
   <div style={{display:"flex",flexDirection:"column",alignItems:"center",textAlign:"center",gap:10,paddingTop:4,paddingBottom:4}}>
-   <button onClick={()=>fileRef.current?.click()} aria-label={lang==="ar"?"تغيير صورة البروفايل":"Change profile image"} style={{width:92,height:92,padding:0,borderRadius:"50%",border:0,overflow:"hidden",display:"grid",placeItems:"center",background:"transparent",color:"white",fontFamily:"inherit",fontSize:30,boxShadow:"none",flex:"0 0 auto"}}>{avatar?<img src={avatar} alt="" style={{display:"block",width:"100%",height:"100%",objectFit:"cover",borderRadius:"50%",border:0,boxShadow:"none"}}/>:<span>{(displayName||"س").trim().slice(0,1)}</span>}</button>
+   <button className="sakinah-profile-avatar" onClick={()=>fileRef.current?.click()} aria-label={lang==="ar"?"تغيير صورة البروفايل":"Change profile image"} style={{width:92,height:92,padding:0,borderRadius:"50%",border:0,overflow:"hidden",display:"grid",placeItems:"center",background:"transparent",color:"white",fontFamily:"inherit",fontSize:30,boxShadow:"none",filter:"none",outline:0,flex:"0 0 auto"}}>{profile.avatar?<img src={profile.avatar} alt="" style={{display:"block",width:"100%",height:"100%",objectFit:"cover",borderRadius:"50%",border:0,boxShadow:"none",filter:"none",outline:0}}/>:<span>{(profile.name||"س").trim().slice(0,1)}</span>}</button>
    <div style={{minWidth:0,width:"100%",maxWidth:310}}>
-    {editing?<div style={{display:"flex",gap:7,justifyContent:"center"}}><input autoFocus value={displayName} onChange={e=>setDisplayName(e.target.value)} onKeyDown={e=>e.key==="Enter"&&saveName()} style={{...baseBtn,width:"100%",boxSizing:"border-box",padding:"10px 12px",background:"rgba(255,255,255,.52)",fontSize:18,textAlign:"center"}}/><button onClick={saveName} style={{...baseBtn,padding:"10px 12px"}}>✓</button></div>:<button onClick={()=>setEditing(true)} style={{border:0,padding:0,background:"transparent",fontFamily:"Fraunces,serif",fontSize:31,color:"inherit",textAlign:"center",maxWidth:"100%",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{displayName}</button>}
+    {editing?<div style={{display:"flex",gap:7,justifyContent:"center"}}><input autoFocus value={draftName} onChange={e=>setDraftName(e.target.value)} onKeyDown={e=>e.key==="Enter"&&saveName()} style={{...baseBtn,width:"100%",boxSizing:"border-box",padding:"10px 12px",background:"rgba(255,255,255,.52)",fontSize:18,textAlign:"center"}}/><button onClick={saveName} style={{...baseBtn,padding:"10px 12px"}}>✓</button></div>:<button onClick={()=>setEditing(true)} style={{border:0,padding:0,background:"transparent",fontFamily:"Fraunces,serif",fontSize:31,color:"inherit",textAlign:"center",maxWidth:"100%",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{profile.name}</button>}
     <div style={{fontSize:11.5,opacity:.48,marginTop:5}}>{current.kind==="child"?(lang==="ar"?"ملف طفل · بياناته وتقدمه مستقلان":"Child profile · independent data"):lang==="ar"?"ملفك، محفوظاتك وخصوصيتك":"Your profile, library and privacy"}</div>
     <button onClick={()=>fileRef.current?.click()} style={{border:0,background:"transparent",padding:0,marginTop:7,fontFamily:"inherit",fontSize:10,color:C.gold}}>{lang==="ar"?"تغيير الصورة":"Change photo"}</button>
     {avatarError&&<div role="status" style={{fontSize:10,color:"#9B2C2C",marginTop:7,lineHeight:1.5}}>{avatarError}</div>}
@@ -132,9 +132,13 @@ function UnifiedNav({lang,panel,go}){
 export default function MergedSakinah(){
  const [panel,setPanel]=useState("app");
  const lang="ar";
+ const [profile,setProfile]=useState(()=>readSharedProfile(lang));
+ useEffect(()=>{const sync=()=>setProfile(readSharedProfile(lang));window.addEventListener("storage",sync);window.addEventListener("sakinah-profile-change",sync);return()=>{window.removeEventListener("storage",sync);window.removeEventListener("sakinah-profile-change",sync)}},[]);
+ const updateProfile=patch=>{setProfile(p=>({...p,...patch}));window.dispatchEvent(new CustomEvent("sakinah-profile-change",{detail:{profileId:profile.id}}))};
  const go=to=>{if(to==="app"||to==="discover"||to==="profile"){setPanel(to);return}openFeature(to)};
  return <div style={{position:"relative",minHeight:"100vh",background:C.ivory}}>
-  {panel==="app"?<SakinahLiveHome/>:panel==="discover"?<DiscoverHub lang={lang} go={go}/>:<ProfileHub lang={lang} go={go}/>}
+  <style>{`.sakinah-profile-avatar,.sakinah-profile-avatar img{border:0!important;outline:0!important;box-shadow:none!important;filter:none!important;background:transparent!important;-webkit-appearance:none!important;appearance:none!important}.sakinah-profile-avatar{border-radius:50%!important;overflow:hidden!important}.sakinah-profile-avatar img{display:block!important;width:100%!important;height:100%!important;object-fit:cover!important;border-radius:50%!important}`}</style>
+  {panel==="app"?<SakinahLiveHome profileAvatar={profile.avatar} profileName={profile.name} onOpenProfile={()=>setPanel("profile")}/>:panel==="discover"?<DiscoverHub lang={lang} go={go}/>:<ProfileHub lang={lang} go={go} profile={profile} onProfileChange={updateProfile}/>}
   <UnifiedNav lang={lang} panel={panel} go={go}/>
  </div>;
 }
