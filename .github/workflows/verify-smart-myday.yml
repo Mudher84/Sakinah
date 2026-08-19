@@ -1,0 +1,37 @@
+name: Verify Smart My Day
+on:
+  push:
+    paths:
+      - 'src/smartMyDay.jsx'
+      - 'src/MergedSakinah.jsx'
+      - '.github/workflows/verify-smart-myday.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Audit smart day integration
+        run: |
+          grep -q 'SmartMyDay' src/MergedSakinah.jsx
+          grep -q 'api.aladhan.com' src/smartMyDay.jsx
+          grep -q 'daily-reflection' src/smartMyDay.jsx
+          grep -q 'smart-khatmah' src/smartMyDay.jsx
+          grep -q 'smart-quranic-adhkar' src/smartMyDay.jsx
+          grep -q 'jumuah-center' src/smartMyDay.jsx
+          grep -q 'ramadan-center' src/smartMyDay.jsx
+      - name: Mark verified build
+        run: |
+          printf 'SMART_MY_DAY_BUILD_PASS\ncommit=%s\n' "$GITHUB_SHA" > .smart-myday-build-pass
+          git config user.name "Sakinah Build Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add .smart-myday-build-pass
+          if ! git diff --cached --quiet; then git commit -m "Verify smart My Day build" && git push; fi
