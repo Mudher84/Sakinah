@@ -1,0 +1,32 @@
+name: Verify Quran Intelligence Suite
+on:
+  push:
+    paths:
+      - 'src/quranInsights.jsx'
+      - 'src/quranAnalytics.jsx'
+      - 'src/searchLibrary.jsx'
+      - 'src/MergedSakinah.jsx'
+      - '.github/workflows/verify-quran-intelligence-suite.yml'
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Verify Quran intelligence routes
+        run: |
+          test -f src/quranInsights.jsx
+          grep -q 'QuranIntelligenceHub' src/MergedSakinah.jsx
+          grep -q 'quran-topics' src/MergedSakinah.jsx
+          grep -q 'quran-compare' src/MergedSakinah.jsx
+          grep -q 'quran-entities' src/MergedSakinah.jsx
+          grep -q 'quran-roots' src/MergedSakinah.jsx
+          grep -q 'tadabbur-ayah' src/MergedSakinah.jsx
+          grep -q 'quran-intelligence' src/searchLibrary.jsx
+          echo 'QURAN_INTELLIGENCE_SUITE_PASS'
