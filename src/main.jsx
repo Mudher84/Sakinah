@@ -5,6 +5,7 @@ import { installTypographyBoost } from './typographyBoost.js'
 import { installCelestialArc } from './celestialArc.js'
 import { installHeroAtmosphere } from './heroAtmosphere.js'
 import { installTimeFormatToggle } from './timeFormatToggle.js'
+import { installPreviewToggle } from './previewToggle.js'
 import './index.css'
 import './amiriExperiment.css'
 
@@ -18,6 +19,7 @@ installTypographyBoost()
 installCelestialArc()
 installHeroAtmosphere()
 installTimeFormatToggle()
+installPreviewToggle()
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch(()=>{}));
