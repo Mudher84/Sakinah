@@ -22,13 +22,13 @@ export function DailyReflection({lang,go}){
  const onNote=value=>{setNote(value);setSaveState("saving");clearTimeout(timer.current);timer.current=setTimeout(()=>persist(value),550)};
  useEffect(()=>()=>clearTimeout(timer.current),[]);
  const shown=expanded?history:history.slice(0,3);
- return <div style={{position:"absolute",inset:0,background:C.ivory,color:C.ink,overflowY:"auto",paddingTop:26,paddingLeft:16,paddingRight:16,paddingBottom:"calc(230px + env(safe-area-inset-bottom, 0px))",scrollPaddingBottom:"calc(230px + env(safe-area-inset-bottom, 0px))",boxSizing:"border-box"}} dir={lang==="ar"?"rtl":"ltr"}>
-  <main style={{maxWidth:700,margin:"0 auto"}}>
+ return <div style={{position:"absolute",inset:0,background:C.ivory,color:C.ink,overflowY:"auto",paddingTop:26,paddingLeft:20,paddingRight:20,paddingBottom:"calc(230px + env(safe-area-inset-bottom, 0px))",scrollPaddingBottom:"calc(230px + env(safe-area-inset-bottom, 0px))",boxSizing:"border-box"}} dir={lang==="ar"?"rtl":"ltr"}>
+  <main style={{maxWidth:640,margin:"0 auto"}}>
    <header style={{textAlign:"center",padding:"10px 8px 2px"}}><div style={{fontSize:10,color:C.gold,letterSpacing:1.2}}>SAKINAH · DAILY</div><h1 style={{fontFamily:"Fraunces,serif",fontSize:28,margin:"6px 0 4px"}}>{lang==="ar"?"تأمّل":"Reflect"}</h1><p style={{fontSize:10.5,opacity:.45,lineHeight:1.8,margin:0}}>{lang==="ar"?"آية اليوم ومساحتك الهادئة للتدبر":"Today's verse and your quiet space for reflection"}</p></header>
 
    <section style={{marginTop:16,borderRadius:26,padding:"18px 20px 22px",background:"linear-gradient(150deg,rgba(181,154,98,.10),rgba(255,255,255,.62))",border:"1px solid rgba(181,154,98,.20)",boxShadow:"0 10px 30px rgba(40,34,22,.035)"}}>
     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:10,fontSize:9.5,opacity:.45}}><span>{lang==="ar"?"آية اليوم":"Verse of the day"}</span><span>{arDigits(ref)}</span></div>
-    <div style={{minHeight:235,display:"flex",alignItems:"center",justifyContent:"center",textAlign:"center"}}>{busy?<span style={{fontSize:10.5,opacity:.42}}>{lang==="ar"?"تحميل آية اليوم…":"Loading today's verse…"}</span>:error?<span style={{fontSize:10.5,color:C.terracotta}}>{error}</span>:ayah&&<div style={{width:"100%",maxWidth:600,fontFamily:"'Noto Naskh Arabic','Amiri',serif",fontSize:"clamp(23px,5vw,31px)",lineHeight:2.05,direction:"rtl",textAlign:"center",padding:"6px 0"}}>{ayah.ar?.text}</div>}</div>
+    <div style={{minHeight:235,display:"flex",alignItems:"center",justifyContent:"center",textAlign:"center"}}>{busy?<span style={{fontSize:10.5,opacity:.42}}>{lang==="ar"?"تحميل آية اليوم…":"Loading today's verse…"}</span>:error?<span style={{fontSize:10.5,color:C.terracotta}}>{error}</span>:ayah&&<div style={{width:"100%",maxWidth:560,fontFamily:"'Noto Naskh Arabic','Amiri',serif",fontSize:"clamp(23px,5vw,31px)",lineHeight:2.05,direction:"rtl",textAlign:"center",padding:"6px 0"}}>{ayah.ar?.text}</div>}</div>
     {ayah&&<div style={{textAlign:"center",fontSize:9.5,opacity:.42}}>{ayah.ar?.surah?.name||""} · الآية {arDigits(ayah.ar?.numberInSurah||ref.split(":")[1])}</div>}
    </section>
 
