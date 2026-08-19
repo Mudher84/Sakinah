@@ -10,6 +10,7 @@ import { installProfileHook } from './profileHook.js'
 import { installGlobalBackButtons } from './globalBackButtons.js'
 import './index.css'
 import './amiriExperiment.css'
+import './bodoniNumbers.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
