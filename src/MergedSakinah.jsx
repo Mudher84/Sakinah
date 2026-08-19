@@ -8,21 +8,56 @@ const activeProfile=()=>{try{return localStorage.getItem("sakinah-active-profile
 
 function openFeature(id){window.dispatchEvent(new CustomEvent("sakinah:feature",{detail:id}))}
 
+function DiscoverSection({title,rows,lang,go}){
+ return <section style={{marginTop:20}}>
+  <div style={{fontSize:10.5,opacity:.42,marginBottom:8}}>{title}</div>
+  <div style={{borderRadius:24,overflow:"hidden",border:"1px solid rgba(16,16,15,.07)",background:"rgba(255,255,255,.5)"}}>
+   {rows.map(([id,icon,ar,en,subAr,subEn])=><button key={id} onClick={()=>go(id)} style={{width:"100%",display:"grid",gridTemplateColumns:"38px 1fr auto",gap:10,alignItems:"center",padding:"14px",border:0,borderBottom:"1px solid rgba(16,16,15,.06)",background:"transparent",fontFamily:"inherit",color:"inherit",textAlign:lang==="ar"?"right":"left"}}><span style={{fontSize:18,color:C.gold}}>{icon}</span><span><span style={{display:"block",fontSize:12.5,fontWeight:650}}>{lang==="ar"?ar:en}</span><small style={{display:"block",fontSize:9.5,opacity:.42,marginTop:3,lineHeight:1.45}}>{lang==="ar"?subAr:subEn}</small></span><span style={{opacity:.28}}>{lang==="ar"?"‹":"›"}</span></button>)}
+  </div>
+ </section>
+}
+
 function DiscoverHub({lang,go}){
- const cards=[
-  ["islamic-search","⌕","البحث الإسلامي وذكاء القرآن","Islamic Search & Quran Intelligence"],
-  ["daily-reflection","◌","تأمّل","Reflection"],
-  ["trusted-daily","✦","المحتوى الموثق","Sourced Content"],
-  ["kids-world","☀","عالم الأطفال","Kids World"],
-  ["saved-library","♡","مكتبتي","My Library"],
-  ["daily-tools","☼","أدوات العبادة اليومية","Daily Worship Tools"],
+ const featured=[
+  ["islamic-search","⌕","البحث الإسلامي وذكاء القرآن","Islamic Search & Quran Intelligence","بحث موحد داخل المعرفة الإسلامية والقرآن","Unified Islamic and Quran search"],
+  ["daily-reflection","◌","تأمّل","Reflection","لحظة هادئة للتدبر والتأمل","A quiet moment for reflection"],
+  ["trusted-daily","✦","المحتوى الموثق","Sourced Content","محتوى يومي موثوق بالمصادر","Daily sourced Islamic content"]
+ ];
+ const knowledge=[
+  ["quranic-duas","◇","الأدعية القرآنية","Quranic Duas","أدعية من القرآن في مكان واحد","Quranic supplications in one place"],
+  ["smart-quranic-adhkar","✧","الأذكار القرآنية الذكية","Smart Quranic Adhkar","أذكار مرتبطة بالوقت والسياق","Context-aware Quranic adhkar"],
+  ["hisn-center","☼","حصن المسلم وأذكار السنة","Hisn & Sunnah Adhkar","أذكار وأدعية مأثورة للاستخدام اليومي","Daily sourced adhkar and duas"],
+  ["names-live","◉","أسماء الله الحسنى","Names of Allah","الأسماء الحسنى ومعانيها","The Beautiful Names and meanings"],
+  ["sourced-seerah","▤","السيرة والقصص الموثقة","Sourced Seerah & Stories","السيرة والقصص الإسلامية من مصادر موثوقة","Sourced Seerah and Islamic stories"],
+  ["guide","◎","تعليم الصلاة والوضوء","Prayer & Wudu Guide","شرح مبسط ومتعدد اللغات","Simple multilingual learning guide"]
+ ];
+ const quranTools=[
+  ["quran-analytics","◫","تحليلات القرآن","Quran Analytics","متابعة القراءة والتقدم","Reading and progress insights"],
+  ["quran-topics","⌘","موضوعات القرآن","Quran Topics","استكشاف الآيات حسب الموضوع","Explore verses by topic"],
+  ["quran-compare","↔","مقارنة كلمات القرآن","Quran Word Compare","مقارنة استعمال الكلمات في القرآن","Compare Quranic word usage"],
+  ["quran-entities","⌾","خريطة الكيانات القرآنية","Quran Entity Map","الأشخاص والأماكن والمفاهيم","People, places and concepts"],
+  ["quran-roots","⌁","جذور كلمات القرآن","Quran Roots","استكشاف الجذور والاشتقاقات","Explore roots and derivations"],
+  ["tadabbur-ayah","◌","تدبر آية","Tadabbur Ayah","مساحة مركزة لتدبر آية","Focused verse reflection"],
+  ["tafsir-library","▥","مكتبة التفاسير","Tafsir Library","الوصول إلى التفاسير","Access Quran tafsir"],
+  ["memorization-center","□","مركز الحفظ","Memorization Center","خطط ومتابعة حفظ القرآن","Quran memorization plans"],
+  ["smart-khatmah","✓","الختمة الذكية","Smart Khatmah","خطة ختمة ومتابعة الإنجاز","Khatmah plan and progress"]
+ ];
+ const seasons=[
+  ["islamic-calendar","▦","التقويم الإسلامي","Islamic Calendar","المناسبات والأيام الهجرية","Hijri dates and occasions"],
+  ["fasting-center","☾","مركز الصيام","Fasting Center","متابعة الصيام والأيام المستحبة","Fasting days and tracking"],
+  ["ramadan-center","✦","مركز رمضان","Ramadan Center","أدوات وبرنامج شهر رمضان","Ramadan tools and plan"],
+  ["jumuah-center","▤","مركز الجمعة","Jumuah Center","ورد الجمعة وأعمالها","Friday worship hub"],
+  ["zakat","◇","الزكاة","Zakat","حساب وإرشادات الزكاة","Zakat calculator and guidance"],
+  ["manasik","△","المناسك","Manasik","دليل الحج والعمرة","Hajj and Umrah guide"]
  ];
  return <div style={{position:"absolute",inset:0,background:C.ivory,color:C.ink,overflowY:"auto",padding:"28px 22px 130px"}} dir={lang==="ar"?"rtl":"ltr"}>
   <div style={{fontSize:11,letterSpacing:1.6,opacity:.42}}>{lang==="ar"?"سكينة":"SAKINAH"}</div>
   <div style={{fontFamily:"Fraunces,serif",fontSize:34,marginTop:6}}>{lang==="ar"?"اكتشف":"Discover"}</div>
-  <div style={{fontSize:12,opacity:.5,lineHeight:1.8,marginTop:6}}>{lang==="ar"?"كل أدوات سكينة في مكان هادئ وواضح، وكل بطاقة تفتح الميزة الفعلية.":"All Sakinah tools in one calm place, with every card opening the real feature."}</div>
-  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginTop:22}}>{cards.map(([id,icon,ar,en],i)=><button key={id} onClick={()=>go(id)} style={{...baseBtn,minHeight:i<2?128:108,textAlign:lang==="ar"?"right":"left",background:i===0?"linear-gradient(145deg,#173B57,#0C293E)":"rgba(255,255,255,.58)",color:i===0?"white":C.ink,boxShadow:"0 12px 32px rgba(16,16,15,.05)"}}><div style={{fontSize:24,color:i===0?"#E7D29B":C.gold}}>{icon}</div><div style={{fontSize:14,fontWeight:700,lineHeight:1.45,marginTop:18}}>{lang==="ar"?ar:en}</div></button>)}</div>
-  <button onClick={()=>go("offline-backup")} style={{...baseBtn,width:"100%",marginTop:10,textAlign:lang==="ar"?"right":"left"}}>{lang==="ar"?"البيانات · Offline · النسخ الاحتياطي":"Data · Offline · Backup"}</button>
+  <div style={{fontSize:12,opacity:.5,lineHeight:1.8,marginTop:6}}>{lang==="ar"?"كل ما لا يحتاج مكاناً دائماً في الصفحات الرئيسية تجده هنا، بدون تكرار خدمات يومي أو أنا.":"Everything that does not need a permanent primary-page slot lives here, without duplicating My Day or Me."}</div>
+  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginTop:22}}>{featured.map(([id,icon,ar,en,subAr,subEn],i)=><button key={id} onClick={()=>go(id)} style={{...baseBtn,minHeight:i===0?132:112,textAlign:lang==="ar"?"right":"left",gridColumn:i===0?"1 / -1":"auto",background:i===0?"linear-gradient(145deg,#173B57,#0C293E)":"rgba(255,255,255,.58)",color:i===0?"white":C.ink,boxShadow:"0 12px 32px rgba(16,16,15,.05)"}}><div style={{fontSize:24,color:i===0?"#E7D29B":C.gold}}>{icon}</div><div style={{fontSize:14,fontWeight:700,lineHeight:1.45,marginTop:16}}>{lang==="ar"?ar:en}</div><small style={{display:"block",fontSize:9.5,opacity:.52,marginTop:5,lineHeight:1.5}}>{lang==="ar"?subAr:subEn}</small></button>)}</div>
+  <DiscoverSection title={lang==="ar"?"المعرفة والإيمان":"KNOWLEDGE & FAITH"} rows={knowledge} lang={lang} go={go}/>
+  <DiscoverSection title={lang==="ar"?"أدوات القرآن المتقدمة":"ADVANCED QURAN TOOLS"} rows={quranTools} lang={lang} go={go}/>
+  <DiscoverSection title={lang==="ar"?"المواسم والعبادات":"SEASONS & WORSHIP"} rows={seasons} lang={lang} go={go}/>
  </div>
 }
 
