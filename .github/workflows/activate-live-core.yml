@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - 'src/liveCore.jsx'
+      - 'src/liveAudio.jsx'
       - '.github/workflows/activate-live-core.yml'
   workflow_dispatch:
 permissions:
@@ -16,21 +17,27 @@ jobs:
         with:
           node-version: '20'
           cache: npm
-      - name: Wire live Quran and prayer routes
+      - name: Wire live Quran prayer and audio routes
         run: |
           python - <<'PY'
           from pathlib import Path
           p=Path('src/App.jsx')
           s=p.read_text()
-          imp='import { LivePrayerCenter, LiveQuranReader, LiveSurahList } from "./liveCore.jsx";\n'
-          if imp not in s:
+          core='import { LivePrayerCenter, LiveQuranReader, LiveSurahList } from "./liveCore.jsx";\n'
+          audio='import { LiveQuranAudio } from "./liveAudio.jsx";\n'
+          first=s.find('\n')
+          if core not in s:
+              s=s[:first+1]+core+s[first+1:]
+          if audio not in s:
               first=s.find('\n')
-              s=s[:first+1]+imp+s[first+1:]
+              s=s[:first+1]+audio+s[first+1:]
           s=s.replace('"surah-list": () => <SurahList lang={lang} go={go} />,','"surah-list": () => <LiveSurahList lang={lang} go={go} />,')
           old='"reader": () => <QuranReader lang={lang} surahId={param.surahId || 1} go={go} lastRead={lastRead} setLastRead={setLastRead} bookmarks={bookmarks} toggleBookmark={toggleBookmark} quranScale={a11y.quranScale} />,'
           s=s.replace(old,'"reader": () => <LiveQuranReader lang={lang} surahId={param.surahId || 1} go={go} />,')
           oldp='"prayer": () => <PrayerScreen lang={lang} hourNow={hourNow} go={go} onScrub={(h) => setPreview(h)} onQiblaDeg={setQiblaDeg} />,'
           s=s.replace(oldp,'"prayer": () => <LivePrayerCenter lang={lang} go={go} />,')
+          olda='"audio": () => <AudioScreen lang={lang} go={go} surahId={param.surahId} />,'
+          s=s.replace(olda,'"audio": () => <LiveQuranAudio lang={lang} go={go} initialSurah={param.surahId || 1} />,')
           p.write_text(s)
           PY
       - run: npm ci
@@ -40,14 +47,16 @@ jobs:
           grep -q 'LiveSurahList' src/App.jsx
           grep -q 'LiveQuranReader' src/App.jsx
           grep -q 'LivePrayerCenter' src/App.jsx
+          grep -q 'LiveQuranAudio' src/App.jsx
           grep -q 'api.alquran.cloud' src/liveCore.jsx
           grep -q 'api.aladhan.com' src/liveCore.jsx
+          grep -q 'mp3quran.net/api/v3/reciters' src/liveAudio.jsx
       - name: Commit verified wiring
         run: |
           git config user.name "Sakinah Build Bot"
           git config user.email "actions@users.noreply.github.com"
           git add src/App.jsx
           if ! git diff --cached --quiet; then
-            git commit -m "Activate live Quran and prayer core"
+            git commit -m "Activate live Quran prayer and audio core"
             git push
           fi
