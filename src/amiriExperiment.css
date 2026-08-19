@@ -30,7 +30,14 @@
   font-family: "Sakinah Roznameh", "HT Roznameh Medium", "Amiri", "Noto Naskh Arabic", serif !important;
 }
 
-/* Keep Quran verses and Mushaf text exactly on their Quran-specific stack. */
+/* Two-step readability lift for the experimental UI font. */
+.sakinahResponsiveShell { font-size: calc(1em + 2px); }
+.sakinahResponsiveShell button,
+.sakinahResponsiveShell input,
+.sakinahResponsiveShell textarea,
+.sakinahResponsiveShell select { font-size: inherit; }
+
+/* Keep Quran verses and Mushaf text exactly on their Quran-specific stack and size. */
 .quranMini,
 .quranHero,
 .ayah span,
