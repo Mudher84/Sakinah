@@ -1,5 +1,6 @@
 import React,{useEffect,useState} from "react";
 import SakinahNativeReadyLayer from "./SakinahNativeReadyLayer.jsx";
+import SakinahAllFeaturesLayer from "./SakinahAllFeaturesLayer.jsx";
 import "./responsiveShell.css";
 
 function emit(name,detail){window.dispatchEvent(new CustomEvent(name,{detail}))}
@@ -42,7 +43,7 @@ export default function SakinahResponsiveShell(){
  },[]);
  return <div className="sakinahResponsiveShell" dir="rtl">
   <aside className="desktopServiceRail"><div className="railBrand"><span>س</span><div><b>سكينة</b><small>كل الخدمات</small></div></div><ServiceList/></aside>
-  <div className="responsiveAppStage"><SakinahNativeReadyLayer/></div>
+  <div className="responsiveAppStage"><SakinahAllFeaturesLayer><SakinahNativeReadyLayer/></SakinahAllFeaturesLayer></div>
   {discover&&<button className="discoverServicesButton" onClick={()=>setOpen(true)}>☷ <span>كل الخدمات</span></button>}
   {open&&<div className="mobileServicesOverlay" onClick={()=>setOpen(false)}><div className="mobileServicesSheet" onClick={e=>e.stopPropagation()}><div className="sheetHead"><div><b>خدمات سكينة</b><small>كل الميزات المطلوبة في مكان واحد</small></div><button onClick={()=>setOpen(false)}>×</button></div><ServiceList close={()=>setOpen(false)}/></div></div>}
  </div>;
