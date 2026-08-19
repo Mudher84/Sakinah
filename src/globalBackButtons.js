@@ -14,7 +14,8 @@ function ensureStyles(){
  #${BAR_ID}{position:fixed!important;top:0!important;left:0!important;right:0!important;height:54px!important;z-index:2147483595!important;display:flex!important;align-items:center!important;padding:0 12px!important;box-sizing:border-box!important;background:rgba(246,243,236,.88)!important;border-bottom:1px solid rgba(16,16,15,.07)!important;box-shadow:0 5px 18px rgba(16,16,15,.045)!important;backdrop-filter:blur(18px) saturate(130%)!important;-webkit-backdrop-filter:blur(18px) saturate(130%)!important}
  #${BAR_ID}.${HIDDEN_CLASS}{display:none!important}
  #${BAR_BUTTON_ID}{height:36px!important;min-width:42px!important;padding:0 12px!important;border:1px solid rgba(16,16,15,.08)!important;border-radius:12px!important;background:rgba(255,255,255,.62)!important;color:#26343B!important;box-shadow:0 3px 10px rgba(16,16,15,.04)!important;font-family:inherit!important;font-size:12px!important;font-weight:600!important;line-height:1!important;cursor:pointer!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:7px!important}
- .global-feature-shell{padding-top:54px!important}
+ .global-feature-shell{padding-top:54px!important;box-sizing:border-box!important}
+ .global-feature-shell>div[style*="position: absolute"],.global-feature-shell>div[style*="position:absolute"]{top:54px!important;bottom:0!important;height:auto!important;min-height:calc(100vh - 54px)!important;box-sizing:border-box!important}
  `;
  document.head.appendChild(s);
 }
