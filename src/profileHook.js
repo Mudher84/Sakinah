@@ -47,24 +47,9 @@ function ensureProfileHook() {
     top: '18px',
     left: '18px',
     zIndex: '18',
-    width: '46px',
-    height: '46px',
+    width: '42px',
+    height: '42px',
     pointerEvents: 'auto'
-  });
-
-  const tail = document.createElement('div');
-  Object.assign(tail.style, {
-    position: 'absolute',
-    left: '25px',
-    top: '26px',
-    width: '22px',
-    height: '16px',
-    borderLeft: '1.5px solid rgba(184,148,67,.58)',
-    borderBottom: '1.5px solid rgba(184,148,67,.58)',
-    borderBottomLeftRadius: '16px',
-    transform: 'rotate(-18deg)',
-    opacity: '.85',
-    pointerEvents: 'none'
   });
 
   const button = document.createElement('button');
@@ -72,7 +57,7 @@ function ensureProfileHook() {
   button.setAttribute('aria-label', 'تغيير صورة البروفايل');
   Object.assign(button.style, {
     position: 'absolute',
-    inset: '0 auto auto 0',
+    inset: '0',
     width: '42px',
     height: '42px',
     padding: '0',
@@ -114,7 +99,7 @@ function ensureProfileHook() {
     input.value = '';
   });
 
-  wrap.append(tail, button, input);
+  wrap.append(button, input);
   hero.appendChild(wrap);
 }
 
