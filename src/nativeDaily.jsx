@@ -13,9 +13,10 @@ async function todayTimes(){const c=await coords();const r=await fetch(`https://
 const PR=["Fajr","Dhuhr","Asr","Maghrib","Isha"];
 function cleanTime(v=""){return v.split(" ")[0]}
 function epochToday(v){const [h,m]=cleanTime(v).split(":").map(Number);const d=new Date();d.setHours(h||0,m||0,0,0);return d.getTime()}
+function epochNext(v){let at=epochToday(v);if(at<=Date.now()){const d=new Date(at);d.setDate(d.getDate()+1);at=d.getTime()}return at}
 function nextPrayer(timings){if(!timings)return null;const now=Date.now();for(const p of PR){const at=epochToday(timings[p]);if(at>now)return [p,cleanTime(timings[p]),at]}const d=new Date();d.setDate(d.getDate()+1);const [h,m]=cleanTime(timings.Fajr).split(":").map(Number);d.setHours(h||0,m||0,0,0);return ["Fajr",cleanTime(timings.Fajr),d.getTime()]}
 function syncNative(cfg,data){const bridge={schema:2,updatedAt:new Date().toISOString(),profile:profile(),notifications:cfg,timings:data?.timings||null,calendar:data?.date||null};write("native-bridge",bridge);const n=native();if(!n)return;try{n.saveBridgeState(JSON.stringify(bridge))}catch{}
- if(data?.timings){for(const p of PR){try{if(cfg[p])n.schedulePrayer(p,epochToday(data.timings[p]),`حان وقت صلاة ${p}`);else n.cancelPrayer(p)}catch{}}
+ if(data?.timings){for(const p of PR){try{if(cfg[p])n.schedulePrayer(p,epochNext(data.timings[p]),`حان وقت صلاة ${p}`);else n.cancelPrayer(p)}catch{}}
  const nxt=nextPrayer(data.timings);if(nxt){try{localStorage.setItem("sakinah-widget-next-prayer",nxt[0]);localStorage.setItem("sakinah-widget-next-time",nxt[1]);n.saveBridgeState(JSON.stringify({...bridge,nextPrayer:nxt[0],nextPrayerTime:nxt[1]}));n.refreshWidget()}catch{}}
  }
 }
