@@ -13,6 +13,7 @@ export default function ModernTasbeeh({lang="ar",go}){
  const [count,setCount]=useState(()=>read(pkey("tasbeeh-count"),0));
  const [target,setTarget]=useState(()=>read(pkey("tasbeeh-target"),33));
  const [vibrate,setVibrate]=useState(()=>read(pkey("tasbeeh-vibrate"),true));
+ const [dhikrOpen,setDhikrOpen]=useState(false);
  const item=DHIKR[idx]||DHIKR[0];
  useEffect(()=>{write(pkey("tasbeeh-dhikr"),idx);write(pkey("tasbeeh-count"),count);write(pkey("tasbeeh-target"),target);write(pkey("tasbeeh-vibrate"),vibrate)},[idx,count,target,vibrate]);
  const step=count%target;
@@ -20,6 +21,7 @@ export default function ModernTasbeeh({lang="ar",go}){
  const remaining=count===0?target:(step===0?0:target-step);
  const round=Math.floor(count/target)+1;
  const tap=()=>{const n=count+1;setCount(n);const today=new Date().toISOString().slice(0,10);const h=read(pkey("tasbeeh-history"),{});h[today]=(h[today]||0)+1;write(pkey("tasbeeh-history"),h);if(vibrate&&navigator.vibrate)navigator.vibrate(n%target===0?[55,45,95]:14)};
+ const chooseDhikr=i=>{setIdx(i);setCount(0);setTarget(DHIKR[i][2]);setDhikrOpen(false)};
  const beadCount=17;
  return <div dir={ar?"rtl":"ltr"} style={{position:"fixed",inset:0,zIndex:50000,overflowY:"auto",boxSizing:"border-box",background:"#F3EFE6",color:INK,fontFamily:"inherit"}}>
   <div style={{maxWidth:620,minHeight:"100%",margin:"0 auto",padding:"max(82px,calc(env(safe-area-inset-top) + 52px)) 18px 120px",boxSizing:"border-box"}}>
@@ -29,10 +31,13 @@ export default function ModernTasbeeh({lang="ar",go}){
     <button onClick={()=>setVibrate(v=>!v)} title={ar?"الاهتزاز":"Vibration"} aria-label={ar?"تشغيل أو إيقاف الاهتزاز":"Toggle vibration"} style={{position:"absolute",insetInlineEnd:0,top:18,width:44,height:44,border:0,borderRadius:22,background:vibrate?BLUE:"rgba(255,255,255,.72)",color:vibrate?"white":INK,fontSize:15,cursor:"pointer",zIndex:2}}>〰</button>
    </header>
 
-   <div style={{marginTop:16,display:"flex",alignItems:"center",gap:10,padding:"9px 10px 9px 14px",borderRadius:22,background:"rgba(255,255,255,.62)",boxShadow:"0 14px 40px rgba(38,30,16,.055)"}}>
-    <div style={{width:42,height:42,borderRadius:16,display:"grid",placeItems:"center",background:"#EAE1CE",color:GOLD,fontSize:18}}>✦</div>
-    <select value={idx} onChange={e=>{const i=+e.target.value;setIdx(i);setCount(0);setTarget(DHIKR[i][2])}} style={{flex:1,minWidth:0,height:42,border:0,outline:0,background:"transparent",fontFamily:"inherit",fontSize:14,color:INK}}>{DHIKR.map((x,i)=><option key={x[0]} value={i}>{ar?x[0]:x[1]}</option>)}</select>
-    <div style={{fontSize:10,opacity:.42,whiteSpace:"nowrap"}}>{ar?`هدف ${target}`:`Goal ${target}`}</div>
+   <div style={{position:"relative",marginTop:16,zIndex:8}}>
+    <button onClick={()=>setDhikrOpen(v=>!v)} aria-expanded={dhikrOpen} style={{width:"100%",height:58,border:0,borderRadius:999,padding:"0 14px",display:"grid",gridTemplateColumns:"42px 1fr auto",alignItems:"center",gap:10,background:"rgba(255,255,255,.72)",boxShadow:"0 14px 40px rgba(38,30,16,.055),inset 0 0 0 1px rgba(21,19,15,.055)",fontFamily:"inherit",color:INK,cursor:"pointer",textAlign:ar?"right":"left"}}>
+     <span style={{width:38,height:38,borderRadius:"50%",display:"grid",placeItems:"center",background:"#EAE1CE",color:GOLD,fontSize:17}}>✦</span>
+     <span style={{minWidth:0,fontSize:14,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{ar?item[0]:item[1]}</span>
+     <span style={{display:"flex",alignItems:"center",gap:8,fontSize:10,opacity:.48,whiteSpace:"nowrap"}}><span>{ar?`هدف ${target}`:`Goal ${target}`}</span><span style={{fontSize:13,transform:dhikrOpen?"rotate(180deg)":"none",transition:"transform .18s ease"}}>⌄</span></span>
+    </button>
+    {dhikrOpen&&<div style={{position:"absolute",top:66,left:0,right:0,padding:8,borderRadius:26,background:"rgba(255,253,248,.96)",boxShadow:"0 24px 65px rgba(32,26,16,.16)",border:"1px solid rgba(21,19,15,.06)",backdropFilter:"blur(18px)",overflow:"hidden"}}>{DHIKR.map((x,i)=><button key={x[0]} onClick={()=>chooseDhikr(i)} style={{width:"100%",minHeight:46,border:0,borderRadius:18,padding:"10px 14px",display:"flex",alignItems:"center",justifyContent:"space-between",gap:12,background:i===idx?"#EDE3CF":"transparent",color:INK,fontFamily:"inherit",fontSize:13.5,textAlign:ar?"right":"left",cursor:"pointer"}}><span>{ar?x[0]:x[1]}</span><span style={{fontSize:10,opacity:.4}}>{x[2]}</span></button>)}</div>}
    </div>
 
    <main style={{position:"relative",height:390,marginTop:8,display:"grid",placeItems:"center"}}>
