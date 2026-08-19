@@ -8,6 +8,7 @@ import {LiveNamesOfAllah} from "./verifiedIslamic.jsx";
 import {MyDayCenter,DailyToolsHub,IslamicCalendar,FastingCenter,RamadanCenter,SmartKhatmah,MemorizationCenter,HisnCenter,JumuahCenter,WorshipTimes,ParentalControls,PrivacyLock,CardMaker} from "./dailySuite.jsx";
 import {SmartMyDay} from "./smartMyDay.jsx";
 import {UniversalIslamicSearch,SavedLibrary} from "./searchLibrary.jsx";
+import {SmartQuranAnalytics} from "./quranAnalytics.jsx";
 
 const C={ivory:"#F6F3EC",ink:"#10100F",lapis:"#173B57",gold:"#B59A62"};
 
@@ -54,7 +55,7 @@ function UnifiedNav({lang,panel,go,setLang}){
 
 export default function MergedSakinah(){
  const [panel,setPanel]=useState("app"),[lang,setLang]=useState("ar");
- const known=new Set(["app","my-day","daily-tools","daily-reflection","trusted-daily","quranic-duas","smart-quranic-adhkar","sourced-seerah","kids-sourced-stories","kids-world","kids-home","kids-quran-live","kids-quiz-live","kids-nasheeds","offline-backup","islamic-calendar","fasting-center","ramadan-center","smart-khatmah","memorization-center","names-live","hisn-center","jumuah-center","worship-times","parental-controls","privacy-lock","card-maker","islamic-search","saved-library"]);
+ const known=new Set(["app","my-day","daily-tools","daily-reflection","trusted-daily","quranic-duas","smart-quranic-adhkar","sourced-seerah","kids-sourced-stories","kids-world","kids-home","kids-quran-live","kids-quiz-live","kids-nasheeds","offline-backup","islamic-calendar","fasting-center","ramadan-center","smart-khatmah","memorization-center","names-live","hisn-center","jumuah-center","worship-times","parental-controls","privacy-lock","card-maker","islamic-search","saved-library","quran-analytics"]);
  const go=(to)=>setPanel(known.has(to)?to:"app");
  const screens={
   "my-day":<SmartMyDay lang={lang} go={go}/>,
@@ -85,6 +86,7 @@ export default function MergedSakinah(){
   "card-maker":<CardMaker lang={lang} go={go}/>,
   "islamic-search":<UniversalIslamicSearch lang={lang} go={go}/>,
   "saved-library":<SavedLibrary lang={lang} go={go}/>,
+  "quran-analytics":<SmartQuranAnalytics lang={lang} go={go}/>,
  };
  return <div style={{position:"relative",minHeight:"100vh",background:C.ivory}}>
   {panel==="app"?<App/>:(screens[panel]||screens["trusted-daily"])}
