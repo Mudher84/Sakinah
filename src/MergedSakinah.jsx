@@ -1,5 +1,5 @@
 import React,{useState} from "react";
-import App from "./App.jsx";
+import SakinahLiveHome from "./SakinahLiveHome.jsx";
 
 const C={ivory:"#F6F3EC",ink:"#10100F",lapis:"#173B57",gold:"#B59A62"};
 const baseBtn={border:"1px solid rgba(16,16,15,.08)",borderRadius:18,padding:14,background:"rgba(255,255,255,.55)",fontFamily:"inherit",color:"inherit"};
@@ -26,6 +26,7 @@ function DiscoverHub({lang,go}){
 
 function ProfileHub({lang,go}){
  const rows=[
+  ["profiles","♙","البروفايلات","Profiles"],
   ["saved-library","♡","المكتبة المحفوظة","Saved Library"],
   ["offline-backup","◫","البيانات والنسخ الاحتياطي","Data & Backup"],
   ["privacy-lock","⌾","قفل الخصوصية","Privacy Lock"],
@@ -55,7 +56,7 @@ export default function MergedSakinah(){
   openFeature(to);
  };
  return <div style={{position:"relative",minHeight:"100vh",background:C.ivory}}>
-  {panel==="app"?<App/>:panel==="discover"?<DiscoverHub lang={lang} go={go}/>:<ProfileHub lang={lang} go={go}/>}
+  {panel==="app"?<SakinahLiveHome/>:panel==="discover"?<DiscoverHub lang={lang} go={go}/>:<ProfileHub lang={lang} go={go}/>}
   <UnifiedNav lang={lang} panel={panel} go={go}/>
  </div>;
 }
