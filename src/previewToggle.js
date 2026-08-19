@@ -17,7 +17,7 @@ function ensureToggle(hero, panel) {
     position: 'absolute',
     top: '18px',
     right: '20px',
-    zIndex: '8',
+    zIndex: '12',
     width: '42px',
     height: '42px',
     borderRadius: '14px',
@@ -32,39 +32,40 @@ function ensureToggle(hero, panel) {
   });
   hero.appendChild(button);
 
+  const hidePanel = () => {
+    panel.style.opacity = '0';
+    panel.style.transform = 'translateY(-8px) scale(.985)';
+    panel.style.pointerEvents = 'none';
+    setTimeout(() => {
+      button.style.pointerEvents = 'auto';
+      button.style.opacity = '1';
+      button.style.transform = 'scale(1)';
+    }, 360);
+  };
+
+  const scheduleHide = () => {
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(hidePanel, 3200);
+  };
+
   const showPanel = () => {
     clearTimeout(hideTimer);
-    panel.style.display = '';
     panel.style.opacity = '0';
-    panel.style.transform = 'translateY(-6px) scale(.985)';
+    panel.style.transform = 'translateY(-8px) scale(.985)';
     panel.style.pointerEvents = 'auto';
     button.style.opacity = '0';
+    button.style.transform = 'scale(.92)';
     button.style.pointerEvents = 'none';
     requestAnimationFrame(() => {
       panel.style.opacity = '1';
       panel.style.transform = 'translateY(0) scale(1)';
     });
-    const scheduleHide = () => {
-      clearTimeout(hideTimer);
-      hideTimer = setTimeout(hidePanel, 3200);
-    };
-    panel.onpointerdown = scheduleHide;
-    panel.oninput = scheduleHide;
-    panel.onclick = scheduleHide;
     scheduleHide();
   };
 
-  const hidePanel = () => {
-    panel.style.opacity = '0';
-    panel.style.transform = 'translateY(-6px) scale(.985)';
-    panel.style.pointerEvents = 'none';
-    setTimeout(() => {
-      panel.style.display = 'none';
-      button.style.pointerEvents = 'auto';
-      button.style.opacity = '1';
-    }, 360);
-  };
-
+  panel.addEventListener('pointerdown', scheduleHide, true);
+  panel.addEventListener('input', scheduleHide, true);
+  panel.addEventListener('click', scheduleHide, true);
   button.addEventListener('click', showPanel);
   hidePanel();
   return button;
@@ -77,8 +78,26 @@ function apply() {
   if (!panel) return;
   if (panel.dataset.previewToggleReady === '1') return;
   panel.dataset.previewToggleReady = '1';
-  panel.style.transition = 'opacity .35s ease, transform .35s ease';
-  panel.style.transformOrigin = 'top center';
+
+  /* Keep the preview permanently out of document flow so opening/closing it
+     never changes hero height or moves the prayer time/content. */
+  Object.assign(panel.style, {
+    position: 'absolute',
+    top: '12px',
+    left: '14px',
+    right: '14px',
+    width: 'auto',
+    margin: '0',
+    boxSizing: 'border-box',
+    zIndex: '11',
+    display: 'block',
+    opacity: '0',
+    pointerEvents: 'none',
+    transition: 'opacity .35s ease, transform .35s ease',
+    transform: 'translateY(-8px) scale(.985)',
+    transformOrigin: 'top center'
+  });
+
   ensureToggle(hero, panel);
 }
 
