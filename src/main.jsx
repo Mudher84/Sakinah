@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import SakinahResponsiveShell from './SakinahResponsiveShell.jsx'
 import './index.css'
+import './amiriExperiment.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
