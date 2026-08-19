@@ -3,8 +3,18 @@ const BACK_CLASS='sakinah-global-back-button';
 const FALLBACK_ID='sakinah-fallback-back-button';
 const HIDDEN_CLASS='sakinah-back-hidden';
 function ensureStyles(){if(document.getElementById(STYLE_ID))return;const s=document.createElement('style');s.id=STYLE_ID;s.textContent=`.${BACK_CLASS}{min-height:42px!important;min-width:42px!important;box-sizing:border-box!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;padding:8px 13px!important;margin:0!important;border:1px solid rgba(16,16,15,.08)!important;border-radius:14px!important;background:rgba(255,255,255,.72)!important;color:#26343B!important;box-shadow:0 5px 15px rgba(16,16,15,.055),inset 0 1px 0 rgba(255,255,255,.75)!important;backdrop-filter:blur(12px) saturate(125%)!important;font-family:inherit!important;font-size:13px!important;font-weight:600!important;line-height:1!important;cursor:pointer!important;white-space:nowrap!important}.sakinah-back-hidden{display:none!important}#${FALLBACK_ID}{position:fixed!important;top:16px!important;inset-inline-start:16px!important;z-index:2147483590!important}`;document.head.appendChild(s)}
-function isBackButton(b){if(!(b instanceof HTMLButtonElement))return false;const text=(b.textContent||'').replace(/\s+/g,' ').trim();const aria=(b.getAttribute('aria-label')||'').trim();const title=(b.getAttribute('title')||'').trim();const v=`${text} ${aria} ${title}`;return /رجوع|الرجوع|عودة|back|←|→|‹|⟵/i.test(v)||/^(?:الأطفال|القرآن|الفهرس|Kids|Quran|Index)$/i.test(text)}
-function decorate(){document.querySelectorAll('button').forEach(b=>{if(isBackButton(b))b.classList.add(BACK_CLASS)})}
+function isBackButton(b){
+ if(!(b instanceof HTMLButtonElement))return false;
+ const text=(b.textContent||'').replace(/\s+/g,' ').trim();
+ const aria=(b.getAttribute('aria-label')||'').trim();
+ const title=(b.getAttribute('title')||'').trim();
+ const meta=`${aria} ${title}`.trim();
+ const exactText=/^(?:رجوع|الرجوع|عودة|Back|←|→|‹|›|⟵|⟶|←\s*رجوع|رجوع\s*[←→]|Back\s*[←→]|[←→]\s*Back)$/i.test(text);
+ const labelled=/\bback\b|رجوع|الرجوع|عودة/i.test(meta);
+ const knownSection=/^(?:الأطفال|القرآن|الفهرس|Kids|Quran|Index)$/i.test(text);
+ return exactText||labelled||knownSection;
+}
+function decorate(){document.querySelectorAll('button').forEach(b=>{if(isBackButton(b))b.classList.add(BACK_CLASS);else{b.classList.remove(BACK_CLASS);b.classList.remove(HIDDEN_CLASS)}})}
 function visible(e){if(!e||!e.isConnected)return false;const s=getComputedStyle(e);return s.display!=='none'&&s.visibility!=='hidden'&&Number(s.opacity)!==0&&e.getClientRects().length>0}
 function createFallback(){let b=document.getElementById(FALLBACK_ID);if(b)return b;b=document.createElement('button');b.id=FALLBACK_ID;b.type='button';b.className=BACK_CLASS;b.textContent='← رجوع';b.setAttribute('aria-label','رجوع');b.onclick=()=>{window.dispatchEvent(new CustomEvent('sakinah:global-root'));window.dispatchEvent(new CustomEvent('sakinah:feature',{detail:'home'}))};document.body.appendChild(b);return b}
 function reconcile(){decorate();const f=document.getElementById(FALLBACK_ID);const all=[...document.querySelectorAll(`button.${BACK_CLASS}`)].filter(b=>b.id!==FALLBACK_ID);all.forEach(b=>b.classList.remove(HIDDEN_CLASS));const shown=all.filter(visible);if(shown.length){/* Prefer the deepest DOM control: child page back beats parent/global back. */const winner=shown.reduce((best,b)=>{if(!best)return b;if(best.contains(b))return b;if(b.contains(best))return best;const bp=best.parentElement?.closest('div');const cp=b.parentElement?.closest('div');if(bp&&cp&&bp.contains(cp))return b;return best},null);shown.forEach(b=>{if(b!==winner)b.classList.add(HIDDEN_CLASS)});if(f)f.classList.add(HIDDEN_CLASS);return}const feature=document.querySelector('.global-feature-shell');if(feature)createFallback().classList.remove(HIDDEN_CLASS);else if(f)f.classList.add(HIDDEN_CLASS)}
