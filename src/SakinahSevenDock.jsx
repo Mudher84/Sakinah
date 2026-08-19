@@ -23,9 +23,9 @@ export default function SakinahSevenDock(){
   <style>{`
    .sakinah-seven-base nav[aria-label="Sakinah primary"]{display:none!important}
    .sakinah-seven-page{position:relative;min-height:100vh;padding-bottom:84px}
-   .sakinah-seven-dock{position:fixed;left:50%;transform:translateX(-50%);bottom:10px;z-index:70000;width:min(560px,calc(100vw - 14px));display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:2px;padding:7px;border:1px solid rgba(16,16,15,.08);border-radius:25px;background:rgba(246,243,236,.96);backdrop-filter:blur(20px);box-shadow:0 14px 40px rgba(16,16,15,.13)}
+   .sakinah-seven-dock{position:fixed;left:50%;transform:translateX(-50%);bottom:10px;z-index:70000;width:min(560px,calc(100vw - 14px));display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:2px;padding:7px;border:1px solid rgba(255,255,255,.46);border-radius:25px;background:rgba(246,243,236,.80);-webkit-backdrop-filter:blur(24px) saturate(145%);backdrop-filter:blur(24px) saturate(145%);box-shadow:0 12px 34px rgba(16,16,15,.10),inset 0 1px 0 rgba(255,255,255,.52)}
    .sakinah-seven-dock button{border:0;border-radius:16px;padding:10px 2px;background:transparent;color:rgba(16,16,15,.58);font-family:inherit;display:grid;place-items:center;min-width:0;min-height:54px}
-   .sakinah-seven-dock button.active{background:rgba(181,154,98,.15);color:#173B57}
+   .sakinah-seven-dock button.active{background:rgba(255,255,255,.34);color:#173B57;box-shadow:inset 0 0 0 1px rgba(181,154,98,.12)}
    .sakinah-seven-dock .dockIcon{font-size:32px;line-height:1;color:inherit;display:block}
    @media(max-width:430px){.sakinah-seven-dock{bottom:7px;width:calc(100vw - 10px);padding:6px 4px}.sakinah-seven-dock button{padding:8px 1px;min-height:50px}.sakinah-seven-dock .dockIcon{font-size:30px}}
   `}</style>
