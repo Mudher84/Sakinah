@@ -1,7 +1,7 @@
 import React,{useRef,useState} from "react";
 import MergedSakinah from "./MergedSakinah.jsx";
 import {LiveQuranAudio} from "./liveAudio.jsx";
-import {NineBooksHub,HadithBookPlaceholder} from "./verifiedIslamic.jsx";
+import {LiveHadithHub} from "./liveHadith.jsx";
 
 const C={ivory:"#F6F3EC",ink:"#10100F",lapis:"#173B57",gold:"#B59A62"};
 const OLD_INDEX={home:0,quran:1,myday:2,discover:3,profile:4};
@@ -9,7 +9,6 @@ const OLD_INDEX={home:0,quran:1,myday:2,discover:3,profile:4};
 export default function SakinahSevenDock(){
  const baseRef=useRef(null);
  const [panel,setPanel]=useState("home");
- const [hadithData,setHadithData]=useState(null);
  const lang="ar";
  const openOld=(key)=>{
   setPanel(key);
@@ -19,20 +18,7 @@ export default function SakinahSevenDock(){
    buttons[OLD_INDEX[key]]?.click();
   });
  };
- const goHadith=(to,data)=>{
-  if(to==="hadith-book"){setHadithData(data||null);setPanel("hadith-book");return;}
-  if(to==="nine-books"){setPanel("hadith");return;}
-  openOld("discover");
- };
- const items=[
-  ["home","⌂","الرئيسية"],
-  ["quran","▥","القرآن"],
-  ["quran-player","♪","المشغل"],
-  ["hadith","▤","الأحاديث"],
-  ["myday","☼","يومي"],
-  ["discover","⌕","اكتشف"],
-  ["profile","♙","أنا"],
- ];
+ const items=[["home","⌂","الرئيسية"],["quran","▥","القرآن"],["quran-player","♪","المشغل"],["hadith","▤","الأحاديث"],["myday","☼","يومي"],["discover","⌕","اكتشف"],["profile","♙","أنا"]];
  return <div style={{position:"relative",minHeight:"100vh",background:C.ivory,color:C.ink}} dir="rtl">
   <style>{`
    .sakinah-seven-base nav[aria-label="Sakinah primary"]{display:none!important}
@@ -45,10 +31,10 @@ export default function SakinahSevenDock(){
    @media(max-width:430px){.sakinah-seven-dock{bottom:7px;width:calc(100vw - 10px);padding:6px 4px}.sakinah-seven-dock button{padding:7px 1px 6px}.sakinah-seven-dock .dockLabel{font-size:7.5px}}
   `}</style>
   <div className="sakinah-seven-page">
-   {panel==="quran-player"?<LiveQuranAudio lang={lang} go={()=>openOld("quran")}/>:panel==="hadith"?<NineBooksHub lang={lang} go={goHadith}/>:panel==="hadith-book"?<HadithBookPlaceholder lang={lang} go={goHadith} data={hadithData}/>:<div ref={baseRef} className="sakinah-seven-base"><MergedSakinah/></div>}
+   {panel==="quran-player"?<LiveQuranAudio lang={lang} go={()=>openOld("quran")}/>:panel==="hadith"?<LiveHadithHub go={()=>openOld("discover")}/>:<div ref={baseRef} className="sakinah-seven-base"><MergedSakinah/></div>}
   </div>
   <nav className="sakinah-seven-dock" aria-label="Sakinah seven primary">
-   {items.map(([id,icon,label])=>{const active=panel===id||(id==="hadith"&&panel==="hadith-book");return <button key={id} className={active?"active":""} onClick={()=>id==="quran-player"?setPanel(id):id==="hadith"?setPanel(id):openOld(id)}><span className="dockIcon">{icon}</span><span className="dockLabel">{label}</span></button>})}
+   {items.map(([id,icon,label])=>{const active=panel===id;return <button key={id} className={active?"active":""} onClick={()=>id==="quran-player"||id==="hadith"?setPanel(id):openOld(id)}><span className="dockIcon">{icon}</span><span className="dockLabel">{label}</span></button>})}
   </nav>
  </div>;
 }
