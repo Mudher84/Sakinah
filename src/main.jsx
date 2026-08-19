@@ -1,11 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import SakinahNativeReadyLayer from './SakinahNativeReadyLayer.jsx'
+import SakinahResponsiveShell from './SakinahResponsiveShell.jsx'
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <SakinahNativeReadyLayer />
+    <SakinahResponsiveShell />
   </React.StrictMode>,
 )
 
