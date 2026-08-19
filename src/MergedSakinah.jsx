@@ -54,27 +54,24 @@ function ProfileHub({lang,go}){
  </div>
 }
 
-function UnifiedNav({lang,panel,go,setLang}){
+function UnifiedNav({lang,panel,go}){
  const items=[["app","الرئيسية","Home","⌂"],["quran-intelligence","القرآن","Quran","▥"],["my-day","يومي","My Day","☼"],["discover","اكتشف","Discover","⌕"],["profile","أنا","Me","♙"]];
  const daily=new Set(["daily-tools","islamic-calendar","fasting-center","ramadan-center","smart-khatmah","memorization-center","names-live","hisn-center","jumuah-center","worship-times"]);
  const quran=new Set(["quran-intelligence","quran-analytics","quran-topics","quran-compare","quran-entities","quran-roots","tadabbur-ayah"]);
  const profile=new Set(["profile","saved-library","offline-backup","privacy-lock","parental-controls","card-maker"]);
  const discover=new Set(["discover","islamic-search","daily-reflection","trusted-daily","quranic-duas","smart-quranic-adhkar","sourced-seerah","kids-world","kids-home","kids-quran-live","kids-quiz-live","kids-nasheeds","kids-sourced-stories"]);
  const active=quran.has(panel)?"quran-intelligence":daily.has(panel)?"my-day":profile.has(panel)?"profile":discover.has(panel)?"discover":panel;
- return <>
-  <button onClick={()=>setLang(lang==="ar"?"en":"ar")} aria-label="language" style={{position:"fixed",top:14,right:14,zIndex:10001,width:40,height:40,borderRadius:14,border:"1px solid rgba(16,16,15,.07)",background:"rgba(246,243,236,.9)",backdropFilter:"blur(18px)",fontFamily:"inherit",fontWeight:700,color:C.ink,boxShadow:"0 8px 22px rgba(16,16,15,.06)"}}>{lang==="ar"?"EN":"ع"}</button>
-  <nav aria-label="Sakinah primary" style={{position:"fixed",left:"50%",transform:"translateX(-50%)",bottom:10,zIndex:10000,width:"min(500px,calc(100vw - 18px))",padding:"7px 8px",borderRadius:25,border:"1px solid rgba(16,16,15,.08)",background:"rgba(246,243,236,.95)",backdropFilter:"blur(20px)",boxShadow:"0 14px 40px rgba(16,16,15,.13)",display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:3}}>
+ return <nav aria-label="Sakinah primary" style={{position:"fixed",left:"50%",transform:"translateX(-50%)",bottom:10,zIndex:10000,width:"min(500px,calc(100vw - 18px))",padding:"7px 8px",borderRadius:25,border:"1px solid rgba(16,16,15,.08)",background:"rgba(246,243,236,.95)",backdropFilter:"blur(20px)",boxShadow:"0 14px 40px rgba(16,16,15,.13)",display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:3}}>
    {items.map(([id,ar,en,icon])=>{const on=active===id;return <button key={id} onClick={()=>go(id)} style={{border:0,borderRadius:17,padding:"8px 3px 7px",background:on?"rgba(181,154,98,.15)":"transparent",color:on?C.lapis:"rgba(16,16,15,.58)",fontFamily:"inherit",display:"grid",gap:4,placeItems:"center",minWidth:0}}><span style={{fontSize:17,lineHeight:1,color:on?C.gold:"inherit"}}>{icon}</span><span style={{fontSize:9,fontWeight:on?750:550,whiteSpace:"nowrap"}}>{lang==="ar"?ar:en}</span></button>})}
-  </nav>
- </>;
+  </nav>;
 }
 
 export default function MergedSakinah(){
- const [panel,setPanel]=useState("app"),[lang,setLang]=useState("ar");
+ const [panel,setPanel]=useState("app"),[lang]=useState("ar");
  const known=new Set(["app","discover","profile","my-day","daily-tools","daily-reflection","trusted-daily","quranic-duas","smart-quranic-adhkar","sourced-seerah","kids-sourced-stories","kids-world","kids-home","kids-quran-live","kids-quiz-live","kids-nasheeds","offline-backup","islamic-calendar","fasting-center","ramadan-center","smart-khatmah","memorization-center","names-live","hisn-center","jumuah-center","worship-times","parental-controls","privacy-lock","card-maker","islamic-search","saved-library","quran-analytics","quran-intelligence","quran-topics","quran-compare","quran-entities","quran-roots","tadabbur-ayah"]);
  const go=(to)=>setPanel(known.has(to)?to:"app");
  const screens={
   "discover":<DiscoverHub lang={lang} go={go}/>,"profile":<ProfileHub lang={lang} go={go}/>,"my-day":<SmartMyDay lang={lang} go={go}/>,"daily-tools":<DailyToolsHub lang={lang} go={go}/>,"daily-reflection":<DailyReflection lang={lang} go={go}/>,"trusted-daily":<TrustedDailyHub lang={lang} go={go}/>,"quranic-duas":<QuranicDuasHub lang={lang} go={go}/>,"smart-quranic-adhkar":<SmartQuranicAdhkar lang={lang} go={go}/>,"sourced-seerah":<SourcedSeerahStories lang={lang} go={go}/>,"kids-sourced-stories":<SourcedSeerahStories lang={lang} go={go} kids/>,"kids-world":<KidsWorldHub lang={lang} go={go}/>,"kids-home":<KidsWorldHub lang={lang} go={go}/>,"kids-quran-live":<KidsQuranTeacherLive lang={lang} go={go}/>,"kids-quiz-live":<KidsQuizLive lang={lang} go={go}/>,"kids-nasheeds":<KidsNasheedsLive lang={lang} go={go}/>,"offline-backup":<OfflineBackupCenter lang={lang} go={go}/>,"islamic-calendar":<IslamicCalendar lang={lang} go={go}/>,"fasting-center":<FastingCenter lang={lang} go={go}/>,"ramadan-center":<RamadanCenter lang={lang} go={go}/>,"smart-khatmah":<SmartKhatmah lang={lang} go={go}/>,"memorization-center":<MemorizationCenter lang={lang} go={go}/>,"names-live":<LiveNamesOfAllah lang={lang} go={go}/>,"hisn-center":<HisnCenter lang={lang} go={go}/>,"jumuah-center":<JumuahCenter lang={lang} go={go}/>,"worship-times":<WorshipTimes lang={lang} go={go}/>,"parental-controls":<ParentalControls lang={lang} go={go}/>,"privacy-lock":<PrivacyLock lang={lang} go={go}/>,"card-maker":<CardMaker lang={lang} go={go}/>,"islamic-search":<UniversalIslamicSearch lang={lang} go={go}/>,"saved-library":<SavedLibrary lang={lang} go={go}/>,"quran-analytics":<SmartQuranAnalytics lang={lang} go={go}/>,"quran-intelligence":<QuranIntelligenceHub lang={lang} go={go}/>,"quran-topics":<QuranTopicExplorer lang={lang} go={go}/>,"quran-compare":<QuranWordCompare lang={lang} go={go}/>,"quran-entities":<QuranEntityMap lang={lang} go={go}/>,"quran-roots":<QuranRootExplorer lang={lang} go={go}/>,"tadabbur-ayah":<TadabburAyah lang={lang} go={go}/>,
  };
- return <div style={{position:"relative",minHeight:"100vh",background:C.ivory}}>{panel==="app"?<App/>:(screens[panel]||screens["discover"])}<UnifiedNav lang={lang} panel={panel} go={go} setLang={setLang}/></div>;
+ return <div style={{position:"relative",minHeight:"100vh",background:C.ivory}}>{panel==="app"?<App/>:(screens[panel]||screens["discover"])}<UnifiedNav lang={lang} panel={panel} go={go}/></div>;
 }
