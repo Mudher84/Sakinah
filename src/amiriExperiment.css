@@ -33,6 +33,35 @@ html, body, #root, #root *, .sakinahResponsiveShell, .sakinahResponsiveShell *, 
 
 .sakinah-live-content > section:first-of-type > div:first-child > div:first-child > div:nth-child(2) { font-size:32px !important; line-height:1.25; }
 
+/* Hero focal points: center + double the Sakinah title and next-prayer time. */
+.sakinah-live-hero > header {
+  position: relative;
+  justify-content: center !important;
+  text-align: center !important;
+}
+.sakinah-live-hero > header > div:first-child {
+  width: 100%;
+  text-align: center !important;
+}
+.sakinah-live-hero > header > div:first-child > div:nth-child(2) {
+  font-size: 58px !important;
+  line-height: 1.05 !important;
+  text-align: center !important;
+}
+.sakinah-live-hero > header > button {
+  position: absolute !important;
+  left: 0;
+  top: 0;
+}
+.sakinah-live-hero > header + div {
+  text-align: center !important;
+}
+.sakinah-live-hero > header + div > div:nth-child(2) {
+  font-size: 128px !important;
+  line-height: .92 !important;
+  text-align: center !important;
+}
+
 /* Daily ayah remains centered and keeps its Quran typography/size. */
 .sakinah-live-hero div:has(> [style*="Amiri Quran"]) { width:100% !important; max-width:540px !important; margin-left:auto !important; margin-right:auto !important; text-align:center !important; }
 .sakinah-live-hero [style*="Amiri Quran"] { display:block !important; width:100% !important; text-align:center !important; margin-left:auto !important; margin-right:auto !important; font-size:21.5px !important; }
