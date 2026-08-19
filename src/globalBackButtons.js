@@ -5,6 +5,7 @@ const BAR_ID='sakinah-back-bar';
 const BAR_BUTTON_ID='sakinah-back-bar-button';
 const BRAND_ID='sakinah-global-brand';
 const INLINE_BRAND_CLASS='sakinah-inline-brand-hidden';
+const INLINE_AR_BRAND_CLASS='sakinah-inline-arabic-brand-centered';
 const TITLE_CLASS='sakinah-centered-page-title';
 let activeTarget=null;
 
@@ -15,6 +16,7 @@ function ensureStyles(){
  s.textContent=`
  .${HIDDEN_CLASS}{display:none!important}
  .${INLINE_BRAND_CLASS}{display:none!important}
+ .${INLINE_AR_BRAND_CLASS}{display:block!important;position:static!important;inset:auto!important;width:100%!important;max-width:none!important;box-sizing:border-box!important;text-align:center!important;margin:0 auto 12px!important;transform:none!important;translate:none!important;animation:none!important;transition:none!important;opacity:1!important;visibility:visible!important;will-change:auto!important}
  .${TITLE_CLASS}{display:block!important;width:100%!important;max-width:none!important;box-sizing:border-box!important;text-align:center!important;margin-left:auto!important;margin-right:auto!important;margin-inline:auto!important;transform:none!important}
  button[aria-label="أنا"],button[aria-label="تغيير صورة البروفايل"],button[aria-label="Change profile image"]{border-radius:50%!important;border:0!important;outline:0!important;box-shadow:none!important;filter:none!important;overflow:hidden!important;padding:0!important}
  button[aria-label="أنا"] img,button[aria-label="تغيير صورة البروفايل"] img,button[aria-label="Change profile image"] img{width:100%!important;height:100%!important;object-fit:cover!important;border-radius:50%!important;display:block!important;border:0!important;outline:0!important;box-shadow:none!important;filter:none!important}
@@ -77,13 +79,15 @@ function ensureBar(){
  return bar;
 }
 
-function hideInlineBrands(){
+function normalizeInlineBrands(){
  document.querySelectorAll(`.${INLINE_BRAND_CLASS}`).forEach(el=>el.classList.remove(INLINE_BRAND_CLASS));
+ document.querySelectorAll(`.${INLINE_AR_BRAND_CLASS}`).forEach(el=>el.classList.remove(INLINE_AR_BRAND_CLASS));
  const nodes=[...document.querySelectorAll('div,span,p,small')];
  nodes.forEach(el=>{
   if(el.id===BRAND_ID||el.closest(`#${BAR_ID}`)||el.children.length)return;
   const text=(el.textContent||'').replace(/\s+/g,' ').trim();
   if(text==='SAKINAH')el.classList.add(INLINE_BRAND_CLASS);
+  if(text==='سكينة'&&!el.closest('button'))el.classList.add(INLINE_AR_BRAND_CLASS);
  });
 }
 
@@ -109,7 +113,7 @@ function depth(el){let d=0;while(el?.parentElement){d++;el=el.parentElement}retu
 function reconcile(){
  ensureStyles();
  const bar=ensureBar();
- hideInlineBrands();
+ normalizeInlineBrands();
  centerPrimaryTitles();
  const candidates=[...document.querySelectorAll('button')].filter(isBackButton).filter(b=>b.id!==BAR_BUTTON_ID);
  candidates.forEach(b=>b.classList.remove(HIDDEN_CLASS));
