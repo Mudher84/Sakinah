@@ -1,8 +1,17 @@
+/* Temporary typography experiment.
+   UI text => user's HT Roznameh Medium when installed on the device.
+   Quran/ayah text => preserve the existing Quran typography.
+   Amiri remains a safe Arabic fallback. */
 @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
 
-/* Temporary typography experiment.
-   UI text => Amiri.
-   Quran/ayah text => preserve the existing Quran typography. */
+@font-face {
+  font-family: "Sakinah Roznameh";
+  src: local("HT Roznameh Medium"), local("HTRoznamehMedium-Regular");
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+}
+
 .sakinahResponsiveShell,
 .sakinahResponsiveShell button,
 .sakinahResponsiveShell input,
@@ -18,7 +27,7 @@
 .appShell input,
 .appShell textarea,
 .appShell select {
-  font-family: "Amiri", "Noto Naskh Arabic", serif !important;
+  font-family: "Sakinah Roznameh", "HT Roznameh Medium", "Amiri", "Noto Naskh Arabic", serif !important;
 }
 
 /* Keep Quran verses and Mushaf text exactly on their Quran-specific stack. */
@@ -33,7 +42,6 @@
   font-family: "Amiri Quran", "Noto Naskh Arabic", serif !important;
 }
 
-/* Preserve Latin branding/technical labels where they are intentionally English. */
 .sakinah-live-home [style*="letterSpacing"],
 .railBrand small {
   letter-spacing: normal;
