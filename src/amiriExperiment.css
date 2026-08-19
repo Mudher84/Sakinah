@@ -1,7 +1,7 @@
 /* Temporary typography experiment.
-   UI text => user's HT Roznameh Medium when installed on the device.
-   Quran/ayah text => preserve the existing Quran typography.
-   Amiri remains a safe Arabic fallback. */
+   Every Sakinah UI glyph => user's HT Roznameh Medium when installed.
+   Quran/ayah text alone preserves the Quran-specific typography.
+   Amiri remains the safe Arabic fallback. */
 @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
 
 @font-face {
@@ -12,40 +12,34 @@
   font-display: swap;
 }
 
+/* Force the experiment across every text-bearing element in Sakinah. */
 .sakinahResponsiveShell,
-.sakinahResponsiveShell button,
-.sakinahResponsiveShell input,
-.sakinahResponsiveShell textarea,
-.sakinahResponsiveShell select,
+.sakinahResponsiveShell *,
 .sakinah-live-home,
-.sakinah-live-home button,
-.sakinah-live-home input,
-.sakinah-live-home textarea,
-.sakinah-live-home select,
+.sakinah-live-home *,
 .appShell,
-.appShell button,
-.appShell input,
-.appShell textarea,
-.appShell select {
+.appShell * {
   font-family: "Sakinah Roznameh", "HT Roznameh Medium", "Amiri", "Noto Naskh Arabic", serif !important;
 }
 
-/* Two-step readability lift for the experimental UI font. */
+/* Keep the +2px readability lift for the whole UI. */
 .sakinahResponsiveShell { font-size: calc(1em + 2px); }
-.sakinahResponsiveShell button,
-.sakinahResponsiveShell input,
-.sakinahResponsiveShell textarea,
-.sakinahResponsiveShell select { font-size: inherit; }
 
-/* Keep Quran verses and Mushaf text exactly on their Quran-specific stack and size. */
+/* Quran verses/Mushaf are the only typography exception. */
 .quranMini,
+.quranMini *,
 .quranHero,
+.quranHero *,
 .ayah span,
+.ayah span *,
 .quranAudioText,
+.quranAudioText *,
 .quranMemo,
+.quranMemo *,
 .mushaf .ayah span,
-[dir="rtl"][style*="Amiri Quran"],
-.sakinah-live-home [style*="Amiri Quran"] {
+.mushaf .ayah span *,
+[style*="Amiri Quran"],
+[style*="Amiri Quran"] * {
   font-family: "Amiri Quran", "Noto Naskh Arabic", serif !important;
 }
 
