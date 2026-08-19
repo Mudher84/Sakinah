@@ -5,9 +5,12 @@ import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.OpenableColumns;
 import android.webkit.GeolocationPermissions;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
@@ -17,7 +20,9 @@ import androidx.core.app.ActivityCompat;
 import org.json.JSONObject;
 
 public class MainActivity extends Activity {
+    private static final int REQ_ADHAN_AUDIO = 73;
     private WebView web;
+    private String pendingPrayer = "";
 
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
@@ -47,6 +52,34 @@ public class MainActivity extends Activity {
         if(!req.isEmpty()) ActivityCompat.requestPermissions(this,req.toArray(new String[0]),41);
     }
 
+    private void pickAdhanAudio(String prayer){
+        pendingPrayer=prayer==null?"":prayer;
+        Intent i=new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        i.addCategory(Intent.CATEGORY_OPENABLE);
+        i.setType("audio/*");
+        i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION|Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+        startActivityForResult(i,REQ_ADHAN_AUDIO);
+    }
+
+    @Override protected void onActivityResult(int requestCode,int resultCode,Intent data){
+        super.onActivityResult(requestCode,resultCode,data);
+        if(requestCode!=REQ_ADHAN_AUDIO||resultCode!=RESULT_OK||data==null||data.getData()==null)return;
+        Uri uri=data.getData();
+        try{getContentResolver().takePersistableUriPermission(uri,Intent.FLAG_GRANT_READ_URI_PERMISSION);}catch(Exception ignored){}
+        String key="adhan_uri_"+pendingPrayer;
+        getSharedPreferences("sakinah",MODE_PRIVATE).edit().putString(key,uri.toString()).apply();
+        String name=uri.getLastPathSegment();
+        try(android.database.Cursor c=getContentResolver().query(uri,null,null,null,null)){
+            if(c!=null&&c.moveToFirst()){
+                int idx=c.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                if(idx>=0)name=c.getString(idx);
+            }
+        }catch(Exception ignored){}
+        final String prayer=pendingPrayer.replace("'","\\'");
+        final String safeName=(name==null?"audio":name).replace("'","\\'");
+        if(web!=null)web.post(()->web.evaluateJavascript("window.dispatchEvent(new CustomEvent('sakinah-adhan-picked',{detail:{prayer:'"+prayer+"',name:'"+safeName+"'}}));",null));
+    }
+
     @Override public void onBackPressed() {
         if (web != null && web.canGoBack()) web.goBack(); else super.onBackPressed();
     }
@@ -60,7 +93,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    public static final class NativeBridge {
+    public final class NativeBridge {
         private final Context context;
         NativeBridge(Context c){ context=c; }
         @JavascriptInterface public void saveBridgeState(String value){
@@ -77,5 +110,7 @@ public class MainActivity extends Activity {
         @JavascriptInterface public void cancelPrayer(String id){ PrayerScheduler.cancel(context,id); }
         @JavascriptInterface public void refreshWidget(){ SakinahWidgetProvider.refreshAll(context); }
         @JavascriptInterface public void setAdhanUri(String uri){ context.getSharedPreferences("sakinah",MODE_PRIVATE).edit().putString("adhan_uri",uri==null?"":uri).apply(); }
+        @JavascriptInterface public void pickAdhan(String prayer){ runOnUiThread(()->pickAdhanAudio(prayer)); }
+        @JavascriptInterface public void clearAdhan(String prayer){ context.getSharedPreferences("sakinah",MODE_PRIVATE).edit().remove("adhan_uri_"+prayer).apply(); }
     }
 }
