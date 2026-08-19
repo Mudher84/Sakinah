@@ -25,14 +25,15 @@ body,
   font-family: "Sakinah Roznameh", "HT Roznameh Medium", "Amiri", "Noto Naskh Arabic", serif !important;
 }
 
-.sakinahResponsiveShell { font-size: calc(1em + 2px); }
+/* Global UI readability lift: +4px for all non-Quran interface text. */
+.sakinahResponsiveShell { font-size: calc(1em + 4px); }
 
 .sakinah-live-content > section:first-of-type > div:first-child > div:first-child > div:nth-child(2) {
-  font-size: 28px !important;
+  font-size: 32px !important;
   line-height: 1.25;
 }
 
-/* Daily ayah: center the real ayah element and its containing block. */
+/* Daily ayah: centered, Quran typography preserved. */
 .sakinah-live-hero div:has(> [style*="Amiri Quran"]) {
   width: 100% !important;
   max-width: 540px !important;
