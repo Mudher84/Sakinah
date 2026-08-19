@@ -1,4 +1,4 @@
-import React,{useRef,useState} from "react";
+import React,{useEffect,useRef,useState} from "react";
 import MergedSakinah from "./MergedSakinah.jsx";
 import {LiveQuranAudio} from "./liveAudio.jsx";
 import {LiveHadithHub} from "./liveHadith.jsx";
@@ -19,6 +19,16 @@ export default function SakinahSevenDock(){
    buttons[OLD_INDEX[key]]?.click();
   });
  };
+ useEffect(()=>{
+  const h=e=>{
+   const id=e.detail;
+   if(id==="quran-home"||id==="quran-intelligence"){setPanel("quran");return}
+   if(id==="quran-player"){setPanel("quran-player");return}
+   if(id==="nine-books"){setPanel("hadith");return}
+  };
+  window.addEventListener("sakinah:feature",h);
+  return()=>window.removeEventListener("sakinah:feature",h);
+ },[]);
  const items=[["home","⌂","الرئيسية"],["quran","▥","القرآن"],["quran-player","♪","المشغل"],["hadith","▤","الأحاديث"],["myday","☼","يومي"],["discover","⌕","اكتشف"],["profile","♙","أنا"]];
  return <div className="sakinah-seven-shell" style={{position:"relative",minHeight:"100vh",background:C.ivory,color:C.ink}} dir="rtl">
   <style>{`
@@ -31,7 +41,7 @@ export default function SakinahSevenDock(){
    @media(max-width:430px){.sakinah-seven-shell .sakinah-seven-dock{bottom:max(7px,env(safe-area-inset-bottom))!important;width:calc(100vw - 10px)}.sakinah-seven-dock{padding:6px 4px}.sakinah-seven-dock button{padding:8px 1px;min-height:50px}.sakinah-seven-dock .dockIcon{font-size:30px}}
   `}</style>
   <div className="sakinah-seven-page">
-   {panel==="quran"?<QuranCenter/>:panel==="quran-player"?<LiveQuranAudio lang={lang} go={()=>setPanel("quran")}/>:panel==="hadith"?<LiveHadithHub go={()=>openOld("discover")}/>:<div ref={baseRef} className="sakinah-seven-base"><MergedSakinah/></div>}
+   {panel==="quran"?<QuranCenter/>:panel==="quran-player"?<LiveQuranAudio lang={lang} go={to=>to==="quran-home"?setPanel("quran"):window.dispatchEvent(new CustomEvent("sakinah:feature",{detail:to}))}/>:panel==="hadith"?<LiveHadithHub go={()=>openOld("discover")}/>:<div ref={baseRef} className="sakinah-seven-base"><MergedSakinah/></div>}
   </div>
   <nav className="sakinah-seven-dock" aria-label="Sakinah seven primary">
    {items.map(([id,icon,label])=>{const active=panel===id;return <button key={id} aria-label={label} title={label} className={active?"active":""} onClick={()=>id==="quran"||id==="quran-player"||id==="hadith"?setPanel(id):openOld(id)}><span className="dockIcon">{icon}</span></button>})}
