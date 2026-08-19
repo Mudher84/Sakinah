@@ -4,6 +4,7 @@ import SakinahResponsiveShell from './SakinahResponsiveShell.jsx'
 import { installTypographyBoost } from './typographyBoost.js'
 import { installCelestialArc } from './celestialArc.js'
 import { installHeroAtmosphere } from './heroAtmosphere.js'
+import { installTimeFormatToggle } from './timeFormatToggle.js'
 import './index.css'
 import './amiriExperiment.css'
 
@@ -16,6 +17,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 installTypographyBoost()
 installCelestialArc()
 installHeroAtmosphere()
+installTimeFormatToggle()
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch(()=>{}));
