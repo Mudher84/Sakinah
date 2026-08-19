@@ -26,6 +26,13 @@ function DiscoverHub({lang,go}){
  </div>
 }
 
+function ProfileGroup({title,rows,lang,go}){
+ return <section style={{marginTop:19}}>
+  <div style={{fontSize:10.5,opacity:.42,marginBottom:8}}>{title}</div>
+  <div style={{borderRadius:24,overflow:"hidden",border:"1px solid rgba(16,16,15,.07)",background:"rgba(255,255,255,.48)"}}>{rows.map(([id,icon,ar,en,subAr,subEn])=><button key={id} onClick={()=>go(id)} style={{width:"100%",display:"grid",gridTemplateColumns:"38px 1fr auto",gap:10,alignItems:"center",padding:"14px",border:0,borderBottom:"1px solid rgba(16,16,15,.06)",background:"transparent",fontFamily:"inherit",color:"inherit",textAlign:lang==="ar"?"right":"left"}}><span style={{color:C.gold,fontSize:18}}>{icon}</span><span><span style={{display:"block",fontSize:12.5,fontWeight:650}}>{lang==="ar"?ar:en}</span><small style={{display:"block",fontSize:9.5,opacity:.42,marginTop:3,lineHeight:1.45}}>{lang==="ar"?subAr:subEn}</small></span><span style={{opacity:.3}}>{lang==="ar"?"‹":"›"}</span></button>)}</div>
+ </section>
+}
+
 function ProfileHub({lang,go}){
  const fileRef=useRef(null);
  const [profileId,setProfileId]=useState(activeProfile());
@@ -39,17 +46,27 @@ function ProfileHub({lang,go}){
  useEffect(()=>{const h=()=>{const id=activeProfile();setProfileId(id);const ps=read("sakinah-profiles",[]);const p=ps.find(x=>x.id===id)||ps[0]||{nameAr:"أنا",nameEn:"Me"};setAvatar(localStorage.getItem(`sakinah-profile-avatar-${id}`)||"");setDisplayName(localStorage.getItem(`sakinah-profile-display-name-${id}`)||(lang==="ar"?p.nameAr:p.nameEn)||"أنا")};window.addEventListener("sakinah-profile-change",h);return()=>window.removeEventListener("sakinah-profile-change",h)},[lang]);
  const saveName=()=>{const n=displayName.trim()||"أنا";setDisplayName(n);localStorage.setItem(nameKey,n);setEditing(false)};
  const chooseAvatar=e=>{const f=e.target.files?.[0];if(!f||!f.type.startsWith("image/"))return;const r=new FileReader();r.onload=()=>{const v=String(r.result||"");setAvatar(v);try{localStorage.setItem(avatarKey,v)}catch{}};r.readAsDataURL(f);e.target.value=""};
- const rows=[
-  ["profiles","♙","البروفايلات","Profiles","تبديل وإدارة أفراد العائلة"],
-  ["saved-library","♡","المحفوظات والمكتبة","Saved Library","كل ما حفظته للرجوع إليه"],
-  ["notes","✎","ملاحظاتي","My Notes","ملاحظات هذا البروفايل"],
-  ["accounts","＋","دفتر حساباتي","My Accounts","الحسابات الشخصية لهذا البروفايل"],
-  ["tasbeeh","○","المسبحة وتقدمي","Tasbeeh & Progress","عدادك وسجل ذكرك اليومي"],
-  ["alerts","◉","التنبيهات والإشعارات","Alerts & Notifications","الصلاة والأذكار والتذكيرات"],
-  ["offline-backup","◫","البيانات والنسخ الاحتياطي","Data & Backup","بياناتك ونسختك الاحتياطية"],
-  ["privacy-lock","⌾","الخصوصية والقفل","Privacy & Lock","حماية بيانات البروفايل"],
-  ["parental-controls","☀","الرقابة الأبوية","Parental Controls","إعدادات ملفات الأطفال"],
-  ["card-maker","◇","صانع البطاقات","Card Maker","بطاقاتك الإسلامية المحفوظة"],
+ const familyRows=[
+  ["kids-world","☀","عالم الأطفال","Kids World","كل محتوى الأطفال من مكان واحد","All kids content in one place"],
+  ["kids-quran-live","▥","معلم القرآن للأطفال","Kids Quran Teacher","تعلم القرآن ومتابعة الطفل","Quran learning for children"],
+  ["kids-quiz-live","?","مسابقات الأطفال","Kids Quizzes","أسئلة ومسابقات دينية","Islamic quizzes for children"],
+  ["kids-nasheeds","♪","أناشيد الطفل الجميلة","Kids Nasheeds","أناشيد مخصصة للأطفال","Nasheeds made for children"],
+  ["parental-controls","☼","الرقابة الأبوية","Parental Controls","الوقت والصلاحيات ومحتوى الطفل","Time, permissions and child content"]
+ ];
+ const personalRows=[
+  ["notes","✎","دفتر الملاحظات","Notes Notebook","ملاحظات هذا البروفايل","Notes for this profile"],
+  ["accounts","⌁","دفتر الحسابات","Accounts Notebook","الحسابات الشخصية لهذا البروفايل","Personal ledger for this profile"],
+  ["profiles","♙","البروفايلات","Profiles","تبديل وإدارة أفراد العائلة","Switch and manage family profiles"],
+  ["card-maker","◇","صانع البطاقات الإسلامية","Islamic Card Maker","إنشاء وحفظ بطاقاتك","Create and save your cards"],
+  ["saved-library","♡","المحفوظات","Saved Library","كل ما حفظته للرجوع إليه","Everything you saved"],
+  ["tasbeeh","○","المسبحة وتقدمي","Tasbeeh & Progress","عدادك وسجل ذكرك اليومي","Your tasbeeh and daily progress"]
+ ];
+ const systemRows=[
+  ["alerts","◉","المؤذن والتنبيهات","Adhan & Alerts","الصلاة والأذكار والتذكيرات","Prayer, dhikr and reminders"],
+  ["adhan-audio","♪","أصوات الأذان لكل صلاة","Adhan Sounds","اختيار صوت الأذان وإعداداته","Choose and configure adhan audio"],
+  ["widget","▦","Widget","Widget","الويدجت وشاشة القفل","Widget and lock-screen preview"],
+  ["privacy-lock","◎","قفل الخصوصية","Privacy Lock","حماية بيانات البروفايل","Protect profile data"],
+  ["offline-backup","◫","البيانات والنسخ الاحتياطي","Data & Backup","بياناتك ونسختك الاحتياطية","Your data and backup"]
  ];
  return <div style={{position:"absolute",inset:0,background:C.ivory,color:C.ink,overflowY:"auto",padding:"28px 22px 130px"}} dir={lang==="ar"?"rtl":"ltr"}>
   <input ref={fileRef} type="file" accept="image/*" onChange={chooseAvatar} style={{display:"none"}}/>
@@ -61,8 +78,9 @@ function ProfileHub({lang,go}){
     <button onClick={()=>fileRef.current?.click()} style={{border:0,background:"transparent",padding:0,marginTop:7,fontFamily:"inherit",fontSize:10,color:C.gold}}>{lang==="ar"?"تغيير الصورة":"Change photo"}</button>
    </div>
   </div>
-  <div style={{fontSize:10.5,opacity:.42,marginTop:24,marginBottom:8}}>{lang==="ar"?"حسابي وخدماتي":"MY ACCOUNT & SERVICES"}</div>
-  <div style={{borderRadius:24,overflow:"hidden",border:"1px solid rgba(16,16,15,.07)",background:"rgba(255,255,255,.48)"}}>{rows.map(([id,icon,ar,en,sub])=><button key={id} onClick={()=>go(id)} style={{width:"100%",display:"grid",gridTemplateColumns:"38px 1fr auto",gap:10,alignItems:"center",padding:"14px",border:0,borderBottom:"1px solid rgba(16,16,15,.06)",background:"transparent",fontFamily:"inherit",color:"inherit",textAlign:lang==="ar"?"right":"left"}}><span style={{color:C.gold,fontSize:18}}>{icon}</span><span><span style={{display:"block",fontSize:12.5,fontWeight:650}}>{lang==="ar"?ar:en}</span><small style={{display:"block",fontSize:9.5,opacity:.42,marginTop:3}}>{sub}</small></span><span style={{opacity:.3}}>{lang==="ar"?"‹":"›"}</span></button>)}</div>
+  <ProfileGroup title={lang==="ar"?"الأطفال والعائلة":"FAMILY & KIDS"} rows={familyRows} lang={lang} go={go}/>
+  <ProfileGroup title={lang==="ar"?"الشخصي والإبداع":"PERSONAL & CREATIVE"} rows={personalRows} lang={lang} go={go}/>
+  <ProfileGroup title={lang==="ar"?"التنبيهات والنظام":"NOTIFICATIONS & SYSTEM"} rows={systemRows} lang={lang} go={go}/>
  </div>
 }
 
