@@ -1,0 +1,59 @@
+name: Activate Trusted Daily Content
+on:
+  push:
+    paths:
+      - 'src/trustedDaily.jsx'
+      - '.github/workflows/activate-trusted-daily.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  wire-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - name: Wire trusted daily routes
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('src/App.jsx'); s=p.read_text()
+          imp='import { TrustedDailyHub, QuranicDuasHub, SmartQuranicAdhkar, SourcedSeerahStories } from "./trustedDaily.jsx";\n'
+          if imp not in s:
+              first=s.find('\n'); s=s[:first+1]+imp+s[first+1:]
+          anchor='    "complete-vision": () => <CompleteVisionCenter lang={lang} go={go} />,'
+          routes='''    "trusted-daily": () => <TrustedDailyHub lang={lang} go={go} />,
+    "quranic-duas": () => <QuranicDuasHub lang={lang} go={go} />,
+    "smart-quranic-adhkar": () => <SmartQuranicAdhkar lang={lang} go={go} />,
+    "sourced-seerah": () => <SourcedSeerahStories lang={lang} go={go} />,
+    "kids-sourced-stories": () => <SourcedSeerahStories lang={lang} go={go} kids={true} />,'''
+          if '"trusted-daily":' not in s and anchor in s:
+              s=s.replace(anchor,routes+'\n'+anchor,1)
+          # Prefer sourced content routes where legacy placeholders existed.
+          s=s.replace('"dua-center": () => <DuaCenter lang={lang} go={go} />,','"dua-center": () => <QuranicDuasHub lang={lang} go={go} />,')
+          s=s.replace('"adhkar-home": () => <AdhkarHome lang={lang} go={go} />,','"adhkar-home": () => <SmartQuranicAdhkar lang={lang} go={go} />,')
+          # Add sourced stories to kids experience when its old placeholder card is present.
+          s=s.replace('["قصص الأنبياء","Prophets\' Stories","✦","feature-preview"]','["قصص الأنبياء","Prophets\' Stories","✦","kids-sourced-stories"]')
+          p.write_text(s)
+          PY
+      - run: npm ci
+      - run: npm run build
+      - name: Audit sourced content
+        run: |
+          grep -q 'TrustedDailyHub' src/App.jsx
+          grep -q 'QuranicDuasHub' src/App.jsx
+          grep -q 'SmartQuranicAdhkar' src/App.jsx
+          grep -q 'SourcedSeerahStories' src/App.jsx
+          grep -q 'api.alquran.cloud' src/trustedDaily.jsx
+      - name: Commit verified integration
+        run: |
+          git config user.name "Sakinah Build Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add src/App.jsx
+          if ! git diff --cached --quiet; then
+            git commit -m "Activate sourced duas adhkar and stories"
+            git push
+          fi
