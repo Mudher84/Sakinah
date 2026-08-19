@@ -9,8 +9,10 @@ export default function SakinahNativeReadyLayer(){
  const lang="ar";
  useEffect(()=>{
   const h=e=>{const t=e.detail;if(["alerts","widget","adhan-audio"].includes(t))setTool(t)};
+  const root=()=>setTool(null);
   window.addEventListener("sakinah:native",h);
-  return()=>window.removeEventListener("sakinah:native",h);
+  window.addEventListener("sakinah:global-root",root);
+  return()=>{window.removeEventListener("sakinah:native",h);window.removeEventListener("sakinah:global-root",root)};
  },[]);
  const base=<SakinahDevotionLayer/>;
  return <div style={{minHeight:"100vh"}}>
