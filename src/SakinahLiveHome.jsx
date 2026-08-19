@@ -8,6 +8,7 @@ function hm(v){const [h,m]=clean(v).split(":").map(Number);return (h||0)+(m||0)/
 function epoch(v,dayOffset=0){const [h,m]=clean(v).split(":").map(Number);const d=new Date();d.setDate(d.getDate()+dayOffset);d.setHours(h||0,m||0,0,0);return d.getTime()}
 function nextPrayer(t){if(!t)return null;const now=Date.now();for(const p of PR){const at=epoch(t[p]);if(at>now)return {id:p,time:clean(t[p]),at}}return {id:"Fajr",time:clean(t.Fajr),at:epoch(t.Fajr,1)}}
 function remaining(ms){if(ms<=0)return "٠ ساعة و ٠ دقيقة";const m=Math.floor(ms/60000),h=Math.floor(m/60),mm=m%60;return `${h} ساعة و ${mm} دقيقة`}
+function emit(id){window.dispatchEvent(new CustomEvent("sakinah:feature",{detail:id}))}
 function dayOfYear(d=new Date()){const s=new Date(d.getFullYear(),0,0);return Math.floor((d-s)/86400000)}
 function dailyAyahNumber(){return ((dayOfYear(new Date())*37+83)%6236)+1}
 function stageFor(t,previewHour=null){
@@ -23,6 +24,28 @@ function stageFor(t,previewHour=null){
 }
 function stageLabel(id){return {fajr:"الفجر",morning:"الصباح",dhuhr:"الظهر",asr:"العصر",maghrib:"المغرب",isha:"الليل"}[id]||"الآن"}
 function DayArc({next,dark}){const points=["Fajr","Dhuhr","Asr","Maghrib","Isha"];return <div style={{position:"relative",height:96,marginTop:18,flex:"0 0 auto"}}><svg viewBox="0 0 420 110" style={{display:"block",width:"100%",height:"100%",overflow:"visible"}}><path d="M20 88 Q210 -14 400 88" fill="none" stroke={dark?"rgba(246,243,236,.25)":"rgba(16,16,15,.16)"} strokeWidth="1.2"/><path d="M20 88 Q210 -14 400 88" fill="none" stroke={C.gold} strokeWidth="1.8" strokeDasharray="205 400" strokeLinecap="round"/>{points.map((p,i)=>{const x=[20,120,210,300,400][i],y=[88,42,22,42,88][i],on=next?.id===p;return <circle key={p} cx={x} cy={y} r={on?6:3} fill={on?C.gold:(dark?"rgba(246,243,236,.55)":"rgba(16,16,15,.42)")}/>})}</svg></div>}
+const cardStyle={border:"1px solid rgba(16,16,15,.065)",borderRadius:20,padding:12,background:"rgba(255,255,255,.58)",boxShadow:"0 8px 24px rgba(16,16,15,.035)",fontFamily:"inherit",textAlign:"center",color:C.ink};
+const QUICK_ACTIONS=[
+ ["smart-quranic-adhkar","◎","الأذكار"],
+ ["mosques","⌂","المساجد"],
+ ["tasbeeh","◉","المسبحة"],
+ ["notes","✎","الملاحظات"],
+ ["accounts","⌁","الحسابات"],
+ ["card-maker","◇","البطاقات"],
+ ["zakat","◈","الزكاة"],
+ ["manasik","⌘","المناسك"],
+ ["guide","♙","الصلاة والوضوء"],
+ ["islamic-calendar","▦","التقويم الإسلامي"],
+ ["fasting-center","◐","الصيام"],
+ ["ramadan-center","☾","رمضان"],
+ ["smart-khatmah","◫","الختمة"],
+ ["memorization-center","◒","الحفظ والمراجعة"],
+ ["jumuah-center","◍","الجمعة"],
+ ["kids-world","✦","عالم الأطفال"],
+ ["names-live","✧","أسماء الله الحسنى"],
+ ["privacy-lock","⌾","قفل الخصوصية"]
+];
+
 export default function SakinahLiveHome(){
  const [data,setData]=useState(null),[status,setStatus]=useState(""),[tick,setTick]=useState(Date.now()),[ayah,setAyah]=useState(null),[preview,setPreview]=useState(null);
  const load=()=>{setStatus("جاري تحديد الموقع…");if(!navigator.geolocation){setStatus("الموقع غير مدعوم على هذا الجهاز");return}navigator.geolocation.getCurrentPosition(async p=>{try{const {latitude,longitude}=p.coords;const r=await fetch(`https://api.aladhan.com/v1/timings?latitude=${latitude}&longitude=${longitude}&method=4`);if(!r.ok)throw new Error();const j=await r.json();setData(j?.data||null);setStatus("")}catch{setStatus("تعذر تحميل مواقيت الصلاة الآن")}},()=>setStatus("فعّل الموقع واسمح لسكينة بالوصول إليه"),{enableHighAccuracy:true,timeout:12000})};
@@ -37,6 +60,9 @@ export default function SakinahLiveHome(){
    {ayah&&<div style={{marginTop:22,maxWidth:540,padding:"12px 0 2px",borderTop:`1px solid ${stage.dark?"rgba(246,243,236,.12)":"rgba(16,16,15,.09)"}`}}><div style={{fontSize:9.5,opacity:.42,marginBottom:5}}>آية اليوم</div><div style={{fontFamily:"'Amiri Quran','Noto Naskh Arabic',serif",fontSize:17.5,lineHeight:1.95}}>{ayah.text}</div><div style={{fontSize:9,opacity:.38,marginTop:4}}>{ayah.surah?.name} · الآية {ayah.numberInSurah}</div></div>}
    <DayArc next={next} dark={stage.dark}/><div style={{display:"grid",gridTemplateColumns:"repeat(5,minmax(0,1fr))",gap:5,marginTop:4,paddingTop:14,borderTop:`1px solid ${stage.dark?"rgba(246,243,236,.14)":"rgba(16,16,15,.10)"}`}}>{PR.map(p=><div key={p} style={{textAlign:"center",minWidth:0}}><div style={{fontSize:8.5,opacity:.48}}>{AR[p]}</div><div style={{fontSize:12.5,marginTop:6,fontWeight:next?.id===p?700:500,color:next?.id===p?C.gold:fg}}>{clean(data?.timings?.[p])||"--:--"}</div></div>)}</div>{status&&<div style={{fontSize:10,opacity:.58,marginTop:12}}>{status}</div>}
   </section>
-  <main style={{padding:"18px 20px 4px",background:C.ivory}}><div style={{fontSize:11,opacity:.42,lineHeight:1.8,textAlign:"center"}}>الرئيسية للوقت والصلاة وآية اليوم فقط. بقية الخدمات موزعة في القرآن، يومي، اكتشف وأنا بدون تكرار.</div></main>
+  <main className="sakinah-live-content" style={{position:"relative",zIndex:1,display:"block",clear:"both",boxSizing:"border-box",width:"100%",padding:"20px 16px 12px",background:C.ivory}}>
+   <div style={{textAlign:"center",marginBottom:14}}><div style={{fontFamily:"Fraunces,serif",fontSize:22}}>الخدمات السريعة</div><div style={{fontSize:10,opacity:.42,marginTop:4}}>١٨ اختصاراً من الصفحة الرئيسية</div></div>
+   <div style={{display:"grid",gridTemplateColumns:"repeat(3,minmax(0,1fr))",gap:8}}>{QUICK_ACTIONS.map(([id,icon,label])=><button key={id} onClick={()=>emit(id)} style={{...cardStyle,minHeight:88}}><div style={{fontSize:19,color:C.gold}}>{icon}</div><div style={{fontSize:10.5,marginTop:10,lineHeight:1.45}}>{label}</div></button>)}</div>
+  </main>
  </div>;
 }
