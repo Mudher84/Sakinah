@@ -6,6 +6,7 @@ import { installCelestialArc } from './celestialArc.js'
 import { installHeroAtmosphere } from './heroAtmosphere.js'
 import { installTimeFormatToggle } from './timeFormatToggle.js'
 import { installPreviewToggle } from './previewToggle.js'
+import { installProfileHook } from './profileHook.js'
 import './index.css'
 import './amiriExperiment.css'
 
@@ -20,6 +21,7 @@ installCelestialArc()
 installHeroAtmosphere()
 installTimeFormatToggle()
 installPreviewToggle()
+installProfileHook()
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch(()=>{}));
