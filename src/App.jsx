@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
+import { VerifiedContentHub, LiveNamesOfAllah, NineBooksHub, HadithBookPlaceholder } from "./verifiedIslamic.jsx";
 import { LiveTafsirCenter, HadithNineBooksGate } from "./liveStudy.jsx";
 import { LiveQuranAudio } from "./liveAudio.jsx";
 import { LivePrayerCenter, LiveQuranReader, LiveSurahList } from "./liveCore.jsx";
@@ -2449,7 +2450,7 @@ export default function SakinahApp() {
     "adhan-config": () => <AdhanConfigurator lang={lang} go={go} />,
     "quran-companion": () => <QuranCompanion lang={lang} go={go} />,
     "friday-eid": () => <FridayEidCenter lang={lang} go={go} />,
-    "names": () => <NamesCenter lang={lang} go={go} />,
+    "names": () => <LiveNamesOfAllah lang={lang} go={go} />,
     "islamic-library": () => <IslamicLibrary lang={lang} go={go} />,
     "qibla-map": () => <QiblaMap lang={lang} go={go} />,
     "downloads-manager": () => <DownloadManager lang={lang} go={go} />,
@@ -2458,6 +2459,10 @@ export default function SakinahApp() {
     "teacher-imam": () => <TeacherImamCenter lang={lang} go={go} />,
     "public-display": () => <PublicDisplayCenter lang={lang} go={go} />,
     "complete-vision": () => <CompleteVisionCenter lang={lang} go={go} />,
+    "verified-content": () => <VerifiedContentHub lang={lang} go={go} />,
+    "live-names": () => <LiveNamesOfAllah lang={lang} go={go} />,
+    "nine-books": () => <NineBooksHub lang={lang} go={go} />,
+    "hadith-book": () => <HadithBookPlaceholder lang={lang} go={go} data={param} />,
     "feature-preview": () => <FeaturePreview lang={lang} go={go} feature={param} />,
     "me": () => <MeScreen lang={lang} setLang={setLang} go={go} bookmarks={bookmarks} lastRead={lastRead} travelMode={travelMode} setTravelMode={setTravelMode} ramadanMode={ramadanMode} setRamadanMode={setRamadanMode} />,
     "me-prayer-settings": () => <PrayerSettingsScreen lang={lang} go={go} />,
