@@ -1,7 +1,6 @@
 /* Temporary typography experiment.
    Every visible Sakinah UI glyph => user's HT Roznameh Medium when installed.
-   Quran/ayah text alone preserves the Quran-specific typography.
-   Amiri remains the safe Arabic fallback. */
+   Quran/ayah text alone preserves the Quran-specific typography. */
 @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
 
 @font-face {
@@ -12,66 +11,36 @@
   font-display: swap;
 }
 
-html,
-body,
-#root,
-#root *,
-.sakinahResponsiveShell,
-.sakinahResponsiveShell *,
-.sakinah-live-home,
-.sakinah-live-home *,
-.appShell,
-.appShell * {
+html, body, #root, #root *, .sakinahResponsiveShell, .sakinahResponsiveShell *, .sakinah-live-home, .sakinah-live-home *, .appShell, .appShell * {
   font-family: "Sakinah Roznameh", "HT Roznameh Medium", "Amiri", "Noto Naskh Arabic", serif !important;
 }
 
-/* Global UI readability lift: +4px for all non-Quran interface text. */
-.sakinahResponsiveShell { font-size: calc(1em + 4px); }
+/* The home uses inline px font sizes, so inherited font-size cannot enlarge them.
+   Force +4px against every inline size used by the live home. */
+.sakinah-live-home [style*="font-size: 8.5px"], .sakinah-live-home [style*="font-size:8.5px"] { font-size:12.5px !important; }
+.sakinah-live-home [style*="font-size: 9px"], .sakinah-live-home [style*="font-size:9px"] { font-size:13px !important; }
+.sakinah-live-home [style*="font-size: 9.5px"], .sakinah-live-home [style*="font-size:9.5px"] { font-size:13.5px !important; }
+.sakinah-live-home [style*="font-size: 10px"], .sakinah-live-home [style*="font-size:10px"] { font-size:14px !important; }
+.sakinah-live-home [style*="font-size: 11px"], .sakinah-live-home [style*="font-size:11px"] { font-size:15px !important; }
+.sakinah-live-home [style*="font-size: 12.5px"], .sakinah-live-home [style*="font-size:12.5px"] { font-size:16.5px !important; }
+.sakinah-live-home [style*="font-size: 14px"], .sakinah-live-home [style*="font-size:14px"] { font-size:18px !important; }
+.sakinah-live-home [style*="font-size: 16px"], .sakinah-live-home [style*="font-size:16px"] { font-size:20px !important; }
+.sakinah-live-home [style*="font-size: 17px"], .sakinah-live-home [style*="font-size:17px"] { font-size:21px !important; }
+.sakinah-live-home [style*="font-size: 24px"], .sakinah-live-home [style*="font-size:24px"] { font-size:28px !important; }
+.sakinah-live-home [style*="font-size: 26px"], .sakinah-live-home [style*="font-size:26px"] { font-size:30px !important; }
+.sakinah-live-home [style*="font-size: 29px"], .sakinah-live-home [style*="font-size:29px"] { font-size:33px !important; }
+.sakinah-live-home [style*="font-size: 64px"], .sakinah-live-home [style*="font-size:64px"] { font-size:68px !important; }
 
-.sakinah-live-content > section:first-of-type > div:first-child > div:first-child > div:nth-child(2) {
-  font-size: 32px !important;
-  line-height: 1.25;
-}
+.sakinah-live-content > section:first-of-type > div:first-child > div:first-child > div:nth-child(2) { font-size:32px !important; line-height:1.25; }
 
-/* Daily ayah: centered, Quran typography preserved. */
-.sakinah-live-hero div:has(> [style*="Amiri Quran"]) {
-  width: 100% !important;
-  max-width: 540px !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-  text-align: center !important;
-}
-.sakinah-live-hero [style*="Amiri Quran"] {
-  display: block !important;
-  width: 100% !important;
-  text-align: center !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-  font-size: 21.5px !important;
-}
-.sakinah-live-hero div:has(> [style*="Amiri Quran"]) > div {
-  text-align: center !important;
-}
+/* Daily ayah remains centered and keeps its Quran typography/size. */
+.sakinah-live-hero div:has(> [style*="Amiri Quran"]) { width:100% !important; max-width:540px !important; margin-left:auto !important; margin-right:auto !important; text-align:center !important; }
+.sakinah-live-hero [style*="Amiri Quran"] { display:block !important; width:100% !important; text-align:center !important; margin-left:auto !important; margin-right:auto !important; font-size:21.5px !important; }
+.sakinah-live-hero div:has(> [style*="Amiri Quran"]) > div { text-align:center !important; }
 
-/* Quran verses/Mushaf are the only typography exception. */
-#root .quranMini,
-#root .quranMini *,
-#root .quranHero,
-#root .quranHero *,
-#root .ayah span,
-#root .ayah span *,
-#root .quranAudioText,
-#root .quranAudioText *,
-#root .quranMemo,
-#root .quranMemo *,
-#root .mushaf .ayah span,
-#root .mushaf .ayah span *,
-#root [style*="Amiri Quran"],
-#root [style*="Amiri Quran"] * {
-  font-family: "Amiri Quran", "Noto Naskh Arabic", serif !important;
+/* Quran verses/Mushaf are the typography exception. */
+#root .quranMini, #root .quranMini *, #root .quranHero, #root .quranHero *, #root .ayah span, #root .ayah span *, #root .quranAudioText, #root .quranAudioText *, #root .quranMemo, #root .quranMemo *, #root .mushaf .ayah span, #root .mushaf .ayah span *, #root [style*="Amiri Quran"], #root [style*="Amiri Quran"] * {
+  font-family:"Amiri Quran", "Noto Naskh Arabic", serif !important;
 }
 
-.sakinah-live-home [style*="letterSpacing"],
-.railBrand small {
-  letter-spacing: normal;
-}
+.sakinah-live-home [style*="letterSpacing"], .railBrand small { letter-spacing:normal; }
