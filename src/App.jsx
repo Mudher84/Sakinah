@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
+import { LivePrayerCenter, LiveQuranReader, LiveSurahList } from "./liveCore.jsx";
 import {
   Compass, BookOpen, Home, User, Bookmark, Share2, Languages,
   ChevronRight, ChevronLeft, Volume2, ArrowLeft, ArrowRight, Search, Sparkles,
@@ -2404,11 +2405,11 @@ export default function SakinahApp() {
   const screens = {
     "today": () => <TodayScreen lang={lang} stage={stage} hourNow={hourNow} nextPrayer={nextPrayer} remH={remH} remM={remM} moment={moment} go={go} onScrub={(h) => setPreview(h)} lastRead={lastRead} qiblaDeg={qiblaDeg} />,
     "quran-home": () => <QuranHome lang={lang} go={go} lastRead={lastRead} bookmarks={bookmarks} />,
-    "surah-list": () => <SurahList lang={lang} go={go} />,
-    "reader": () => <QuranReader lang={lang} surahId={param.surahId || 1} go={go} lastRead={lastRead} setLastRead={setLastRead} bookmarks={bookmarks} toggleBookmark={toggleBookmark} quranScale={a11y.quranScale} />,
+    "surah-list": () => <LiveSurahList lang={lang} go={go} />,
+    "reader": () => <LiveQuranReader lang={lang} surahId={param.surahId || 1} go={go} />,
     "memorize": () => <MemorizeScreen lang={lang} go={go} initialSurahId={param.surahId} />,
     "audio": () => <AudioScreen lang={lang} go={go} surahId={param.surahId} />,
-    "prayer": () => <PrayerScreen lang={lang} hourNow={hourNow} go={go} onScrub={(h) => setPreview(h)} onQiblaDeg={setQiblaDeg} />,
+    "prayer": () => <LivePrayerCenter lang={lang} go={go} />,
     "discover": () => <DiscoverScreen lang={lang} go={go} isFriday={isFriday} />,
     "adhkar-home": () => <AdhkarHome lang={lang} go={go} />,
     "adhkar-cat": () => <AdhkarReader lang={lang} go={go} catId={param.cat} />,
