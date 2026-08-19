@@ -48,6 +48,11 @@ function ensureStyles() {
     }
     [dir="rtl"] .${BACK_CLASS} { direction: rtl !important; }
     [dir="ltr"] .${BACK_CLASS} { direction: ltr !important; }
+
+    /* One back control only: feature pages already have a fixed global back. */
+    .global-feature-shell .${BACK_CLASS}:not(.global-feature-back) {
+      display: none !important;
+    }
   `;
   document.head.appendChild(style);
 }
@@ -58,7 +63,7 @@ function isBackButton(button) {
   const aria = (button.getAttribute('aria-label') || '').trim();
   if (!text && !aria) return false;
 
-  const exact = /^(?:←\s*)?(?:رجوع|عودة|الأطفال|Back|Kids)(?:\s*→)?$/i;
+  const exact = /^(?:←\s*)?(?:رجوع|عودة|الأطفال|القرآن|Back|Kids|Quran)(?:\s*→)?$/i;
   const beginsWithArrow = /^←\s*\S+/.test(text);
   const namedBack = /^(?:رجوع|عودة|Back)\b/i.test(text) || /^(?:رجوع|عودة|Back)$/i.test(aria);
   return exact.test(text) || beginsWithArrow || namedBack;
