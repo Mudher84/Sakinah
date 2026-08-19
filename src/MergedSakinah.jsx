@@ -6,6 +6,27 @@ const baseBtn={border:"1px solid rgba(16,16,15,.08)",borderRadius:18,padding:14,
 const read=(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(d))}catch{return d}};
 const activeProfile=()=>{try{return localStorage.getItem("sakinah-active-profile")||"me"}catch{return"me"}};
 function openFeature(id){window.dispatchEvent(new CustomEvent("sakinah:feature",{detail:id}))}
+function profileAvatarKey(id){return `sakinah-profile-avatar-${id||activeProfile()}`}
+function profileNameKey(id){return `sakinah-profile-display-name-${id||activeProfile()}`}
+function compressAvatar(file){
+ return new Promise((resolve,reject)=>{
+  const reader=new FileReader();
+  reader.onerror=()=>reject(new Error("read"));
+  reader.onload=()=>{
+   const img=new Image();
+   img.onerror=()=>reject(new Error("image"));
+   img.onload=()=>{
+    const size=512,scale=Math.max(size/img.width,size/img.height),sw=size/scale,sh=size/scale,sx=(img.width-sw)/2,sy=(img.height-sh)/2;
+    const canvas=document.createElement("canvas");canvas.width=size;canvas.height=size;
+    const ctx=canvas.getContext("2d",{alpha:false});if(!ctx){reject(new Error("canvas"));return}
+    ctx.drawImage(img,sx,sy,sw,sh,0,0,size,size);
+    resolve(canvas.toDataURL("image/jpeg",.86));
+   };
+   img.src=String(reader.result||"");
+  };
+  reader.readAsDataURL(file);
+ });
+}
 
 function DiscoverSection({title,rows,lang,go}){
  return <section style={{marginTop:20}}>
@@ -52,15 +73,16 @@ function ProfileHub({lang,go}){
  const [profileId,setProfileId]=useState(activeProfile());
  const profiles=read("sakinah-profiles",[{id:"me",nameAr:"أنا",nameEn:"Me",kind:"adult",age:""}]);
  const current=profiles.find(p=>p.id===profileId)||profiles[0]||{id:"me",nameAr:"أنا",nameEn:"Me",kind:"adult"};
- const avatarKey=`sakinah-profile-avatar-${profileId}`;
- const nameKey=`sakinah-profile-display-name-${profileId}`;
+ const avatarKey=profileAvatarKey(profileId);
+ const nameKey=profileNameKey(profileId);
  const [avatar,setAvatar]=useState(()=>localStorage.getItem(avatarKey)||"");
  const [displayName,setDisplayName]=useState(()=>localStorage.getItem(nameKey)||(lang==="ar"?current.nameAr:current.nameEn)||"أنا");
  const [editing,setEditing]=useState(false);
- useEffect(()=>{const h=()=>{const id=activeProfile();setProfileId(id);const ps=read("sakinah-profiles",[]);const p=ps.find(x=>x.id===id)||ps[0]||{nameAr:"أنا",nameEn:"Me"};setAvatar(localStorage.getItem(`sakinah-profile-avatar-${id}`)||"");setDisplayName(localStorage.getItem(`sakinah-profile-display-name-${id}`)||(lang==="ar"?p.nameAr:p.nameEn)||"أنا")};window.addEventListener("sakinah-profile-change",h);return()=>window.removeEventListener("sakinah-profile-change",h)},[lang]);
+ const [avatarError,setAvatarError]=useState("");
+ useEffect(()=>{const h=()=>{const id=activeProfile();setProfileId(id);const ps=read("sakinah-profiles",[]);const p=ps.find(x=>x.id===id)||ps[0]||{nameAr:"أنا",nameEn:"Me"};setAvatar(localStorage.getItem(profileAvatarKey(id))||"");setDisplayName(localStorage.getItem(profileNameKey(id))||(lang==="ar"?p.nameAr:p.nameEn)||"أنا")};window.addEventListener("sakinah-profile-change",h);window.addEventListener("storage",h);return()=>{window.removeEventListener("sakinah-profile-change",h);window.removeEventListener("storage",h)}},[lang]);
  const notifyProfileChange=()=>window.dispatchEvent(new CustomEvent("sakinah-profile-change",{detail:{profileId}}));
- const saveName=()=>{const n=displayName.trim()||"أنا";setDisplayName(n);localStorage.setItem(nameKey,n);setEditing(false);notifyProfileChange()};
- const chooseAvatar=e=>{const f=e.target.files?.[0];if(!f||!f.type.startsWith("image/"))return;const r=new FileReader();r.onload=()=>{const v=String(r.result||"");setAvatar(v);try{localStorage.setItem(avatarKey,v);notifyProfileChange()}catch{}};r.readAsDataURL(f);e.target.value=""};
+ const saveName=()=>{const n=displayName.trim()||"أنا";localStorage.setItem(nameKey,n);setDisplayName(n);setEditing(false);notifyProfileChange()};
+ const chooseAvatar=async e=>{const f=e.target.files?.[0];e.target.value="";if(!f||!f.type.startsWith("image/"))return;setAvatarError("");try{const v=await compressAvatar(f);localStorage.setItem(avatarKey,v);setAvatar(v);notifyProfileChange()}catch{setAvatarError(lang==="ar"?"تعذر حفظ الصورة. اختر صورة أخرى أو أصغر حجماً.":"Could not save the image. Choose another or smaller image.")}};
  const familyRows=[
   ["kids-world","☀","عالم الأطفال","Kids World","كل محتوى الأطفال من مكان واحد","All kids content in one place"],
   ["kids-quran-live","▥","معلم القرآن للأطفال","Kids Quran Teacher","تعلم القرآن ومتابعة الطفل","Quran learning for children"],
@@ -91,6 +113,7 @@ function ProfileHub({lang,go}){
     {editing?<div style={{display:"flex",gap:7,justifyContent:"center"}}><input autoFocus value={displayName} onChange={e=>setDisplayName(e.target.value)} onKeyDown={e=>e.key==="Enter"&&saveName()} style={{...baseBtn,width:"100%",boxSizing:"border-box",padding:"10px 12px",background:"rgba(255,255,255,.52)",fontSize:18,textAlign:"center"}}/><button onClick={saveName} style={{...baseBtn,padding:"10px 12px"}}>✓</button></div>:<button onClick={()=>setEditing(true)} style={{border:0,padding:0,background:"transparent",fontFamily:"Fraunces,serif",fontSize:31,color:"inherit",textAlign:"center",maxWidth:"100%",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{displayName}</button>}
     <div style={{fontSize:11.5,opacity:.48,marginTop:5}}>{current.kind==="child"?(lang==="ar"?"ملف طفل · بياناته وتقدمه مستقلان":"Child profile · independent data"):lang==="ar"?"ملفك، محفوظاتك وخصوصيتك":"Your profile, library and privacy"}</div>
     <button onClick={()=>fileRef.current?.click()} style={{border:0,background:"transparent",padding:0,marginTop:7,fontFamily:"inherit",fontSize:10,color:C.gold}}>{lang==="ar"?"تغيير الصورة":"Change photo"}</button>
+    {avatarError&&<div role="status" style={{fontSize:10,color:"#9B2C2C",marginTop:7,lineHeight:1.5}}>{avatarError}</div>}
    </div>
   </div>
   <ProfileGroup title={lang==="ar"?"الأطفال والعائلة":"FAMILY & KIDS"} rows={familyRows} lang={lang} go={go}/>
