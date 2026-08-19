@@ -22,14 +22,14 @@ export default function ModernTasbeeh({lang="ar",go}){
  const tap=()=>{const n=count+1;setCount(n);const today=new Date().toISOString().slice(0,10);const h=read(pkey("tasbeeh-history"),{});h[today]=(h[today]||0)+1;write(pkey("tasbeeh-history"),h);if(vibrate&&navigator.vibrate)navigator.vibrate(n%target===0?[55,45,95]:14)};
  const beadCount=17;
  return <div dir={ar?"rtl":"ltr"} style={{position:"fixed",inset:0,zIndex:50000,overflowY:"auto",boxSizing:"border-box",background:"#F3EFE6",color:INK,fontFamily:"inherit"}}>
-  <div style={{maxWidth:620,minHeight:"100%",margin:"0 auto",padding:"max(72px,calc(env(safe-area-inset-top) + 42px)) 18px 120px",boxSizing:"border-box"}}>
-   <header style={{display:"grid",gridTemplateColumns:"48px 1fr 48px",alignItems:"center",gap:8}}>
-    <button onClick={go} style={{width:44,height:44,border:0,borderRadius:22,background:"rgba(255,255,255,.72)",boxShadow:"0 8px 25px rgba(31,25,14,.07)",fontSize:19,color:INK,cursor:"pointer"}}>←</button>
-    <div style={{textAlign:"center"}}><div style={{fontSize:9,letterSpacing:2.5,color:GOLD,fontWeight:700}}>SAKINAH</div><h1 style={{fontFamily:"'IBM Plex Sans Arabic','Noto Naskh Arabic',sans-serif",fontSize:27,lineHeight:1.55,fontWeight:500,margin:"2px 0 0",paddingTop:2,overflow:"visible"}}>{ar?"المسبحة الذكية":"Smart Tasbeeh"}</h1></div>
-    <button onClick={()=>setVibrate(v=>!v)} title={ar?"الاهتزاز":"Vibration"} style={{width:44,height:44,border:0,borderRadius:22,background:vibrate?BLUE:"rgba(255,255,255,.72)",color:vibrate?"white":INK,fontSize:15,cursor:"pointer"}}>〰</button>
+  <div style={{maxWidth:620,minHeight:"100%",margin:"0 auto",padding:"max(82px,calc(env(safe-area-inset-top) + 52px)) 18px 120px",boxSizing:"border-box"}}>
+   <header style={{position:"relative",minHeight:88,display:"flex",alignItems:"center",justifyContent:"center",padding:"0 62px",boxSizing:"border-box"}}>
+    <button onClick={go} aria-label={ar?"رجوع":"Back"} style={{position:"absolute",insetInlineStart:0,top:18,width:44,height:44,border:0,borderRadius:22,background:"rgba(255,255,255,.72)",boxShadow:"0 8px 25px rgba(31,25,14,.07)",fontSize:19,color:INK,cursor:"pointer",zIndex:2}}>←</button>
+    <div style={{width:"100%",minWidth:0,textAlign:"center"}}><div style={{fontSize:9,letterSpacing:2.5,color:GOLD,fontWeight:700}}>SAKINAH</div><h1 style={{fontFamily:"'IBM Plex Sans Arabic','Noto Naskh Arabic',sans-serif",fontSize:"clamp(24px,7vw,30px)",lineHeight:1.45,fontWeight:500,margin:"4px 0 0",padding:"2px 0 4px",whiteSpace:"nowrap",overflow:"visible",textOverflow:"clip"}}>{ar?"المسبحة الذكية":"Smart Tasbeeh"}</h1></div>
+    <button onClick={()=>setVibrate(v=>!v)} title={ar?"الاهتزاز":"Vibration"} aria-label={ar?"تشغيل أو إيقاف الاهتزاز":"Toggle vibration"} style={{position:"absolute",insetInlineEnd:0,top:18,width:44,height:44,border:0,borderRadius:22,background:vibrate?BLUE:"rgba(255,255,255,.72)",color:vibrate?"white":INK,fontSize:15,cursor:"pointer",zIndex:2}}>〰</button>
    </header>
 
-   <div style={{marginTop:24,display:"flex",alignItems:"center",gap:10,padding:"9px 10px 9px 14px",borderRadius:22,background:"rgba(255,255,255,.62)",boxShadow:"0 14px 40px rgba(38,30,16,.055)"}}>
+   <div style={{marginTop:16,display:"flex",alignItems:"center",gap:10,padding:"9px 10px 9px 14px",borderRadius:22,background:"rgba(255,255,255,.62)",boxShadow:"0 14px 40px rgba(38,30,16,.055)"}}>
     <div style={{width:42,height:42,borderRadius:16,display:"grid",placeItems:"center",background:"#EAE1CE",color:GOLD,fontSize:18}}>✦</div>
     <select value={idx} onChange={e=>{const i=+e.target.value;setIdx(i);setCount(0);setTarget(DHIKR[i][2])}} style={{flex:1,minWidth:0,height:42,border:0,outline:0,background:"transparent",fontFamily:"inherit",fontSize:14,color:INK}}>{DHIKR.map((x,i)=><option key={x[0]} value={i}>{ar?x[0]:x[1]}</option>)}</select>
     <div style={{fontSize:10,opacity:.42,whiteSpace:"nowrap"}}>{ar?`هدف ${target}`:`Goal ${target}`}</div>
