@@ -16,7 +16,7 @@ export default function AdultNasheeds({go}){
  const upload=async e=>{const files=e.target.files;if(!files?.length)return;try{await addFiles(files);setStatus("تمت إضافة الأناشيد وحفظها على الجهاز");await reload()}catch{setStatus("تعذر حفظ الملفات")}e.target.value=""};
  const remove=async id=>{await del(id);if(current?.id===id){if(urlRef.current)URL.revokeObjectURL(urlRef.current);urlRef.current=null;setCurrent(null)}reload()};
  return <div style={{minHeight:"100vh",background:C.ivory,color:C.ink,padding:"26px 22px 130px"}} dir="rtl">
-  <div style={{fontSize:10,letterSpacing:1.4,opacity:.4}}>SAKINAH · NASHEEDS</div>
+  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:12,marginBottom:14}}><button onClick={()=>go?.("quran-player")} style={{height:42,padding:"0 15px",border:"1px solid rgba(16,16,15,.09)",borderRadius:999,background:"rgba(255,255,255,.62)",fontFamily:"inherit",color:C.ink,boxShadow:"0 7px 20px rgba(16,16,15,.06)",cursor:"pointer"}}>← رجوع</button><div style={{fontSize:10,letterSpacing:1.4,opacity:.4}}>SAKINAH · NASHEEDS</div></div>
   <div style={{fontFamily:"Fraunces,serif",fontSize:33,marginTop:6}}>الأناشيد</div>
   <div style={{fontSize:12,opacity:.5,lineHeight:1.8,marginTop:7}}>مكتبة أناشيد عامة مستقلة عن محتوى الأطفال. أضف الملفات المرخّصة أو المملوكة لك وتبقى محفوظة محلياً على جهازك.</div>
   <div style={{marginTop:20,borderRadius:26,padding:20,background:"linear-gradient(145deg,#17232a,#0b1318)",color:"white"}}>
