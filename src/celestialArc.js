@@ -1,5 +1,3 @@
-const SVG_NS = 'http://www.w3.org/2000/svg';
-
 function qBezier(t, p0, p1, p2) {
   const u = 1 - t;
   return u * u * p0 + 2 * u * t * p1 + t * t * p2;
@@ -7,7 +5,6 @@ function qBezier(t, p0, p1, p2) {
 
 function currentPreviewHour(hero) {
   const slider = hero?.querySelector('input[type="range"][aria-label="معاينة وقت الهيرو"]');
-  if (slider && document.activeElement === slider) return Number(slider.value);
   if (slider && slider.dataset.celestialPreview === '1') return Number(slider.value);
   const d = new Date();
   return d.getHours() + d.getMinutes() / 60;
@@ -23,96 +20,80 @@ function markerT(hour) {
   return Math.max(0, Math.min(1, nightHour / 12));
 }
 
-function ensureMarker(svg) {
-  let g = svg.querySelector('[data-sakinah-celestial]');
-  if (g) return g;
+function ensureMarker() {
+  let marker = document.getElementById('sakinah-celestial-marker');
+  if (marker) return marker;
 
-  g = document.createElementNS(SVG_NS, 'g');
-  g.setAttribute('data-sakinah-celestial', '1');
-  g.style.transition = 'transform .55s ease';
-  g.style.pointerEvents = 'none';
-
-  const glow = document.createElementNS(SVG_NS, 'circle');
-  glow.setAttribute('r', '15');
-  glow.setAttribute('fill', 'rgba(181,154,98,.12)');
-  glow.setAttribute('data-role', 'glow');
-
-  const body = document.createElementNS(SVG_NS, 'circle');
-  body.setAttribute('r', '8');
-  body.setAttribute('fill', '#C9A85C');
-  body.setAttribute('data-role', 'body');
-
-  const rays = document.createElementNS(SVG_NS, 'g');
-  rays.setAttribute('data-role', 'rays');
-  for (let i = 0; i < 8; i++) {
-    const line = document.createElementNS(SVG_NS, 'line');
-    const a = (Math.PI * 2 * i) / 8;
-    line.setAttribute('x1', String(Math.cos(a) * 11));
-    line.setAttribute('y1', String(Math.sin(a) * 11));
-    line.setAttribute('x2', String(Math.cos(a) * 15));
-    line.setAttribute('y2', String(Math.sin(a) * 15));
-    line.setAttribute('stroke', '#C9A85C');
-    line.setAttribute('stroke-width', '1.5');
-    line.setAttribute('stroke-linecap', 'round');
-    rays.appendChild(line);
-  }
-
-  const moonCut = document.createElementNS(SVG_NS, 'circle');
-  moonCut.setAttribute('r', '7');
-  moonCut.setAttribute('cx', '4');
-  moonCut.setAttribute('cy', '-2');
-  moonCut.setAttribute('data-role', 'moon-cut');
-
-  g.append(glow, rays, body, moonCut);
-  svg.appendChild(g);
-  return g;
+  marker = document.createElement('div');
+  marker.id = 'sakinah-celestial-marker';
+  marker.setAttribute('aria-hidden', 'true');
+  Object.assign(marker.style, {
+    position: 'fixed',
+    zIndex: '65000',
+    width: '34px',
+    height: '34px',
+    display: 'grid',
+    placeItems: 'center',
+    pointerEvents: 'none',
+    transform: 'translate(-50%,-50%)',
+    transition: 'left .45s ease, top .45s ease, color .45s ease, filter .45s ease',
+    fontFamily: 'Georgia, serif',
+    fontSize: '27px',
+    lineHeight: '1'
+  });
+  document.body.appendChild(marker);
+  return marker;
 }
 
 function updateMarker() {
   const hero = document.querySelector('.sakinah-live-hero');
   const svg = hero?.querySelector('svg[viewBox="0 0 420 110"]');
-  if (!hero || !svg) return;
+  const marker = ensureMarker();
+
+  if (!hero || !svg) {
+    marker.style.display = 'none';
+    return;
+  }
+
+  const rect = svg.getBoundingClientRect();
+  if (!rect.width || !rect.height) {
+    marker.style.display = 'none';
+    return;
+  }
 
   const hour = currentPreviewHour(hero);
   const day = isDay(hour);
   const t = markerT(hour);
-  const x = qBezier(t, 20, 210, 400);
-  const y = qBezier(t, 88, -14, 88);
-  const g = ensureMarker(svg);
 
-  g.setAttribute('transform', `translate(${x.toFixed(2)} ${y.toFixed(2)})`);
-  const body = g.querySelector('[data-role="body"]');
-  const rays = g.querySelector('[data-role="rays"]');
-  const cut = g.querySelector('[data-role="moon-cut"]');
-  const glow = g.querySelector('[data-role="glow"]');
+  // Match DayArc's SVG quadratic path: M20 88 Q210 -14 400 88.
+  const vx = qBezier(t, 20, 210, 400);
+  const vy = qBezier(t, 88, -14, 88);
+  const x = rect.left + (vx / 420) * rect.width;
+  const y = rect.top + (vy / 110) * rect.height;
 
-  if (day) {
-    body?.setAttribute('fill', '#C9A85C');
-    if (rays) rays.style.display = '';
-    if (cut) cut.style.display = 'none';
-    glow?.setAttribute('fill', 'rgba(201,168,92,.16)');
-  } else {
-    body?.setAttribute('fill', '#EDE7D7');
-    if (rays) rays.style.display = 'none';
-    if (cut) {
-      cut.style.display = '';
-      cut.setAttribute('fill', '#171727');
-    }
-    glow?.setAttribute('fill', 'rgba(237,231,215,.12)');
-  }
+  marker.style.display = 'grid';
+  marker.style.left = `${x}px`;
+  marker.style.top = `${y}px`;
+  marker.textContent = day ? '☀' : '☾';
+  marker.style.color = day ? '#B89443' : '#F0E9D7';
+  marker.style.textShadow = day
+    ? '0 0 7px rgba(205,166,78,.38), 0 0 18px rgba(205,166,78,.18)'
+    : '0 0 8px rgba(240,233,215,.36), 0 0 18px rgba(240,233,215,.16)';
+  marker.style.filter = day ? 'drop-shadow(0 1px 1px rgba(93,68,18,.12))' : 'drop-shadow(0 1px 1px rgba(0,0,0,.18))';
 }
 
 export function installCelestialArc() {
   const start = () => {
     updateMarker();
+
     const root = document.getElementById('root');
-    const observer = new MutationObserver(() => updateMarker());
+    const observer = new MutationObserver(() => requestAnimationFrame(updateMarker));
     if (root) observer.observe(root, {subtree:true, childList:true});
 
     document.addEventListener('input', e => {
       if (e.target?.matches?.('input[type="range"][aria-label="معاينة وقت الهيرو"]')) {
         e.target.dataset.celestialPreview = '1';
-        updateMarker();
+        requestAnimationFrame(updateMarker);
       }
     }, true);
 
@@ -124,7 +105,9 @@ export function installCelestialArc() {
       }
     }, true);
 
-    setInterval(updateMarker, 60000);
+    window.addEventListener('resize', updateMarker, {passive:true});
+    window.addEventListener('scroll', updateMarker, {passive:true});
+    setInterval(updateMarker, 30000);
   };
 
   requestAnimationFrame(() => requestAnimationFrame(start));
