@@ -1,11 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import SakinahDevotionLayer from './SakinahDevotionLayer.jsx'
+import SakinahNativeReadyLayer from './SakinahNativeReadyLayer.jsx'
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <SakinahDevotionLayer />
+    <SakinahNativeReadyLayer />
   </React.StrictMode>,
 )
 
