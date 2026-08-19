@@ -1,11 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import SakinahNotebookLayer from './SakinahNotebookLayer.jsx'
+import SakinahCompletionLayer from './SakinahCompletionLayer.jsx'
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <SakinahNotebookLayer />
+    <SakinahCompletionLayer />
   </React.StrictMode>,
 )
 
