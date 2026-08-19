@@ -46,6 +46,7 @@ body,
   text-align: center !important;
   margin-left: auto !important;
   margin-right: auto !important;
+  font-size: 21.5px !important;
 }
 .sakinah-live-hero div:has(> [style*="Amiri Quran"]) > div {
   text-align: center !important;
