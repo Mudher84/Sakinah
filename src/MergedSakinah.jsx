@@ -1,8 +1,10 @@
-import React,{useState} from "react";
+import React,{useEffect,useRef,useState} from "react";
 import SakinahLiveHome from "./SakinahLiveHome.jsx";
 
 const C={ivory:"#F6F3EC",ink:"#10100F",lapis:"#173B57",gold:"#B59A62"};
 const baseBtn={border:"1px solid rgba(16,16,15,.08)",borderRadius:18,padding:14,background:"rgba(255,255,255,.55)",fontFamily:"inherit",color:"inherit"};
+const read=(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(d))}catch{return d}};
+const activeProfile=()=>{try{return localStorage.getItem("sakinah-active-profile")||"me"}catch{return"me"}};
 
 function openFeature(id){window.dispatchEvent(new CustomEvent("sakinah:feature",{detail:id}))}
 
@@ -25,19 +27,42 @@ function DiscoverHub({lang,go}){
 }
 
 function ProfileHub({lang,go}){
+ const fileRef=useRef(null);
+ const [profileId,setProfileId]=useState(activeProfile());
+ const profiles=read("sakinah-profiles",[{id:"me",nameAr:"أنا",nameEn:"Me",kind:"adult",age:""}]);
+ const current=profiles.find(p=>p.id===profileId)||profiles[0]||{id:"me",nameAr:"أنا",nameEn:"Me",kind:"adult"};
+ const avatarKey=`sakinah-profile-avatar-${profileId}`;
+ const nameKey=`sakinah-profile-display-name-${profileId}`;
+ const [avatar,setAvatar]=useState(()=>localStorage.getItem(avatarKey)||"");
+ const [displayName,setDisplayName]=useState(()=>localStorage.getItem(nameKey)||(lang==="ar"?current.nameAr:current.nameEn)||"أنا");
+ const [editing,setEditing]=useState(false);
+ useEffect(()=>{const h=()=>{const id=activeProfile();setProfileId(id);const ps=read("sakinah-profiles",[]);const p=ps.find(x=>x.id===id)||ps[0]||{nameAr:"أنا",nameEn:"Me"};setAvatar(localStorage.getItem(`sakinah-profile-avatar-${id}`)||"");setDisplayName(localStorage.getItem(`sakinah-profile-display-name-${id}`)||(lang==="ar"?p.nameAr:p.nameEn)||"أنا")};window.addEventListener("sakinah-profile-change",h);return()=>window.removeEventListener("sakinah-profile-change",h)},[lang]);
+ const saveName=()=>{const n=displayName.trim()||"أنا";setDisplayName(n);localStorage.setItem(nameKey,n);setEditing(false)};
+ const chooseAvatar=e=>{const f=e.target.files?.[0];if(!f||!f.type.startsWith("image/"))return;const r=new FileReader();r.onload=()=>{const v=String(r.result||"");setAvatar(v);try{localStorage.setItem(avatarKey,v)}catch{}};r.readAsDataURL(f);e.target.value=""};
  const rows=[
-  ["profiles","♙","البروفايلات","Profiles"],
-  ["saved-library","♡","المكتبة المحفوظة","Saved Library"],
-  ["offline-backup","◫","البيانات والنسخ الاحتياطي","Data & Backup"],
-  ["privacy-lock","⌾","قفل الخصوصية","Privacy Lock"],
-  ["parental-controls","☀","الرقابة الأبوية","Parental Controls"],
-  ["card-maker","◇","صانع البطاقات","Card Maker"],
+  ["profiles","♙","البروفايلات","Profiles","تبديل وإدارة أفراد العائلة"],
+  ["saved-library","♡","المحفوظات والمكتبة","Saved Library","كل ما حفظته للرجوع إليه"],
+  ["notes","✎","ملاحظاتي","My Notes","ملاحظات هذا البروفايل"],
+  ["accounts","＋","دفتر حساباتي","My Accounts","الحسابات الشخصية لهذا البروفايل"],
+  ["tasbeeh","○","المسبحة وتقدمي","Tasbeeh & Progress","عدادك وسجل ذكرك اليومي"],
+  ["alerts","◉","التنبيهات والإشعارات","Alerts & Notifications","الصلاة والأذكار والتذكيرات"],
+  ["offline-backup","◫","البيانات والنسخ الاحتياطي","Data & Backup","بياناتك ونسختك الاحتياطية"],
+  ["privacy-lock","⌾","الخصوصية والقفل","Privacy & Lock","حماية بيانات البروفايل"],
+  ["parental-controls","☀","الرقابة الأبوية","Parental Controls","إعدادات ملفات الأطفال"],
+  ["card-maker","◇","صانع البطاقات","Card Maker","بطاقاتك الإسلامية المحفوظة"],
  ];
  return <div style={{position:"absolute",inset:0,background:C.ivory,color:C.ink,overflowY:"auto",padding:"28px 22px 130px"}} dir={lang==="ar"?"rtl":"ltr"}>
-  <div style={{width:72,height:72,borderRadius:24,display:"grid",placeItems:"center",background:"linear-gradient(145deg,#173B57,#0C293E)",color:"white",fontSize:26,boxShadow:"0 14px 32px rgba(23,59,87,.18)"}}>س</div>
-  <div style={{fontFamily:"Fraunces,serif",fontSize:31,marginTop:15}}>{lang==="ar"?"أنا":"Me"}</div>
-  <div style={{fontSize:11.5,opacity:.48,marginTop:5}}>{lang==="ar"?"ملفك، محفوظاتك وخصوصيتك":"Your profile, library and privacy"}</div>
-  <div style={{marginTop:22,borderRadius:24,overflow:"hidden",border:"1px solid rgba(16,16,15,.07)",background:"rgba(255,255,255,.48)"}}>{rows.map(([id,icon,ar,en])=><button key={id} onClick={()=>go(id)} style={{width:"100%",display:"grid",gridTemplateColumns:"38px 1fr auto",gap:10,alignItems:"center",padding:"15px 14px",border:0,borderBottom:"1px solid rgba(16,16,15,.06)",background:"transparent",fontFamily:"inherit",color:"inherit",textAlign:lang==="ar"?"right":"left"}}><span style={{color:C.gold,fontSize:18}}>{icon}</span><span style={{fontSize:12.5,fontWeight:650}}>{lang==="ar"?ar:en}</span><span style={{opacity:.3}}>{lang==="ar"?"‹":"›"}</span></button>)}</div>
+  <input ref={fileRef} type="file" accept="image/*" onChange={chooseAvatar} style={{display:"none"}}/>
+  <div style={{display:"flex",alignItems:"center",gap:15}}>
+   <button onClick={()=>fileRef.current?.click()} aria-label={lang==="ar"?"تغيير صورة البروفايل":"Change profile image"} style={{width:78,height:78,padding:0,borderRadius:26,border:"1px solid rgba(16,16,15,.07)",overflow:"hidden",display:"grid",placeItems:"center",background:"linear-gradient(145deg,#173B57,#0C293E)",color:"white",fontFamily:"inherit",fontSize:27,boxShadow:"0 14px 32px rgba(23,59,87,.18)",flex:"0 0 auto"}}>{avatar?<img src={avatar} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>:<span>{(displayName||"س").trim().slice(0,1)}</span>}</button>
+   <div style={{minWidth:0,flex:1}}>
+    {editing?<div style={{display:"flex",gap:7}}><input autoFocus value={displayName} onChange={e=>setDisplayName(e.target.value)} onKeyDown={e=>e.key==="Enter"&&saveName()} style={{...baseBtn,width:"100%",boxSizing:"border-box",padding:"10px 12px",background:"rgba(255,255,255,.52)",fontSize:18}}/><button onClick={saveName} style={{...baseBtn,padding:"10px 12px"}}>✓</button></div>:<button onClick={()=>setEditing(true)} style={{border:0,padding:0,background:"transparent",fontFamily:"Fraunces,serif",fontSize:31,color:"inherit",textAlign:lang==="ar"?"right":"left",maxWidth:"100%",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{displayName}</button>}
+    <div style={{fontSize:11.5,opacity:.48,marginTop:5}}>{current.kind==="child"?(lang==="ar"?"ملف طفل · بياناته وتقدمه مستقلان":"Child profile · independent data"):lang==="ar"?"ملفك، محفوظاتك وخصوصيتك":"Your profile, library and privacy"}</div>
+    <button onClick={()=>fileRef.current?.click()} style={{border:0,background:"transparent",padding:0,marginTop:7,fontFamily:"inherit",fontSize:10,color:C.gold}}>{lang==="ar"?"تغيير الصورة":"Change photo"}</button>
+   </div>
+  </div>
+  <div style={{fontSize:10.5,opacity:.42,marginTop:24,marginBottom:8}}>{lang==="ar"?"حسابي وخدماتي":"MY ACCOUNT & SERVICES"}</div>
+  <div style={{borderRadius:24,overflow:"hidden",border:"1px solid rgba(16,16,15,.07)",background:"rgba(255,255,255,.48)"}}>{rows.map(([id,icon,ar,en,sub])=><button key={id} onClick={()=>go(id)} style={{width:"100%",display:"grid",gridTemplateColumns:"38px 1fr auto",gap:10,alignItems:"center",padding:"14px",border:0,borderBottom:"1px solid rgba(16,16,15,.06)",background:"transparent",fontFamily:"inherit",color:"inherit",textAlign:lang==="ar"?"right":"left"}}><span style={{color:C.gold,fontSize:18}}>{icon}</span><span><span style={{display:"block",fontSize:12.5,fontWeight:650}}>{lang==="ar"?ar:en}</span><small style={{display:"block",fontSize:9.5,opacity:.42,marginTop:3}}>{sub}</small></span><span style={{opacity:.3}}>{lang==="ar"?"‹":"›"}</span></button>)}</div>
  </div>
 }
 
