@@ -1,21 +1,94 @@
 const STYLE_ID='sakinah-global-back-buttons-style';
 const BACK_CLASS='sakinah-global-back-button';
-const FALLBACK_ID='sakinah-fallback-back-button';
 const HIDDEN_CLASS='sakinah-back-hidden';
-function ensureStyles(){if(document.getElementById(STYLE_ID))return;const s=document.createElement('style');s.id=STYLE_ID;s.textContent=`.${BACK_CLASS}{min-height:42px!important;min-width:42px!important;box-sizing:border-box!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;padding:8px 13px!important;margin:0!important;border:1px solid rgba(16,16,15,.08)!important;border-radius:14px!important;background:rgba(255,255,255,.72)!important;color:#26343B!important;box-shadow:0 5px 15px rgba(16,16,15,.055),inset 0 1px 0 rgba(255,255,255,.75)!important;backdrop-filter:blur(12px) saturate(125%)!important;font-family:inherit!important;font-size:13px!important;font-weight:600!important;line-height:1!important;cursor:pointer!important;white-space:nowrap!important}.sakinah-back-hidden{display:none!important}#${FALLBACK_ID}{position:fixed!important;top:16px!important;inset-inline-start:16px!important;z-index:2147483590!important}`;document.head.appendChild(s)}
+const BAR_ID='sakinah-back-bar';
+const BAR_BUTTON_ID='sakinah-back-bar-button';
+let activeTarget=null;
+
+function ensureStyles(){
+ if(document.getElementById(STYLE_ID))return;
+ const s=document.createElement('style');
+ s.id=STYLE_ID;
+ s.textContent=`
+ .${HIDDEN_CLASS}{display:none!important}
+ #${BAR_ID}{position:fixed!important;top:0!important;left:0!important;right:0!important;height:54px!important;z-index:2147483595!important;display:flex!important;align-items:center!important;padding:0 12px!important;box-sizing:border-box!important;background:rgba(246,243,236,.88)!important;border-bottom:1px solid rgba(16,16,15,.07)!important;box-shadow:0 5px 18px rgba(16,16,15,.045)!important;backdrop-filter:blur(18px) saturate(130%)!important;-webkit-backdrop-filter:blur(18px) saturate(130%)!important}
+ #${BAR_ID}.${HIDDEN_CLASS}{display:none!important}
+ #${BAR_BUTTON_ID}{height:36px!important;min-width:42px!important;padding:0 12px!important;border:1px solid rgba(16,16,15,.08)!important;border-radius:12px!important;background:rgba(255,255,255,.62)!important;color:#26343B!important;box-shadow:0 3px 10px rgba(16,16,15,.04)!important;font-family:inherit!important;font-size:12px!important;font-weight:600!important;line-height:1!important;cursor:pointer!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:7px!important}
+ .global-feature-shell{padding-top:54px!important}
+ `;
+ document.head.appendChild(s);
+}
+
 function isBackButton(b){
  if(!(b instanceof HTMLButtonElement))return false;
+ if(b.id===BAR_BUTTON_ID)return false;
  const text=(b.textContent||'').replace(/\s+/g,' ').trim();
  const aria=(b.getAttribute('aria-label')||'').trim();
  const title=(b.getAttribute('title')||'').trim();
  const meta=`${aria} ${title}`.trim();
- const exactText=/^(?:رجوع|الرجوع|عودة|Back|←|→|‹|›|⟵|⟶|←\s*رجوع|رجوع\s*[←→]|Back\s*[←→]|[←→]\s*Back)$/i.test(text);
+ const exactText=/^(?:رجوع|الرجوع|عودة|Back|←|→|‹|›|⟵|⟶|←\s*رجوع|رجوع\s*[←→]|Back\s*[←→]|[←→]\s*Back|سكينة\s*[←→]|[←→]\s*سكينة)$/i.test(text);
  const labelled=/\bback\b|رجوع|الرجوع|عودة/i.test(meta);
  const knownSection=/^(?:الأطفال|القرآن|الفهرس|Kids|Quran|Index)$/i.test(text);
- return exactText||labelled||knownSection;
+ const globalClass=b.classList.contains('global-feature-back');
+ return exactText||labelled||knownSection||globalClass;
 }
-function decorate(){document.querySelectorAll('button').forEach(b=>{if(isBackButton(b))b.classList.add(BACK_CLASS);else{b.classList.remove(BACK_CLASS);b.classList.remove(HIDDEN_CLASS)}})}
-function visible(e){if(!e||!e.isConnected)return false;const s=getComputedStyle(e);return s.display!=='none'&&s.visibility!=='hidden'&&Number(s.opacity)!==0&&e.getClientRects().length>0}
-function createFallback(){let b=document.getElementById(FALLBACK_ID);if(b)return b;b=document.createElement('button');b.id=FALLBACK_ID;b.type='button';b.className=BACK_CLASS;b.textContent='← رجوع';b.setAttribute('aria-label','رجوع');b.onclick=()=>{window.dispatchEvent(new CustomEvent('sakinah:global-root'));window.dispatchEvent(new CustomEvent('sakinah:feature',{detail:'home'}))};document.body.appendChild(b);return b}
-function reconcile(){decorate();const f=document.getElementById(FALLBACK_ID);const all=[...document.querySelectorAll(`button.${BACK_CLASS}`)].filter(b=>b.id!==FALLBACK_ID);all.forEach(b=>b.classList.remove(HIDDEN_CLASS));const shown=all.filter(visible);if(shown.length){/* Prefer the deepest DOM control: child page back beats parent/global back. */const winner=shown.reduce((best,b)=>{if(!best)return b;if(best.contains(b))return b;if(b.contains(best))return best;const bp=best.parentElement?.closest('div');const cp=b.parentElement?.closest('div');if(bp&&cp&&bp.contains(cp))return b;return best},null);shown.forEach(b=>{if(b!==winner)b.classList.add(HIDDEN_CLASS)});if(f)f.classList.add(HIDDEN_CLASS);return}const feature=document.querySelector('.global-feature-shell');if(feature)createFallback().classList.remove(HIDDEN_CLASS);else if(f)f.classList.add(HIDDEN_CLASS)}
-export function installGlobalBackButtons(){ensureStyles();reconcile();let q=false;const run=()=>{if(q)return;q=true;requestAnimationFrame(()=>{q=false;reconcile()})};new MutationObserver(run).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class','style','aria-label','title']});['sakinah:feature','sakinah:native','sakinah:devotion','sakinah:global-root','popstate'].forEach(n=>window.addEventListener(n,run));document.addEventListener('click',run,true)}
+
+function visible(e){
+ if(!e||!e.isConnected)return false;
+ const s=getComputedStyle(e);
+ return s.display!=='none'&&s.visibility!=='hidden'&&Number(s.opacity)!==0&&e.getClientRects().length>0;
+}
+
+function ensureBar(){
+ let bar=document.getElementById(BAR_ID);
+ if(bar)return bar;
+ bar=document.createElement('div');
+ bar.id=BAR_ID;
+ bar.setAttribute('role','navigation');
+ bar.setAttribute('aria-label','شريط الرجوع');
+ const b=document.createElement('button');
+ b.id=BAR_BUTTON_ID;
+ b.type='button';
+ b.innerHTML='<span aria-hidden="true">→</span><span>رجوع</span>';
+ b.setAttribute('aria-label','رجوع');
+ b.onclick=()=>{
+  const target=activeTarget;
+  if(target&&target.isConnected){target.click();return}
+  window.dispatchEvent(new CustomEvent('sakinah:global-root'));
+  window.dispatchEvent(new CustomEvent('sakinah:feature',{detail:'home'}));
+ };
+ bar.appendChild(b);
+ document.body.appendChild(bar);
+ return bar;
+}
+
+function depth(el){let d=0;while(el?.parentElement){d++;el=el.parentElement}return d}
+
+function reconcile(){
+ ensureStyles();
+ const bar=ensureBar();
+ const candidates=[...document.querySelectorAll('button')].filter(isBackButton).filter(b=>b.id!==BAR_BUTTON_ID);
+ candidates.forEach(b=>b.classList.remove(HIDDEN_CLASS));
+ const shown=candidates.filter(visible);
+ const feature=document.querySelector('.global-feature-shell');
+ if(!feature&&!shown.length){activeTarget=null;bar.classList.add(HIDDEN_CLASS);return}
+ let winner=null;
+ if(shown.length){winner=shown.reduce((best,b)=>!best||depth(b)>depth(best)?b:best,null)}
+ activeTarget=winner;
+ candidates.forEach(b=>b.classList.add(HIDDEN_CLASS));
+ bar.classList.remove(HIDDEN_CLASS);
+}
+
+export function installGlobalBackButtons(){
+ ensureStyles();
+ reconcile();
+ let queued=false;
+ const run=()=>{
+  if(queued)return;
+  queued=true;
+  requestAnimationFrame(()=>{queued=false;reconcile()});
+ };
+ new MutationObserver(run).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class','style','aria-label','title']});
+ ['sakinah:feature','sakinah:native','sakinah:devotion','sakinah:global-root','popstate'].forEach(n=>window.addEventListener(n,run));
+ document.addEventListener('click',run,true);
+}
