@@ -36,6 +36,14 @@ body,
   line-height: 1.25;
 }
 
+/* Center the complete daily-ayah block in the home hero. */
+.sakinah-live-hero > div:nth-of-type(4) {
+  margin-left: auto !important;
+  margin-right: auto !important;
+  text-align: center !important;
+  width: 100%;
+}
+
 /* Quran verses/Mushaf are the only typography exception. */
 #root .quranMini,
 #root .quranMini *,
