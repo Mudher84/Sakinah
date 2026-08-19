@@ -1,11 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import MergedSakinah from './MergedSakinah.jsx'
+import SakinahNotebookLayer from './SakinahNotebookLayer.jsx'
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <MergedSakinah />
+    <SakinahNotebookLayer />
   </React.StrictMode>,
 )
 
