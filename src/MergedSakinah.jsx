@@ -7,6 +7,7 @@ import {DailyReflection} from "./dailyReflection.jsx";
 import {LiveNamesOfAllah} from "./verifiedIslamic.jsx";
 import {MyDayCenter,DailyToolsHub,IslamicCalendar,FastingCenter,RamadanCenter,SmartKhatmah,MemorizationCenter,HisnCenter,JumuahCenter,WorshipTimes,ParentalControls,PrivacyLock,CardMaker} from "./dailySuite.jsx";
 import {SmartMyDay} from "./smartMyDay.jsx";
+import {UniversalIslamicSearch,SavedLibrary} from "./searchLibrary.jsx";
 
 const C={ivory:"#F6F3EC",ink:"#10100F",lapis:"#173B57",gold:"#B59A62"};
 
@@ -34,24 +35,26 @@ function UnifiedNav({lang,panel,go,setLang}){
  const items=[
   ["app","سكينة","Home","⌂"],
   ["my-day","يومي","My Day","☼"],
+  ["islamic-search","بحث","Search","⌕"],
   ["daily-reflection","تأمّل","Reflect","◌"],
   ["trusted-daily","الموثق","Sourced","✦"],
   ["kids-world","الأطفال","Kids","☀"],
+  ["saved-library","مكتبتي","Library","♡"],
   ["offline-backup","بياناتي","Data","◫"],
  ];
  const daily=new Set(["daily-tools","islamic-calendar","fasting-center","ramadan-center","smart-khatmah","memorization-center","names-live","hisn-center","jumuah-center","worship-times","parental-controls","privacy-lock","card-maker"]);
  const active=panel.startsWith("kids-")?"kids-world":["quranic-duas","smart-quranic-adhkar","sourced-seerah"].includes(panel)?"trusted-daily":daily.has(panel)?"my-day":panel;
  return <>
   <button onClick={()=>setLang(lang==="ar"?"en":"ar")} aria-label="language" style={{position:"fixed",top:14,right:14,zIndex:10001,width:38,height:38,borderRadius:13,border:"1px solid rgba(16,16,15,.08)",background:"rgba(246,243,236,.92)",backdropFilter:"blur(14px)",fontFamily:"inherit",fontWeight:700,color:C.ink}}>{lang==="ar"?"EN":"ع"}</button>
-  <nav aria-label="Sakinah primary" style={{position:"fixed",left:"50%",transform:"translateX(-50%)",bottom:12,zIndex:10000,width:"min(470px,calc(100vw - 20px))",padding:6,borderRadius:23,border:"1px solid rgba(16,16,15,.09)",background:"rgba(246,243,236,.94)",backdropFilter:"blur(18px)",boxShadow:"0 12px 36px rgba(0,0,0,.14)",display:"grid",gridTemplateColumns:"repeat(6,1fr)",gap:2}}>
-   {items.map(([id,ar,en,icon])=>{const on=active===id;return <button key={id} onClick={()=>go(id)} style={{border:0,borderRadius:17,padding:"7px 3px 6px",background:on?"rgba(181,154,98,.16)":"transparent",color:on?C.lapis:C.ink,fontFamily:"inherit",display:"grid",gap:3,placeItems:"center"}}><span style={{fontSize:16,lineHeight:1}}>{icon}</span><span style={{fontSize:8.8,fontWeight:on?700:500}}>{lang==="ar"?ar:en}</span></button>})}
+  <nav aria-label="Sakinah primary" style={{position:"fixed",left:"50%",transform:"translateX(-50%)",bottom:12,zIndex:10000,width:"min(560px,calc(100vw - 18px))",padding:5,borderRadius:23,border:"1px solid rgba(16,16,15,.09)",background:"rgba(246,243,236,.94)",backdropFilter:"blur(18px)",boxShadow:"0 12px 36px rgba(0,0,0,.14)",display:"grid",gridTemplateColumns:"repeat(8,1fr)",gap:1}}>
+   {items.map(([id,ar,en,icon])=>{const on=active===id;return <button key={id} onClick={()=>go(id)} style={{border:0,borderRadius:16,padding:"7px 2px 6px",background:on?"rgba(181,154,98,.16)":"transparent",color:on?C.lapis:C.ink,fontFamily:"inherit",display:"grid",gap:3,placeItems:"center",minWidth:0}}><span style={{fontSize:15,lineHeight:1}}>{icon}</span><span style={{fontSize:8,fontWeight:on?700:500,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",maxWidth:"100%"}}>{lang==="ar"?ar:en}</span></button>})}
   </nav>
  </>;
 }
 
 export default function MergedSakinah(){
  const [panel,setPanel]=useState("app"),[lang,setLang]=useState("ar");
- const known=new Set(["app","my-day","daily-tools","daily-reflection","trusted-daily","quranic-duas","smart-quranic-adhkar","sourced-seerah","kids-sourced-stories","kids-world","kids-home","kids-quran-live","kids-quiz-live","kids-nasheeds","offline-backup","islamic-calendar","fasting-center","ramadan-center","smart-khatmah","memorization-center","names-live","hisn-center","jumuah-center","worship-times","parental-controls","privacy-lock","card-maker"]);
+ const known=new Set(["app","my-day","daily-tools","daily-reflection","trusted-daily","quranic-duas","smart-quranic-adhkar","sourced-seerah","kids-sourced-stories","kids-world","kids-home","kids-quran-live","kids-quiz-live","kids-nasheeds","offline-backup","islamic-calendar","fasting-center","ramadan-center","smart-khatmah","memorization-center","names-live","hisn-center","jumuah-center","worship-times","parental-controls","privacy-lock","card-maker","islamic-search","saved-library"]);
  const go=(to)=>setPanel(known.has(to)?to:"app");
  const screens={
   "my-day":<SmartMyDay lang={lang} go={go}/>,
@@ -80,6 +83,8 @@ export default function MergedSakinah(){
   "parental-controls":<ParentalControls lang={lang} go={go}/>,
   "privacy-lock":<PrivacyLock lang={lang} go={go}/>,
   "card-maker":<CardMaker lang={lang} go={go}/>,
+  "islamic-search":<UniversalIslamicSearch lang={lang} go={go}/>,
+  "saved-library":<SavedLibrary lang={lang} go={go}/>,
  };
  return <div style={{position:"relative",minHeight:"100vh",background:C.ivory}}>
   {panel==="app"?<App/>:(screens[panel]||screens["trusted-daily"])}
