@@ -1,7 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import SakinahResponsiveShell from './SakinahResponsiveShell.jsx'
-import { installTypographyBoost } from './typographyBoost.js'
 import { installCelestialArc } from './celestialArc.js'
 import { installHeroAtmosphere } from './heroAtmosphere.js'
 import { installTimeFormatToggle } from './timeFormatToggle.js'
@@ -14,9 +13,6 @@ import { installModernHadithCategoryIcons } from './modernHadithCategoryIcons.js
 import { installModernFamilyIcons } from './modernFamilyIcons.js'
 import { installModernPersonalIcons } from './modernPersonalIcons.js'
 import { installModernSystemIcons } from './modernSystemIcons.js'
-import { installQuranSurahDownload } from './quranSurahDownload.js'
-import { installQuranSurahAutoPlay } from './quranSurahAutoPlay.js'
-import { installQuranPlayerActions } from './quranPlayerActions.js'
 import { installLuxuryDockIcons } from './luxuryDockIcons.js'
 import { installLivingHomeExperience } from './livingHomeExperience.js'
 import { installLivingHomeRotation } from './livingHomeRotation.js'
@@ -38,7 +34,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   </React.StrictMode>,
 )
 
-installTypographyBoost()
 installCelestialArc()
 installHeroAtmosphere()
 installTimeFormatToggle()
@@ -51,9 +46,6 @@ installModernHadithCategoryIcons()
 installModernFamilyIcons()
 installModernPersonalIcons()
 installModernSystemIcons()
-installQuranSurahDownload()
-installQuranSurahAutoPlay()
-installQuranPlayerActions()
 installLuxuryDockIcons()
 installLivingHomeExperience()
 installLivingHomeRotation()
