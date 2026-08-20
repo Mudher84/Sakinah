@@ -7,10 +7,10 @@ import { installHeroAtmosphere } from './heroAtmosphere.js'
 import { installTimeFormatToggle } from './timeFormatToggle.js'
 import { installPreviewToggle } from './previewToggle.js'
 import { installGlobalBackButtons } from './globalBackButtons.js'
-import { installTitleScrollMorph } from './titleScrollMorph.js'
 import './index.css'
 import './amiriExperiment.css'
 import './bodoniNumbers.css'
+import './topbarBrandPulse.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
@@ -24,7 +24,6 @@ installHeroAtmosphere()
 installTimeFormatToggle()
 installPreviewToggle()
 installGlobalBackButtons()
-installTitleScrollMorph()
 
 if ("serviceWorker" in navigator) {
   const localHost=["localhost","127.0.0.1","::1"].includes(window.location.hostname)
