@@ -42,7 +42,6 @@ export default function SakinahResponsiveShell(){
   <aside className="desktopServiceRail"><div className="railBrand"><span>م</span><div><b>مِرْآةُ الْمُسْلِمِ</b><small>كل الخدمات</small></div></div><ServiceList/></aside>
   <div className="responsiveAppStage"><SakinahAllFeaturesLayer><SakinahNativeReadyLayer/></SakinahAllFeaturesLayer></div>
   <nav className="app-global-dock" aria-label="Muslim Mirror primary">{dock.map(id=><button key={id} className={active===id?"active":""} aria-label={id} onClick={()=>goDock(id)}><span className="dockIcon"><DockIcon name={id}/></span></button>)}</nav>
-  {discover&&<button className="discoverServicesButton" onClick={()=>setOpen(true)}>☷ <span>كل الخدمات</span></button>}
   {open&&<div className="mobileServicesOverlay" onClick={()=>setOpen(false)}><div className="mobileServicesSheet" onClick={e=>e.stopPropagation()}><div className="sheetHead"><div><b>خدمات مِرْآةُ الْمُسْلِمِ</b><small>كل الميزات المفعلة في مكان واحد</small></div><button onClick={()=>setOpen(false)}>×</button></div><ServiceList close={()=>setOpen(false)}/></div></div>}
  </div>;
 }
