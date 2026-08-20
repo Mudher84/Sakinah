@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "source": "Sakina APK local hadith dataset",
+  "format": "sakinah-hadith-gzip-v1",
+  "books": [
+    {
+      "id": "bukhari",
+      "titleAr": "صحيح البخاري",
+      "titleEn": "Sahih al-Bukhari",
+      "authorAr": "الإمام محمد بن إسماعيل البخاري",
+      "count": 7277,
+      "chapters": 97,
+      "file": "/data/hadiths/books/bukhari.json.gz",
+      "sha256": "5a4e67729eb574c40e57b900a9d647a4fab06b9fb4eabc8213bc38adbda8de93",
+      "bytes": 1419705
+    },
+    {
+      "id": "muslim",
+      "titleAr": "صحيح مسلم",
+      "titleEn": "Sahih Muslim",
+      "authorAr": "الإمام مسلم بن الحجاج القشيري النيسابوري",
+      "count": 7459,
+      "chapters": 57,
+      "file": "/data/hadiths/books/muslim.json.gz",
+      "sha256": "3216123600259191e2a097621329cb84a858f02e78037ad8e497d01e138de75c",
+      "bytes": 1180857
+    },
+    {
+      "id": "abudawud",
+      "titleAr": "سنن أبي داود",
+      "titleEn": "Sunan Abi Dawud",
+      "authorAr": "الإمام سليمان بن الأشعث أبو داود السجستاني",
+      "count": 5276,
+      "chapters": 43,
+      "file": "/data/hadiths/books/abudawud.json.gz",
+      "sha256": "cb0397709842c693b5f466e4b96292650ba80894bdb1b2481dd5854754a2a896",
+      "bytes": 876643
+    },
+    {
+      "id": "tirmidhi",
+      "titleAr": "جامع الترمذي",
+      "titleEn": "Jami at-Tirmidhi",
+      "authorAr": "الإمام أبو عيسى محمد بن عيسى الترمذي",
+      "count": 4053,
+      "chapters": 49,
+      "file": "/data/hadiths/books/tirmidhi.json.gz",
+      "sha256": "942527dc61cc523a8e945c9fe0ea9611971f16f38719c10a76568f54a2a5a140",
+      "bytes": 874118
+    },
+    {
+      "id": "nasai",
+      "titleAr": "سنن النسائي",
+      "titleEn": "Sunan an-Nasa’i",
+      "authorAr": "الإمام أبو عبد الرحمن أحمد بن شعيب النسائي",
+      "count": 5768,
+      "chapters": 52,
+      "file": "/data/hadiths/books/nasai.json.gz",
+      "sha256": "b39d712dae293cf061d616d11e47baf07e03ff85d36a67a4b8d43c5d8b444c16",
+      "bytes": 763814
+    },
+    {
+      "id": "ibnmajah",
+      "titleAr": "سنن ابن ماجه",
+      "titleEn": "Sunan Ibn Majah",
+      "authorAr": "الإمام محمد بن يزيد بن ماجه القزويني",
+      "count": 4345,
+      "chapters": 38,
+      "file": "/data/hadiths/books/ibnmajah.json.gz",
+      "sha256": "f4652c8ccf4c305e1de154a50660232589906cc90ab15281f45c4a10e1da4e2b",
+      "bytes": 611960
+    },
+    {
+      "id": "malik",
+      "titleAr": "موطأ مالك",
+      "titleEn": "Muwatta Malik",
+      "authorAr": "الإمام مالك بن أنس",
+      "count": 1985,
+      "chapters": 61,
+      "file": "/data/hadiths/books/malik.json.gz",
+      "sha256": "527330103031b2ad7c5e284bf5c2846591afd0a5f508c948900c0e4cac8892a6",
+      "bytes": 301636
+    },
+    {
+      "id": "ahmed",
+      "titleAr": "مسند الإمام أحمد بن حنبل",
+      "titleEn": "Musnad Ahmad",
+      "authorAr": "الإمام أحمد بن حنبل",
+      "count": 1374,
+      "chapters": 8,
+      "file": "/data/hadiths/books/ahmed.json.gz",
+      "sha256": "7b09bcb38606b4cbe5b91f6124c0ced0f51f926829d88bcd83dda5f0cb68ff2d",
+      "bytes": 251876
+    },
+    {
+      "id": "darimi",
+      "titleAr": "سنن الدارمي",
+      "titleEn": "Sunan ad-Darimi",
+      "authorAr": "الإمام أبو محمد عبد الرحمن بن عبد الله بن الدارمي",
+      "count": 3406,
+      "chapters": 24,
+      "file": "/data/hadiths/books/darimi.json.gz",
+      "sha256": "2d6b3b897a6078be6661ca43901d251abae748d54da699c8ac8e8aae29515011",
+      "bytes": 454562
+    }
+  ]
+}
