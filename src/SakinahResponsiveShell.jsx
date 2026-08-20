@@ -1,4 +1,4 @@
-import React,{useEffect,useState} from "react";
+import React,{useState} from "react";
 import SakinahNativeReadyLayer from "./SakinahNativeReadyLayer.jsx";
 import SakinahAllFeaturesLayer from "./SakinahAllFeaturesLayer.jsx";
 import "./responsiveShell.css";
@@ -30,31 +30,20 @@ function DockIcon({name}){
 
 export default function SakinahResponsiveShell(){
  const [open,setOpen]=useState(false),[discover,setDiscover]=useState(false),[active,setActive]=useState("home");
- const goDock=(id,index,fallback)=>{
-  setActive(id);setDiscover(id==="discover");
+ const goDock=id=>{
+  setActive(id);
+  setDiscover(id==="discover");
   window.dispatchEvent(new CustomEvent("sakinah:global-root"));
   emit("home");
-  setTimeout(()=>{
-   const nav=document.querySelector('nav[aria-label="Sakinah seven primary"]');
-   const btn=nav?.querySelectorAll("button")?.[index];
-   if(btn){btn.click();return}
-   if(fallback)emit(fallback);
-  },35);
+  requestAnimationFrame(()=>window.dispatchEvent(new CustomEvent("muslimmirror:dock",{detail:id})));
  };
- useEffect(()=>{
-  const onClick=e=>{
-   const seven=e.target.closest?.('nav[aria-label="Sakinah seven primary"] button');
-   if(seven){const buttons=[...seven.closest('nav').querySelectorAll('button')],i=buttons.indexOf(seven);setActive(["home","quran","quran-player","hadith","myday","discover","profile"][i]||"home");setDiscover(i===5)}
-  };
-  document.addEventListener('click',onClick,true);return()=>document.removeEventListener('click',onClick,true)
- },[]);
- const dock=[["home",0,null],["quran",1,"quran-intelligence"],["quran-player",2,"quran-player"],["hadith",3,"nine-books"],["myday",4,"my-day"],["discover",5,null],["profile",6,"profiles"]];
+ const dock=["home","quran","quran-player","hadith","myday","discover","profile"];
  return <div className="sakinahResponsiveShell" dir="rtl">
-  <style>{`.sakinah-seven-dock,.global-feature-dock{display:none!important}.app-global-dock{position:fixed!important;left:50%!important;right:auto!important;bottom:max(10px,env(safe-area-inset-bottom))!important;transform:translateX(-50%)!important;z-index:2147483600!important;width:min(560px,calc(100vw - 14px));display:grid!important;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;padding:7px;border:1px solid rgba(255,255,255,.72);border-radius:28px;background:linear-gradient(180deg,rgba(250,248,242,.9),rgba(243,239,229,.82));-webkit-backdrop-filter:blur(28px) saturate(145%);backdrop-filter:blur(28px) saturate(145%);box-shadow:0 18px 44px rgba(34,30,24,.11),0 2px 8px rgba(34,30,24,.045),inset 0 1px 0 rgba(255,255,255,.86)}.app-global-dock button{position:relative;border:0;border-radius:19px;padding:8px 2px;min-height:54px;background:transparent;color:rgba(25,25,23,.42);display:grid;place-items:center;font-family:inherit;transition:transform .2s cubic-bezier(.2,.8,.2,1),background .2s ease,color .2s ease,box-shadow .2s ease}.app-global-dock button:active{transform:scale(.91)}.app-global-dock button.active{background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(250,247,239,.82));color:#173B57;box-shadow:inset 0 0 0 1px rgba(181,154,98,.16),inset 0 1px 0 rgba(255,255,255,.96),0 8px 20px rgba(23,59,87,.08)}.app-global-dock button.active:after{content:"";position:absolute;bottom:4px;width:13px;height:1.5px;border-radius:999px;background:linear-gradient(90deg,rgba(181,154,98,0),#B59A62,rgba(181,154,98,0));opacity:.85}.app-global-dock .dockIcon{width:29px;height:29px;display:grid;place-items:center;transition:transform .2s ease}.app-global-dock .dockIcon svg{width:24px;height:24px;display:block}.app-global-dock button.active .dockIcon{transform:translateY(-1.5px) scale(1.03)}@media(max-width:430px){.app-global-dock{width:calc(100vw - 10px);padding:6px 4px;border-radius:25px}.app-global-dock button{min-height:50px;border-radius:17px}.app-global-dock .dockIcon{width:26px;height:26px}.app-global-dock .dockIcon svg{width:22px;height:22px}.app-global-dock button.active:after{bottom:3px}}`}</style>
-  <aside className="desktopServiceRail"><div className="railBrand"><span>س</span><div><b>سكينة</b><small>كل الخدمات</small></div></div><ServiceList/></aside>
+  <style>{`.app-global-dock{position:fixed!important;left:50%!important;right:auto!important;bottom:max(10px,env(safe-area-inset-bottom))!important;transform:translateX(-50%)!important;z-index:2147483600!important;width:min(560px,calc(100vw - 14px));display:grid!important;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;padding:7px;border:1px solid rgba(255,255,255,.72);border-radius:28px;background:linear-gradient(180deg,rgba(250,248,242,.9),rgba(243,239,229,.82));-webkit-backdrop-filter:blur(28px) saturate(145%);backdrop-filter:blur(28px) saturate(145%);box-shadow:0 18px 44px rgba(34,30,24,.11),0 2px 8px rgba(34,30,24,.045),inset 0 1px 0 rgba(255,255,255,.86)}.app-global-dock button{position:relative;border:0;border-radius:19px;padding:8px 2px;min-height:54px;background:transparent;color:rgba(25,25,23,.42);display:grid;place-items:center;font-family:inherit;transition:transform .2s cubic-bezier(.2,.8,.2,1),background .2s ease,color .2s ease,box-shadow .2s ease}.app-global-dock button:active{transform:scale(.91)}.app-global-dock button.active{background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(250,247,239,.82));color:#173B57;box-shadow:inset 0 0 0 1px rgba(181,154,98,.16),inset 0 1px 0 rgba(255,255,255,.96),0 8px 20px rgba(23,59,87,.08)}.app-global-dock button.active:after{content:"";position:absolute;bottom:4px;width:13px;height:1.5px;border-radius:999px;background:linear-gradient(90deg,rgba(181,154,98,0),#B59A62,rgba(181,154,98,0));opacity:.85}.app-global-dock .dockIcon{width:29px;height:29px;display:grid;place-items:center;transition:transform .2s ease}.app-global-dock .dockIcon svg{width:24px;height:24px;display:block}.app-global-dock button.active .dockIcon{transform:translateY(-1.5px) scale(1.03)}@media(max-width:430px){.app-global-dock{width:calc(100vw - 10px);padding:6px 4px;border-radius:25px}.app-global-dock button{min-height:50px;border-radius:17px}.app-global-dock .dockIcon{width:26px;height:26px}.app-global-dock .dockIcon svg{width:22px;height:22px}.app-global-dock button.active:after{bottom:3px}}`}</style>
+  <aside className="desktopServiceRail"><div className="railBrand"><span>م</span><div><b>مِرْآةُ الْمُسْلِمِ</b><small>كل الخدمات</small></div></div><ServiceList/></aside>
   <div className="responsiveAppStage"><SakinahAllFeaturesLayer><SakinahNativeReadyLayer/></SakinahAllFeaturesLayer></div>
-  <nav className="app-global-dock" aria-label="Sakinah persistent primary">{dock.map(([id,index,fallback])=><button key={id} className={active===id?"active":""} aria-label={id} onClick={()=>goDock(id,index,fallback)}><span className="dockIcon"><DockIcon name={id}/></span></button>)}</nav>
+  <nav className="app-global-dock" aria-label="Muslim Mirror primary">{dock.map(id=><button key={id} className={active===id?"active":""} aria-label={id} onClick={()=>goDock(id)}><span className="dockIcon"><DockIcon name={id}/></span></button>)}</nav>
   {discover&&<button className="discoverServicesButton" onClick={()=>setOpen(true)}>☷ <span>كل الخدمات</span></button>}
-  {open&&<div className="mobileServicesOverlay" onClick={()=>setOpen(false)}><div className="mobileServicesSheet" onClick={e=>e.stopPropagation()}><div className="sheetHead"><div><b>خدمات سكينة</b><small>كل الميزات المفعلة في مكان واحد</small></div><button onClick={()=>setOpen(false)}>×</button></div><ServiceList close={()=>setOpen(false)}/></div></div>}
+  {open&&<div className="mobileServicesOverlay" onClick={()=>setOpen(false)}><div className="mobileServicesSheet" onClick={e=>e.stopPropagation()}><div className="sheetHead"><div><b>خدمات مِرْآةُ الْمُسْلِمِ</b><small>كل الميزات المفعلة في مكان واحد</small></div><button onClick={()=>setOpen(false)}>×</button></div><ServiceList close={()=>setOpen(false)}/></div></div>}
  </div>;
 }
