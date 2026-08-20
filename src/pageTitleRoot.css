@@ -1,0 +1,36 @@
+/* Muslim Mirror — canonical page-title alignment contract.
+   Page-level titles are centered here once; feature/card/body headings are intentionally untouched. */
+.sakinahResponsiveShell .pageTitle,
+.sakinahResponsiveShell .backHeader,
+.sakinahResponsiveShell .readerTop {
+  text-align: center !important;
+}
+
+.sakinahResponsiveShell .pageTitle > h1,
+.sakinahResponsiveShell .pageTitle > h2,
+.sakinahResponsiveShell .pageTitle > p {
+  width: 100%;
+  margin-inline-left: auto !important;
+  margin-inline-right: auto !important;
+  text-align: center !important;
+}
+
+.sakinahResponsiveShell .backHeader > b,
+.sakinahResponsiveShell .backHeader > strong,
+.sakinahResponsiveShell .readerTop > div {
+  min-width: 0;
+  width: 100%;
+  justify-self: center;
+  text-align: center !important;
+}
+
+/* Shared top-level headings used by feature layers that do not wrap in pageTitle. */
+.sakinahResponsiveShell .screen > h1,
+.sakinahResponsiveShell .screen > h2,
+.sakinahResponsiveShell .screen > header > h1,
+.sakinahResponsiveShell .screen > header > h2 {
+  width: 100%;
+  margin-inline-left: auto !important;
+  margin-inline-right: auto !important;
+  text-align: center !important;
+}
