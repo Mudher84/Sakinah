@@ -1,0 +1,110 @@
+.sakinah-seven-base > div:has(.sakinah-profile-avatar[aria-label="تغيير صورة البروفايل"]){
+  padding:18px 16px 150px!important;
+  background:
+    radial-gradient(circle at 84% 2%,rgba(181,154,98,.11),transparent 25%),
+    linear-gradient(180deg,#F7F3EA 0%,#F6F3EC 24%,#F6F3EC 100%)!important;
+  scroll-behavior:smooth;
+}
+.sakinah-seven-base > div:has(.sakinah-profile-avatar[aria-label="تغيير صورة البروفايل"]) > div:first-of-type{
+  position:relative!important;
+  max-width:620px!important;
+  margin:0 auto 24px!important;
+  padding:28px 18px 22px!important;
+  border:1px solid rgba(16,16,15,.065)!important;
+  border-radius:30px!important;
+  background:linear-gradient(145deg,rgba(255,255,255,.82),rgba(251,247,238,.68))!important;
+  box-shadow:0 18px 46px rgba(28,24,17,.055)!important;
+  overflow:hidden!important;
+}
+.sakinah-seven-base > div:has(.sakinah-profile-avatar[aria-label="تغيير صورة البروفايل"]) > div:first-of-type::before{
+  content:"";
+  position:absolute;
+  width:180px;
+  height:180px;
+  top:-86px;
+  right:-42px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(181,154,98,.16),rgba(181,154,98,0) 68%);
+  pointer-events:none;
+}
+.sakinah-seven-base .sakinah-profile-avatar[aria-label="تغيير صورة البروفايل"]{
+  width:104px!important;
+  height:104px!important;
+  position:relative!important;
+  z-index:1!important;
+  background:linear-gradient(145deg,#fff,#EEE8DB)!important;
+  box-shadow:0 0 0 1px rgba(181,154,98,.18),0 12px 30px rgba(16,16,15,.08)!important;
+}
+.sakinah-seven-base > div:has(.sakinah-profile-avatar[aria-label="تغيير صورة البروفايل"]) > div:first-of-type > div{
+  position:relative!important;
+  z-index:1!important;
+}
+.sakinah-seven-base > div:has(.sakinah-profile-avatar[aria-label="تغيير صورة البروفايل"]) > section{
+  max-width:620px!important;
+  margin:0 auto 22px!important;
+}
+.sakinah-seven-base > div:has(.sakinah-profile-avatar[aria-label="تغيير صورة البروفايل"]) > section > div:first-child{
+  margin:0 4px 10px!important;
+  font-size:11px!important;
+  font-weight:700!important;
+  letter-spacing:.02em!important;
+  opacity:.58!important;
+}
+.sakinah-seven-base > div:has(.sakinah-profile-avatar[aria-label="تغيير صورة البروفايل"]) > section > div:last-child{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:10px!important;
+  overflow:visible!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+  border-radius:0!important;
+}
+.sakinah-seven-base > div:has(.sakinah-profile-avatar[aria-label="تغيير صورة البروفايل"]) > section button{
+  min-height:92px!important;
+  grid-template-columns:42px 1fr auto!important;
+  gap:10px!important;
+  padding:14px 13px!important;
+  border:1px solid rgba(16,16,15,.065)!important;
+  border-radius:22px!important;
+  background:rgba(255,255,255,.68)!important;
+  box-shadow:0 9px 24px rgba(16,16,15,.035)!important;
+  transition:background .24s ease,border-color .24s ease,box-shadow .24s ease!important;
+}
+.sakinah-seven-base > div:has(.sakinah-profile-avatar[aria-label="تغيير صورة البروفايل"]) > section button:active{
+  background:rgba(255,255,255,.92)!important;
+  border-color:rgba(181,154,98,.24)!important;
+  box-shadow:0 4px 14px rgba(16,16,15,.06)!important;
+}
+.sakinah-seven-base > div:has(.sakinah-profile-avatar[aria-label="تغيير صورة البروفايل"]) > section button > span:first-child{
+  width:38px!important;
+  height:38px!important;
+  display:grid!important;
+  place-items:center!important;
+  border-radius:13px!important;
+  background:rgba(181,154,98,.09)!important;
+  color:#A78349!important;
+}
+.sakinah-seven-base > div:has(.sakinah-profile-avatar[aria-label="تغيير صورة البروفايل"]) > section button > span:nth-child(2) > span{
+  font-size:12.5px!important;
+  font-weight:650!important;
+  line-height:1.5!important;
+}
+.sakinah-seven-base > div:has(.sakinah-profile-avatar[aria-label="تغيير صورة البروفايل"]) > section button > span:nth-child(2) > small{
+  margin-top:5px!important;
+  font-size:9.5px!important;
+  line-height:1.55!important;
+  opacity:.46!important;
+}
+.sakinah-seven-base > div:has(.sakinah-profile-avatar[aria-label="تغيير صورة البروفايل"]) > section:nth-of-type(1) button:nth-child(1),
+.sakinah-seven-base > div:has(.sakinah-profile-avatar[aria-label="تغيير صورة البروفايل"]) > section:nth-of-type(1) button:nth-child(2){background:linear-gradient(145deg,rgba(252,241,224,.92),rgba(255,255,255,.72))!important}
+.sakinah-seven-base > div:has(.sakinah-profile-avatar[aria-label="تغيير صورة البروفايل"]) > section:nth-of-type(2) button:nth-child(1),
+.sakinah-seven-base > div:has(.sakinah-profile-avatar[aria-label="تغيير صورة البروفايل"]) > section:nth-of-type(2) button:nth-child(6){background:linear-gradient(145deg,rgba(233,240,237,.92),rgba(255,255,255,.72))!important}
+.sakinah-seven-base > div:has(.sakinah-profile-avatar[aria-label="تغيير صورة البروفايل"]) > section:nth-of-type(3) button:nth-child(1),
+.sakinah-seven-base > div:has(.sakinah-profile-avatar[aria-label="تغيير صورة البروفايل"]) > section:nth-of-type(3) button:nth-child(4){background:linear-gradient(145deg,rgba(235,239,244,.92),rgba(255,255,255,.72))!important}
+@media(max-width:430px){
+  .sakinah-seven-base > div:has(.sakinah-profile-avatar[aria-label="تغيير صورة البروفايل"]){padding:14px 12px 145px!important}
+  .sakinah-seven-base > div:has(.sakinah-profile-avatar[aria-label="تغيير صورة البروفايل"]) > div:first-of-type{padding:24px 14px 20px!important;border-radius:26px!important}
+  .sakinah-seven-base > div:has(.sakinah-profile-avatar[aria-label="تغيير صورة البروفايل"]) > section > div:last-child{grid-template-columns:1fr!important;gap:8px!important}
+  .sakinah-seven-base > div:has(.sakinah-profile-avatar[aria-label="تغيير صورة البروفايل"]) > section button{min-height:82px!important}
+}
