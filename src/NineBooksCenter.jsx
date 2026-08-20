@@ -5,7 +5,19 @@ const MANIFEST="/data/hadiths/manifest.json";
 const ar=n=>String(n??"").replace(/[0-9]/g,d=>"٠١٢٣٤٥٦٧٨٩"[d]);
 const textOf=h=>{const v=h?.arabic;return typeof v==="string"?v:String(v?.text??v?.body??v?.hadith??v?.contents??"").trim()};
 const chapterName=c=>String(c?.arabic?.title??c?.arabic?.name??c?.arabic??"").trim();
-async function loadGzipJson(url){const r=await fetch(url,{cache:"force-cache"});if(!r.ok)throw new Error("missing");if(typeof DecompressionStream!=="function")throw new Error("gzip-unsupported");const ds=new DecompressionStream("gzip");return new Response(r.body.pipeThrough(ds)).json()}
+async function loadGzipJson(url){
+ const r=await fetch(url,{cache:"force-cache"});
+ if(!r.ok)throw new Error("missing");
+ const buf=await r.arrayBuffer();
+ const bytes=new Uint8Array(buf);
+ const isGzip=bytes.length>=2&&bytes[0]===0x1f&&bytes[1]===0x8b;
+ if(isGzip){
+  if(typeof DecompressionStream!=="function")throw new Error("gzip-unsupported");
+  const ds=new DecompressionStream("gzip");
+  return new Response(new Blob([buf]).stream().pipeThrough(ds)).json();
+ }
+ return JSON.parse(new TextDecoder("utf-8").decode(bytes));
+}
 
 export default function NineBooksCenter(){
  const[manifest,setManifest]=useState(null),[bookMeta,setBookMeta]=useState(null),[bookData,setBookData]=useState(null),[chapter,setChapter]=useState(null),[detail,setDetail]=useState(null),[q,setQ]=useState(""),[busy,setBusy]=useState(true),[err,setErr]=useState("");
@@ -17,7 +29,7 @@ export default function NineBooksCenter(){
  const chapters=bookData?.chapters||[],hadiths=bookData?.hadiths||[];
  const rows=useMemo(()=>chapter?hadiths.filter(h=>String(h.chapterId)===String(chapter.id)):hadiths,[hadiths,chapter]);
  const shownHadiths=useMemo(()=>{const s=q.trim();return s?rows.filter(h=>`${h.idInBook??h.id??""} ${textOf(h)}`.includes(s)):rows},[rows,q]);
- const openBook=async b=>{setBookMeta(b);setBookData(null);setChapter(null);setDetail(null);setQ("");setErr("");setBusy(true);try{localStorage.setItem("sakinah-nine-last-book",b.id);setLastBook(b.id)}catch{}try{setBookData(await loadGzipJson(b.file))}catch(e){setErr(e?.message==="gzip-unsupported"?"هذا المتصفح لا يدعم فك ضغط بيانات الكتب المحلية.":"تعذر فتح بيانات هذا الكتاب المحلية.")}finally{setBusy(false)}};
+ const openBook=async b=>{setBookMeta(b);setBookData(null);setChapter(null);setDetail(null);setQ("");setErr("");setBusy(true);try{localStorage.setItem("sakinah-nine-last-book",b.id);setLastBook(b.id)}catch{}try{setBookData(await loadGzipJson(b.file))}catch(e){console.error("NineBooks load failed",b.file,e);setErr(e?.message==="gzip-unsupported"?"هذا المتصفح لا يدعم فك ضغط بيانات الكتب المحلية.":e?.message==="missing"?"ملف هذا الكتاب غير موجود في المكتبة المحلية.":"تعذر فتح بيانات هذا الكتاب المحلية.")}finally{setBusy(false)}};
  const saveKey=detail&&`${bookMeta?.id}:${detail.idInBook??detail.id}`;
  const toggleSave=()=>{if(!saveKey)return;const n={...saved,[saveKey]:!saved[saveKey]};setSaved(n);try{localStorage.setItem("sakinah-nine-books-saved",JSON.stringify(n))}catch{}};
  const share=async()=>{if(!detail)return;const no=detail.idInBook??detail.id??"",text=`${bookMeta?.titleAr||"حديث"}\nحديث رقم ${no}\n\n${textOf(detail)}`;try{if(navigator.share)await navigator.share({title:bookMeta?.titleAr||"حديث",text});else await navigator.clipboard.writeText(text)}catch{}};
