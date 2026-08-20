@@ -8,6 +8,7 @@ import { installTimeFormatToggle } from './timeFormatToggle.js'
 import { installPreviewToggle } from './previewToggle.js'
 import { installGlobalBackButtons } from './globalBackButtons.js'
 import { installFixedTitleMorph } from './fixedTitleMorph.js'
+import { installAdhanMomentScreen } from './adhanMomentScreen.js'
 import './index.css'
 import './amiriExperiment.css'
 import './bodoniNumbers.css'
@@ -26,6 +27,7 @@ installTimeFormatToggle()
 installPreviewToggle()
 installGlobalBackButtons()
 installFixedTitleMorph()
+installAdhanMomentScreen()
 
 if ("serviceWorker" in navigator) {
   const localHost=["localhost","127.0.0.1","::1"].includes(window.location.hostname)
