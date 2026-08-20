@@ -3,17 +3,16 @@
   50% { opacity: 1; }
 }
 
-.sakinah-wordmark {
-  font-weight: 800 !important;
-  opacity: 0;
-  animation: sakinahWordmarkZeroToFull 2.2s ease-in-out infinite !important;
+html body #root .sakinah-live-home .sakinah-live-hero .sakinah-wordmark {
+  display: inline-block !important;
+  font-weight: 900 !important;
+  opacity: 0 !important;
+  animation-name: sakinahWordmarkZeroToFull !important;
+  animation-duration: 1.8s !important;
+  animation-timing-function: ease-in-out !important;
+  animation-iteration-count: infinite !important;
+  animation-fill-mode: both !important;
   transform: none !important;
   text-shadow: none !important;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .sakinah-wordmark {
-    animation: none !important;
-    opacity: 1 !important;
-  }
+  will-change: opacity;
 }
