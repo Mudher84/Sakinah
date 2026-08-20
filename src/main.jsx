@@ -24,7 +24,6 @@ import './playerControlsCenter.css'
 import './dailyCardMotion.css'
 import './profilePagePolish.css'
 import './globalScrollbar.css'
-import './pageTitleRoot.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
