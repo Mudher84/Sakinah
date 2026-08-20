@@ -1,8 +1,9 @@
-/* Muslim Mirror — safe ROOT title alignment contract.
-   IMPORTANT: never target anonymous nth-child nodes. Those rules altered
-   unrelated home/profile content. Only explicit title/header contracts live here. */
+/* Muslim Mirror — canonical routed-page title contract.
+   Scope is restricted to explicit feature routes only. Home/profile content
+   is intentionally outside this contract. */
 
-.sakinahResponsiveShell .responsiveAppStage :is(.pageTitle,[class*="PageTitle"],[class*="pageTitle"],[class*="HeroTitle"],[class*="heroTitle"]){
+/* Shared/semantic title components inside routed feature pages. */
+.sakinahResponsiveShell .global-feature-shell[data-feature] :is(.pageTitle,[class*="PageTitle"],[class*="pageTitle"],[class*="HeroTitle"],[class*="heroTitle"],[class*="TitleBlock"],[class*="titleBlock"]){
   width:100%!important;
   max-width:none!important;
   margin-inline:auto!important;
@@ -10,20 +11,30 @@
   align-items:center!important;
   justify-items:center!important;
 }
+.sakinahResponsiveShell .global-feature-shell[data-feature] :is(.pageTitle,[class*="PageTitle"],[class*="pageTitle"],[class*="HeroTitle"],[class*="heroTitle"],[class*="TitleBlock"],[class*="titleBlock"]) :is(h1,h2,h3,p,b,strong,small){
+  text-align:center!important;
+  margin-inline:auto!important;
+}
 
-.sakinahResponsiveShell .responsiveAppStage :is(.pageTitle,[class*="PageTitle"],[class*="pageTitle"],[class*="HeroTitle"],[class*="heroTitle"]) :is(h1,h2,h3,p){
+/* Primary semantic heading at the top of a routed feature component. */
+.sakinahResponsiveShell .global-feature-shell[data-feature] > * > :is(h1,h2),
+.sakinahResponsiveShell .global-feature-shell[data-feature] > * > header > :is(h1,h2),
+.sakinahResponsiveShell .global-feature-shell[data-feature] > * > main > :is(h1,h2):first-child{
   width:100%!important;
   max-width:none!important;
   margin-inline:auto!important;
   text-align:center!important;
+  align-self:center!important;
+  justify-self:center!important;
 }
 
-.sakinahResponsiveShell :is(.backHeader,.readerTop){
+/* Explicit navigation headers. Buttons remain untouched while the title is
+   geometrically centered in the page. */
+.sakinahResponsiveShell .global-feature-shell[data-feature] :is(.backHeader,.readerTop){
   position:relative!important;
 }
-
-.sakinahResponsiveShell .backHeader > :nth-child(2),
-.sakinahResponsiveShell .readerTop > :nth-child(2){
+.sakinahResponsiveShell .global-feature-shell[data-feature] .backHeader > :nth-child(2),
+.sakinahResponsiveShell .global-feature-shell[data-feature] .readerTop > :nth-child(2){
   position:absolute!important;
   left:50%!important;
   right:auto!important;
@@ -32,5 +43,11 @@
   width:max-content!important;
   max-width:calc(100% - 104px)!important;
   margin:0!important;
+  text-align:center!important;
+}
+
+/* Existing native/base pages that already expose the shared pageTitle contract. */
+.sakinahResponsiveShell .responsiveAppStage .pageTitle,
+.sakinahResponsiveShell .responsiveAppStage .pageTitle :is(h1,h2,h3,p){
   text-align:center!important;
 }
