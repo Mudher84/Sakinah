@@ -4,7 +4,7 @@ export function installWordmarkPulse(){
   const apply=now=>{
     const phase=((now-start)%1800)/1800;
     const opacity=phase<0.5?phase*2:(1-phase)*2;
-    const el=document.querySelector('.sakinah-live-home .sakinah-live-hero .sakinah-wordmark');
+    const el=document.querySelector('.topbar .brandMark');
     if(el){
       el.style.setProperty('font-weight','900','important');
       el.style.setProperty('opacity',String(opacity),'important');
