@@ -8,7 +8,7 @@ import { installTimeFormatToggle } from './timeFormatToggle.js'
 import { installPreviewToggle } from './previewToggle.js'
 import { installGlobalBackButtons } from './globalBackButtons.js'
 import { installFixedTitleMorph } from './fixedTitleMorph.js'
-import { installAdhanMomentScreen } from './adhanMomentScreen.js'
+import { installAdhanMomentScreenV2 } from './adhanMomentScreenV2.js'
 import { installAdhanKazanBackground } from './adhanBackgroundKazan.js'
 import './index.css'
 import './amiriExperiment.css'
@@ -28,7 +28,7 @@ installTimeFormatToggle()
 installPreviewToggle()
 installGlobalBackButtons()
 installFixedTitleMorph()
-installAdhanMomentScreen()
+installAdhanMomentScreenV2()
 installAdhanKazanBackground()
 
 if ("serviceWorker" in navigator) {
