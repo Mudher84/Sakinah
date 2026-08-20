@@ -1,0 +1,11 @@
+@keyframes sakinahTopbarBrandPulse {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+.topbar .brandMark {
+  font-weight: 900 !important;
+  opacity: 0;
+  animation: sakinahTopbarBrandPulse 1.8s ease-in-out infinite !important;
+  will-change: opacity;
+}
