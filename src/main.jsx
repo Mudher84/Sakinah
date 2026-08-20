@@ -20,6 +20,7 @@ import { installQuranSurahAutoPlay } from './quranSurahAutoPlay.js'
 import { installQuranPlayerActions } from './quranPlayerActions.js'
 import { installLuxuryDockIcons } from './luxuryDockIcons.js'
 import { installLivingHomeExperience } from './livingHomeExperience.js'
+import { installLivingHomeRotation } from './livingHomeRotation.js'
 import './index.css'
 import './amiriExperiment.css'
 import './bodoniNumbers.css'
@@ -51,6 +52,7 @@ installQuranSurahAutoPlay()
 installQuranPlayerActions()
 installLuxuryDockIcons()
 installLivingHomeExperience()
+installLivingHomeRotation()
 
 if ("serviceWorker" in navigator) {
   const localHost=["localhost","127.0.0.1","::1"].includes(window.location.hostname)
