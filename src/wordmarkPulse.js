@@ -4,12 +4,13 @@ export function installWordmarkPulse(){
   const apply=now=>{
     const phase=((now-start)%1800)/1800;
     const opacity=phase<0.5?phase*2:(1-phase)*2;
-    document.querySelectorAll('.sakinah-wordmark').forEach(el=>{
+    const el=document.querySelector('.sakinah-live-home .sakinah-live-hero .sakinah-wordmark');
+    if(el){
       el.style.setProperty('font-weight','900','important');
       el.style.setProperty('opacity',String(opacity),'important');
       el.style.setProperty('transform','none','important');
       el.style.setProperty('text-shadow','none','important');
-    });
+    }
     raf=requestAnimationFrame(apply);
   };
   raf=requestAnimationFrame(apply);
