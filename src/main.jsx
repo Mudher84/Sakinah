@@ -12,6 +12,7 @@ import { installAdhanMomentScreenV2 } from './adhanMomentScreenV2.js'
 import { installAdhanKazanBackground } from './adhanBackgroundKazan.js'
 import { installHideHadithSourceFooter } from './hideHadithSourceFooter.js'
 import { installModernHadithCategoryIcons } from './modernHadithCategoryIcons.js'
+import { installModernFamilyIcons } from './modernFamilyIcons.js'
 import './index.css'
 import './amiriExperiment.css'
 import './bodoniNumbers.css'
@@ -34,6 +35,7 @@ installAdhanMomentScreenV2()
 installAdhanKazanBackground()
 installHideHadithSourceFooter()
 installModernHadithCategoryIcons()
+installModernFamilyIcons()
 
 if ("serviceWorker" in navigator) {
   const localHost=["localhost","127.0.0.1","::1"].includes(window.location.hostname)
