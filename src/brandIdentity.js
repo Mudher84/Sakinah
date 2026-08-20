@@ -8,7 +8,7 @@ function cleanText(value){
   .replace(/صباح\s+السكينة/g,"صباح الخير")
   .replace(/مساء\s+السكينة/g,"مساء الخير")
   .replace(/لحظة\s+سكينة/g,"لحظة هادئة")
-  .replace(/^\s*سكينة\s*$/g,BRAND_AR);
+  .replace(/سكينة/g,BRAND_AR);
 }
 function cleanVisibleText(root=document.body){
  if(!root)return;
