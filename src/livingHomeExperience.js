@@ -30,16 +30,16 @@ function icon(kind){const p='viewBox="0 0 24 24" fill="none" stroke="currentColo
 function style(){if(document.getElementById("sakinah-living-home-style"))return;const s=document.createElement("style");s.id="sakinah-living-home-style";s.textContent=`
 @keyframes sakinahHomeRise{from{opacity:0;transform:translateY(16px) scale(.985)}to{opacity:1;transform:none}}
 @keyframes sakinahHomeGlow{0%,100%{transform:translate3d(-10%,0,0);opacity:.18}50%{transform:translate3d(10%,0,0);opacity:.32}}
-.sakinah-daily-stream{margin:-2px 0 22px;display:grid;gap:10px;animation:sakinahHomeRise .65s cubic-bezier(.2,.7,.2,1) both}
-.sakinah-daily-hero{position:relative;overflow:hidden;border:1px solid rgba(16,16,15,.065);border-radius:24px;padding:18px;background:rgba(255,255,255,.62);color:#10100F;box-shadow:0 10px 28px rgba(16,16,15,.04);min-height:150px}
+.sakinah-daily-stream{margin:-2px 0 22px;display:grid;gap:10px;animation:sakinahHomeRise .65s cubic-bezier(.2,.7,.2,1) both;text-align:center}
+.sakinah-daily-hero{position:relative;overflow:hidden;border:1px solid rgba(16,16,15,.065);border-radius:24px;padding:18px;background:rgba(255,255,255,.62);color:#10100F;box-shadow:0 10px 28px rgba(16,16,15,.04);min-height:150px;text-align:center}
 .sakinah-daily-hero:before{content:"";position:absolute;width:58%;height:150%;top:-30%;right:-16%;border-radius:50%;background:radial-gradient(circle,rgba(181,154,98,.12),transparent 70%);animation:sakinahHomeGlow 8s ease-in-out infinite;pointer-events:none}
-.sakinah-daily-kicker{position:relative;font-size:9.5px;letter-spacing:.05em;color:#A88353;opacity:.88}
-.sakinah-daily-title{position:relative;font-family:Fraunces,'Noto Naskh Arabic',serif;font-size:22px;margin-top:8px;color:#10100F}
-.sakinah-daily-quote{position:relative;font-size:16px;line-height:1.95;margin-top:15px;max-width:520px;color:#10100F}
-.sakinah-daily-source{position:relative;font-size:9.5px;opacity:.42;margin-top:8px;color:#10100F}
+.sakinah-daily-kicker{position:relative;font-size:9.5px;letter-spacing:.05em;color:#A88353;opacity:.88;text-align:center}
+.sakinah-daily-title{position:relative;font-family:Fraunces,'Noto Naskh Arabic',serif;font-size:22px;margin-top:8px;color:#10100F;text-align:center}
+.sakinah-daily-quote{position:relative;font-size:16px;line-height:1.95;margin:15px auto 0;max-width:520px;color:#10100F;text-align:center}
+.sakinah-daily-source{position:relative;font-size:9.5px;opacity:.42;margin-top:8px;color:#10100F;text-align:center}
 .sakinah-daily-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.sakinah-daily-card{border:1px solid rgba(16,16,15,.065);border-radius:22px;padding:15px;background:rgba(255,255,255,.62);box-shadow:0 10px 28px rgba(16,16,15,.04);min-height:126px;position:relative;overflow:hidden}
-.sakinah-daily-card svg{width:22px;height:22px;color:#B59A62}.sakinah-daily-label{font-size:9px;opacity:.42;margin-top:12px}.sakinah-daily-card b{display:block;font-size:12.5px;font-weight:550;line-height:1.75;margin-top:7px}
+.sakinah-daily-card{border:1px solid rgba(16,16,15,.065);border-radius:22px;padding:15px;background:rgba(255,255,255,.62);box-shadow:0 10px 28px rgba(16,16,15,.04);min-height:126px;position:relative;overflow:hidden;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.sakinah-daily-card svg{width:22px;height:22px;color:#B59A62}.sakinah-daily-label{font-size:9px;opacity:.42;margin-top:12px;text-align:center}.sakinah-daily-card b{display:block;width:100%;font-size:12.5px;font-weight:550;line-height:1.75;margin-top:7px;text-align:center}
 .sakinah-quick-grid{perspective:900px}.sakinah-quick-card{position:relative!important;overflow:hidden!important;transition:transform .28s cubic-bezier(.2,.7,.2,1),box-shadow .28s ease,border-color .28s ease,background .28s ease!important;animation:sakinahHomeRise .55s cubic-bezier(.2,.7,.2,1) both!important}
 .sakinah-quick-card:before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,var(--sakinah-card-tint,rgba(181,154,98,.08)),transparent 62%);opacity:.72;pointer-events:none}.sakinah-quick-card:after{content:"";position:absolute;width:58px;height:58px;border-radius:50%;left:-24px;bottom:-30px;background:var(--sakinah-card-accent,#B59A62);opacity:.055;transition:transform .3s ease,opacity .3s ease}
 .sakinah-quick-card:hover,.sakinah-quick-card:focus-visible{transform:translateY(-4px) scale(1.018);box-shadow:0 16px 34px rgba(16,16,15,.08)!important;border-color:color-mix(in srgb,var(--sakinah-card-accent,#B59A62) 32%,transparent)!important}.sakinah-quick-card:hover:after,.sakinah-quick-card:focus-visible:after{transform:scale(1.7);opacity:.09}.sakinah-quick-card:active{transform:translateY(-1px) scale(.97)}
