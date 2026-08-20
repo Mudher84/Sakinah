@@ -7,7 +7,6 @@ import { installHeroAtmosphere } from './heroAtmosphere.js'
 import { installTimeFormatToggle } from './timeFormatToggle.js'
 import { installPreviewToggle } from './previewToggle.js'
 import { installGlobalBackButtons } from './globalBackButtons.js'
-import { installScrollTitleMotion } from './scrollTitleMotion.js'
 import './index.css'
 import './amiriExperiment.css'
 import './bodoniNumbers.css'
@@ -25,7 +24,6 @@ installHeroAtmosphere()
 installTimeFormatToggle()
 installPreviewToggle()
 installGlobalBackButtons()
-installScrollTitleMotion()
 
 if ("serviceWorker" in navigator) {
   const localHost=["localhost","127.0.0.1","::1"].includes(window.location.hostname)
