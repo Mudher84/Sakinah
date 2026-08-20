@@ -4,11 +4,11 @@
 }
 
 .topbar .brandMark {
-  font-size: 11px !important;
-  line-height: 1 !important;
-  letter-spacing: 1.45px !important;
-  font-weight: 800 !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  letter-spacing: .7px !important;
+  text-transform: none !important;
   opacity: 0;
-  animation: sakinahTopbarBrandPulse 2s ease-in-out infinite !important;
+  animation: sakinahTopbarBrandPulse 1.8s ease-in-out infinite !important;
   will-change: opacity;
 }
