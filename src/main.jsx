@@ -7,11 +7,9 @@ import { installHeroAtmosphere } from './heroAtmosphere.js'
 import { installTimeFormatToggle } from './timeFormatToggle.js'
 import { installPreviewToggle } from './previewToggle.js'
 import { installGlobalBackButtons } from './globalBackButtons.js'
-import { installWordmarkPulse } from './wordmarkPulse.js'
 import './index.css'
 import './amiriExperiment.css'
 import './bodoniNumbers.css'
-import './sakinahWordmarkPulse.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
@@ -25,7 +23,6 @@ installHeroAtmosphere()
 installTimeFormatToggle()
 installPreviewToggle()
 installGlobalBackButtons()
-installWordmarkPulse()
 
 if ("serviceWorker" in navigator) {
   const localHost=["localhost","127.0.0.1","::1"].includes(window.location.hostname)
