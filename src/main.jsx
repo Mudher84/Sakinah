@@ -23,6 +23,7 @@ import { installLivingHomeExperience } from './livingHomeExperience.js'
 import { installLivingHomeRotation } from './livingHomeRotation.js'
 import { installAlyamFooter } from './alyamFooter.js'
 import { installBrandIdentity } from './brandIdentity.js'
+import { installNineBooksLayoutFix } from './nineBooksLayoutFix.js'
 import './index.css'
 import './amiriExperiment.css'
 import './bodoniNumbers.css'
@@ -60,6 +61,7 @@ installLivingHomeExperience()
 installLivingHomeRotation()
 installAlyamFooter()
 installBrandIdentity()
+installNineBooksLayoutFix()
 
 if ("serviceWorker" in navigator) {
   const localHost=["localhost","127.0.0.1","::1"].includes(window.location.hostname)
