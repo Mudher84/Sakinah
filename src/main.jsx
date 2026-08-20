@@ -18,6 +18,7 @@ import { installModernSystemIcons } from './modernSystemIcons.js'
 import { installQuranSurahDownload } from './quranSurahDownload.js'
 import { installQuranSurahAutoPlay } from './quranSurahAutoPlay.js'
 import { installQuranPlayerActions } from './quranPlayerActions.js'
+import { installLuxuryDockIcons } from './luxuryDockIcons.js'
 import './index.css'
 import './amiriExperiment.css'
 import './bodoniNumbers.css'
@@ -47,6 +48,7 @@ installModernSystemIcons()
 installQuranSurahDownload()
 installQuranSurahAutoPlay()
 installQuranPlayerActions()
+installLuxuryDockIcons()
 
 if ("serviceWorker" in navigator) {
   const localHost=["localhost","127.0.0.1","::1"].includes(window.location.hostname)
