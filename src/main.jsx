@@ -10,6 +10,7 @@ import { installGlobalBackButtons } from './globalBackButtons.js'
 import { installFixedTitleMorph } from './fixedTitleMorph.js'
 import { installAdhanMomentScreenV2 } from './adhanMomentScreenV2.js'
 import { installAdhanKazanBackground } from './adhanBackgroundKazan.js'
+import { installHideHadithSourceFooter } from './hideHadithSourceFooter.js'
 import './index.css'
 import './amiriExperiment.css'
 import './bodoniNumbers.css'
@@ -30,6 +31,7 @@ installGlobalBackButtons()
 installFixedTitleMorph()
 installAdhanMomentScreenV2()
 installAdhanKazanBackground()
+installHideHadithSourceFooter()
 
 if ("serviceWorker" in navigator) {
   const localHost=["localhost","127.0.0.1","::1"].includes(window.location.hostname)
