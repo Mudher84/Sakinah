@@ -14,6 +14,7 @@ import { installHideHadithSourceFooter } from './hideHadithSourceFooter.js'
 import { installModernHadithCategoryIcons } from './modernHadithCategoryIcons.js'
 import { installModernFamilyIcons } from './modernFamilyIcons.js'
 import { installModernPersonalIcons } from './modernPersonalIcons.js'
+import { installModernSystemIcons } from './modernSystemIcons.js'
 import './index.css'
 import './amiriExperiment.css'
 import './bodoniNumbers.css'
@@ -38,6 +39,7 @@ installHideHadithSourceFooter()
 installModernHadithCategoryIcons()
 installModernFamilyIcons()
 installModernPersonalIcons()
+installModernSystemIcons()
 
 if ("serviceWorker" in navigator) {
   const localHost=["localhost","127.0.0.1","::1"].includes(window.location.hostname)
