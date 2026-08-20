@@ -1,0 +1,19 @@
+@keyframes sakinahWordmarkZeroToFull {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+.sakinah-wordmark {
+  font-weight: 800 !important;
+  opacity: 0;
+  animation: sakinahWordmarkZeroToFull 2.2s ease-in-out infinite !important;
+  transform: none !important;
+  text-shadow: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sakinah-wordmark {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+}
