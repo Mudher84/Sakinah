@@ -7,7 +7,12 @@ const BRAND_ID='sakinah-global-brand';
 const INLINE_BRAND_CLASS='sakinah-inline-brand-hidden';
 const INLINE_AR_BRAND_CLASS='sakinah-inline-arabic-brand-centered';
 const TITLE_CLASS='sakinah-centered-page-title';
+const TITLE_ACTIVE_ATTR='data-sakinah-title-morph';
 let activeTarget=null;
+let motionTitle=null;
+let motionScroller=null;
+let motionStart=null;
+let motionQueued=false;
 
 function ensureStyles(){
  if(document.getElementById(STYLE_ID))return;
@@ -19,6 +24,7 @@ function ensureStyles(){
  .${INLINE_BRAND_CLASS}{display:none!important}
  .${INLINE_AR_BRAND_CLASS}{display:block!important;position:static!important;inset:auto!important;width:100%!important;max-width:none!important;box-sizing:border-box!important;text-align:center!important;margin:0 auto 12px!important;transform:none!important;translate:none!important;animation:none!important;transition:none!important;opacity:1!important;visibility:visible!important;will-change:auto!important}
  .${TITLE_CLASS}{display:block!important;width:100%!important;max-width:none!important;box-sizing:border-box!important;text-align:center!important;margin-left:auto!important;margin-right:auto!important;margin-inline:auto!important;transform:none!important}
+ .${TITLE_CLASS}[${TITLE_ACTIVE_ATTR}="1"]{position:fixed!important;left:var(--sakinah-title-left)!important;top:var(--sakinah-title-top)!important;width:var(--sakinah-title-width)!important;height:var(--sakinah-title-height)!important;max-width:none!important;margin:0!important;z-index:2147483600!important;pointer-events:none!important;transform-origin:center center!important;transform:translate3d(var(--sakinah-title-x),var(--sakinah-title-y),0) scale(var(--sakinah-title-scale))!important;transition:none!important;will-change:transform!important;white-space:nowrap!important}
  button[aria-label="أنا"],button[aria-label="تغيير صورة البروفايل"],button[aria-label="Change profile image"]{border-radius:50%!important;border:0!important;outline:0!important;box-shadow:none!important;filter:none!important;overflow:hidden!important;padding:0!important}
  button[aria-label="أنا"] img,button[aria-label="تغيير صورة البروفايل"] img,button[aria-label="Change profile image"] img{width:100%!important;height:100%!important;object-fit:cover!important;border-radius:50%!important;display:block!important;border:0!important;outline:0!important;box-shadow:none!important;filter:none!important}
  #${BAR_ID}{position:fixed!important;top:0!important;left:0!important;right:0!important;height:54px!important;z-index:2147483595!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:0 12px!important;box-sizing:border-box!important;background:rgba(246,243,236,.92)!important;border-bottom:1px solid rgba(16,16,15,.07)!important;box-shadow:0 5px 18px rgba(16,16,15,.045)!important;backdrop-filter:blur(18px) saturate(130%)!important;-webkit-backdrop-filter:blur(18px) saturate(130%)!important}
@@ -96,7 +102,7 @@ function centerPrimaryTitles(){
  document.querySelectorAll(`.${TITLE_CLASS}`).forEach(el=>el.classList.remove(TITLE_CLASS));
  const nodes=[...document.querySelectorAll('h1,h2,h3,div')];
  nodes.forEach(el=>{
-  if(!visible(el)||el.closest('button')||el.id===BAR_ID||el.id===BRAND_ID)return;
+  if(!visible(el)||el.closest('button')||el.id===BAR_ID||el.id===BRAND_ID||el.closest('.sakinah-live-home'))return;
   const text=(el.textContent||'').replace(/\s+/g,' ').trim();
   if(!text||text.length>60)return;
   const s=getComputedStyle(el);
@@ -104,12 +110,108 @@ function centerPrimaryTitles(){
   const rect=el.getBoundingClientRect();
   const headingTag=/^H[1-3]$/.test(el.tagName);
   const likelyPageTitle=size>=23&&rect.height<=88;
-  const inHeaderZone=rect.top>=45&&rect.top<=260;
+  const inHeaderZone=rect.top>=20&&rect.top<=280;
   if(inHeaderZone&&(headingTag||likelyPageTitle))el.classList.add(TITLE_CLASS);
  });
 }
 
 function depth(el){let d=0;while(el?.parentElement){d++;el=el.parentElement}return d}
+
+function isScrollable(el){
+ if(!el||el===document.body||el===document.documentElement)return false;
+ const s=getComputedStyle(el);
+ return /(auto|scroll|overlay)/.test(s.overflowY)&&el.scrollHeight>el.clientHeight+4;
+}
+
+function findScroller(el){
+ let p=el?.parentElement;
+ while(p&&p!==document.body){if(isScrollable(p))return p;p=p.parentElement}
+ return document.scrollingElement||document.documentElement;
+}
+
+function scrollTopOf(scroller){
+ if(!scroller||scroller===document.scrollingElement||scroller===document.documentElement||scroller===document.body)return window.scrollY||document.documentElement.scrollTop||0;
+ return scroller.scrollTop||0;
+}
+
+function textRect(el){
+ try{
+  const r=document.createRange();
+  r.selectNodeContents(el);
+  const rect=r.getBoundingClientRect();
+  if(rect.width>0&&rect.height>0)return rect;
+ }catch{}
+ return el.getBoundingClientRect();
+}
+
+function resetTitleMotion(){
+ if(motionTitle?.isConnected)motionTitle.removeAttribute(TITLE_ACTIVE_ATTR);
+ motionTitle=null;
+ motionScroller=null;
+ motionStart=null;
+ const root=document.documentElement.style;
+ ['--sakinah-title-left','--sakinah-title-top','--sakinah-title-width','--sakinah-title-height','--sakinah-title-x','--sakinah-title-y','--sakinah-title-scale'].forEach(k=>root.removeProperty(k));
+}
+
+function chooseMotionTitle(scroller){
+ const titles=[...document.querySelectorAll(`.${TITLE_CLASS}`)].filter(visible).filter(t=>!t.closest(`#${BAR_ID}`));
+ const inside=t=>scroller===document.scrollingElement||scroller===document.documentElement||scroller===document.body?true:scroller?.contains(t);
+ const candidates=titles.filter(inside);
+ if(!candidates.length)return null;
+ return candidates.reduce((best,t)=>{
+  const r=t.getBoundingClientRect();
+  if(!best)return t;
+  const br=best.getBoundingClientRect();
+  return Math.abs(r.top-110)<Math.abs(br.top-110)?t:best;
+ },null);
+}
+
+function prepareMotion(scroller){
+ const title=chooseMotionTitle(scroller);
+ if(!title){resetTitleMotion();return false}
+ const box=title.getBoundingClientRect();
+ const txt=textRect(title);
+ motionTitle=title;
+ motionScroller=scroller;
+ motionStart={box,txt,scroll:scrollTopOf(scroller)};
+ title.setAttribute(TITLE_ACTIVE_ATTR,'1');
+ const root=document.documentElement.style;
+ root.setProperty('--sakinah-title-left',`${box.left}px`);
+ root.setProperty('--sakinah-title-top',`${box.top}px`);
+ root.setProperty('--sakinah-title-width',`${box.width}px`);
+ root.setProperty('--sakinah-title-height',`${box.height}px`);
+ return true;
+}
+
+function renderTitleMotion(scroller){
+ if(!motionTitle||!motionTitle.isConnected||motionScroller!==scroller){if(!prepareMotion(scroller))return}
+ const now=scrollTopOf(scroller);
+ const delta=Math.max(0,now-motionStart.scroll);
+ const p=Math.max(0,Math.min(1,delta/120));
+ const eased=1-Math.pow(1-p,3);
+ const scale=1-(0.46*eased);
+ const viewportW=window.innerWidth;
+ const targetTextCenterX=viewportW-18-(motionStart.txt.width*scale/2);
+ const startTextCenterX=motionStart.txt.left+motionStart.txt.width/2;
+ const targetTextCenterY=27;
+ const startTextCenterY=motionStart.txt.top+motionStart.txt.height/2;
+ const x=(targetTextCenterX-startTextCenterX)*eased;
+ const y=(targetTextCenterY-startTextCenterY)*eased;
+ const root=document.documentElement.style;
+ root.setProperty('--sakinah-title-x',`${x}px`);
+ root.setProperty('--sakinah-title-y',`${y}px`);
+ root.setProperty('--sakinah-title-scale',String(scale));
+ if(p<=0.001&&delta<=0){
+  motionTitle.removeAttribute(TITLE_ACTIVE_ATTR);
+  motionTitle=null;motionScroller=null;motionStart=null;
+ }
+}
+
+function scheduleMotionFrom(scroller){
+ if(motionQueued)return;
+ motionQueued=true;
+ requestAnimationFrame(()=>{motionQueued=false;renderTitleMotion(scroller)});
+}
 
 function reconcile(){
  ensureStyles();
@@ -126,6 +228,7 @@ function reconcile(){
  candidates.forEach(b=>b.classList.add(HIDDEN_CLASS));
  const globalBack=bar.querySelector(`#${BAR_BUTTON_ID}`);
  if(feature||winner)globalBack.classList.remove(HIDDEN_CLASS);else globalBack.classList.add(HIDDEN_CLASS);
+ if(motionTitle&&!motionTitle.classList.contains(TITLE_CLASS))resetTitleMotion();
 }
 
 export function installGlobalBackButtons(){
@@ -138,6 +241,8 @@ export function installGlobalBackButtons(){
   requestAnimationFrame(()=>{queued=false;reconcile()});
  };
  new MutationObserver(run).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class','style','aria-label','title']});
- ['sakinah:feature','sakinah:native','sakinah:devotion','sakinah:global-root','popstate','resize'].forEach(n=>window.addEventListener(n,run));
- document.addEventListener('click',run,true);
+ ['sakinah:feature','sakinah:native','sakinah:devotion','sakinah:global-root','popstate','resize'].forEach(n=>window.addEventListener(n,()=>{resetTitleMotion();run()}));
+ document.addEventListener('click',()=>{resetTitleMotion();run()},true);
+ document.addEventListener('scroll',e=>scheduleMotionFrom(e.target===document?document.scrollingElement:e.target),true);
+ window.addEventListener('scroll',()=>scheduleMotionFrom(document.scrollingElement||document.documentElement),{passive:true});
 }
