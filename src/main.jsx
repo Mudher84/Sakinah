@@ -19,6 +19,7 @@ import './index.css'
 import './amiriExperiment.css'
 import './bodoniNumbers.css'
 import './topbarBrandPulse.css'
+import './playerControlsCenter.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
