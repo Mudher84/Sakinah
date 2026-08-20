@@ -1,18 +1,10 @@
-@keyframes sakinahBrandPulse {
+@keyframes sakinahOriginalBrandPulse {
   0%, 100% { opacity: 0; }
   50% { opacity: 1; }
 }
 
-/* Keep the single top SAKINAH brand and animate it directly. */
-.brandMark {
-  font-weight: 900 !important;
-  animation: sakinahBrandPulse 1.8s ease-in-out infinite !important;
+.topbar .brandMark {
+  font-weight: 800 !important;
+  animation: sakinahOriginalBrandPulse 1.8s ease-in-out infinite !important;
   will-change: opacity;
-}
-
-/* Remove the duplicate wordmark inside the live hero. */
-.sakinah-live-hero .sakinah-wordmark {
-  display: none !important;
-  animation: none !important;
-  opacity: 0 !important;
 }
