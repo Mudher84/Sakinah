@@ -8,12 +8,40 @@
   justify-items:center!important;
   align-items:center!important;
 }
+
+.sakinah-audio-page{
+  width:100%!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+  overflow-x:hidden!important;
+}
+.sakinah-player-card{
+  width:100%!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+  margin-left:0!important;
+  margin-right:0!important;
+}
+.sakinah-cover{
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+}
+.sakinah-cover>*{
+  max-width:100%!important;
+  box-sizing:border-box!important;
+}
 @media(max-width:430px){
   .sakinah-player-controls{gap:6px!important;}
   .sakinah-player-main{width:64px!important;height:64px!important;}
   .sakinah-player-side{width:42px!important;height:42px!important;font-size:23px!important;}
   .sakinah-player-skip{width:36px!important;height:36px!important;font-size:10px!important;}
   .sakinah-player-skip span{font-size:8px!important;}
+  .sakinah-audio-page{padding-left:14px!important;padding-right:14px!important;}
+  .sakinah-player-card{padding-left:14px!important;padding-right:14px!important;}
 }
 @media(max-width:340px){
   .sakinah-player-controls{gap:4px!important;}
