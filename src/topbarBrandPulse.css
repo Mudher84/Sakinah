@@ -3,7 +3,8 @@
   50% { opacity: 1; }
 }
 
-.topbar .brandMark {
+.topbar .brandMark,
+body #sakinah-global-brand {
   font-size: 10px !important;
   font-weight: 700 !important;
   letter-spacing: .7px !important;
