@@ -1,6 +1,5 @@
 import React,{useEffect,useState} from "react";
 import SakinahDevotionLayer from "./SakinahDevotionLayer.jsx";
-import SakinahAllFeaturesLayer from "./SakinahAllFeaturesLayer.jsx";
 import {NativeDailyCenter,WidgetLockPreview} from "./nativeDaily.jsx";
 import {AdhanAudioSettings} from "./adhanAudioSettings.jsx";
 
@@ -16,7 +15,7 @@ export default function SakinahNativeReadyLayer(){
  },[]);
  const base=<SakinahDevotionLayer/>;
  return <div style={{minHeight:"100vh"}}>
-  {!tool&&<SakinahAllFeaturesLayer>{base}</SakinahAllFeaturesLayer>}
+  {!tool&&base}
   {tool==="alerts"&&<NativeDailyCenter lang={lang} go={()=>setTool(null)}/>} 
   {tool==="widget"&&<WidgetLockPreview lang={lang} go={()=>setTool(null)}/>} 
   {tool==="adhan-audio"&&<AdhanAudioSettings lang={lang} go={()=>setTool(null)}/>} 
