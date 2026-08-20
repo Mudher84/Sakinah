@@ -1,25 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import SakinahResponsiveShell from './SakinahResponsiveShell.jsx'
-import { installCelestialArc } from './celestialArc.js'
-import { installHeroAtmosphere } from './heroAtmosphere.js'
-import { installTimeFormatToggle } from './timeFormatToggle.js'
-import { installPreviewToggle } from './previewToggle.js'
-import { installGlobalBackButtons } from './globalBackButtons.js'
 import { installAdhanMomentScreenV2 } from './adhanMomentScreenV2.js'
-import { installHideHadithSourceFooter } from './hideHadithSourceFooter.js'
-import { installModernFamilyIcons } from './modernFamilyIcons.js'
-import { installModernPersonalIcons } from './modernPersonalIcons.js'
-import { installModernSystemIcons } from './modernSystemIcons.js'
-import { installLuxuryDockIcons } from './luxuryDockIcons.js'
-import { installLivingHomeExperience } from './livingHomeExperience.js'
-import { installLivingHomeRotation } from './livingHomeRotation.js'
-import { installAlyamFooter } from './alyamFooter.js'
-import { installBrandIdentity } from './brandIdentity.js'
 import './index.css'
 import './amiriExperiment.css'
 import './bodoniNumbers.css'
-import './topbarBrandPulse.css'
 import './playerControlsCenter.css'
 import './dailyCardMotion.css'
 import './profilePagePolish.css'
@@ -31,21 +16,13 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   </React.StrictMode>,
 )
 
-installCelestialArc()
-installHeroAtmosphere()
-installTimeFormatToggle()
-installPreviewToggle()
-installGlobalBackButtons()
+/* Muslim Mirror cleanup contract:
+   React owns rendered layout/content. Legacy DOM-patching installers that
+   append overlays, rewrite text/innerHTML, hide nodes, or observe the whole
+   application tree are intentionally not started here. The Adhan moment is
+   kept because it is an explicit runtime feature opened by an event, not a
+   continuous layout patcher. */
 installAdhanMomentScreenV2()
-installHideHadithSourceFooter()
-installModernFamilyIcons()
-installModernPersonalIcons()
-installModernSystemIcons()
-installLuxuryDockIcons()
-installLivingHomeExperience()
-installLivingHomeRotation()
-installAlyamFooter()
-installBrandIdentity()
 
 if ("serviceWorker" in navigator) {
   const localHost=["localhost","127.0.0.1","::1"].includes(window.location.hostname)
