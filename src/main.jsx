@@ -7,7 +7,6 @@ import { installTimeFormatToggle } from './timeFormatToggle.js'
 import { installPreviewToggle } from './previewToggle.js'
 import { installGlobalBackButtons } from './globalBackButtons.js'
 import { installAdhanMomentScreenV2 } from './adhanMomentScreenV2.js'
-import { installAdhanKazanBackground } from './adhanBackgroundKazan.js'
 import { installHideHadithSourceFooter } from './hideHadithSourceFooter.js'
 import { installModernFamilyIcons } from './modernFamilyIcons.js'
 import { installModernPersonalIcons } from './modernPersonalIcons.js'
@@ -38,7 +37,6 @@ installTimeFormatToggle()
 installPreviewToggle()
 installGlobalBackButtons()
 installAdhanMomentScreenV2()
-installAdhanKazanBackground()
 installHideHadithSourceFooter()
 installModernFamilyIcons()
 installModernPersonalIcons()
