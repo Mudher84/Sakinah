@@ -1,52 +1,27 @@
-/* Muslim Mirror — canonical ROOT heading alignment.
-   Feature pages are mounted under .global-feature-shell and many legacy
-   screens use anonymous DIVs + inline styles instead of h1/pageTitle.
-   Therefore the shell owns the top title region itself. */
+/* Muslim Mirror — safe ROOT title alignment contract.
+   IMPORTANT: never target anonymous nth-child nodes. Those rules altered
+   unrelated home/profile content. Only explicit title/header contracts live here. */
 
-/* Every routed feature has one component root directly below this shell. */
-.sakinahResponsiveShell .global-feature-shell > :first-child{
-  width:100%!important;
-}
-
-/* Canonical top-of-page title region: legacy feature components generally
-   render eyebrow, main title and subtitle as their first three root children.
-   !important intentionally wins over old inline RTL/right alignment. */
-.sakinahResponsiveShell .global-feature-shell > :first-child > :nth-child(1),
-.sakinahResponsiveShell .global-feature-shell > :first-child > :nth-child(2),
-.sakinahResponsiveShell .global-feature-shell > :first-child > :nth-child(3){
-  text-align:center!important;
-  margin-inline-left:auto!important;
-  margin-inline-right:auto!important;
-}
-
-/* Semantic headings anywhere in the first page/header region. */
-.sakinahResponsiveShell .global-feature-shell > :first-child > :is(h1,h2,h3),
-.sakinahResponsiveShell .global-feature-shell > :first-child > header > :is(h1,h2,h3),
-.sakinahResponsiveShell .global-feature-shell .pageTitle,
-.sakinahResponsiveShell .global-feature-shell .pageTitle :is(h1,h2,h3,p){
+.sakinahResponsiveShell .responsiveAppStage :is(.pageTitle,[class*="PageTitle"],[class*="pageTitle"],[class*="HeroTitle"],[class*="heroTitle"]){
   width:100%!important;
   max-width:none!important;
+  margin-inline:auto!important;
   text-align:center!important;
-  margin-inline-left:auto!important;
-  margin-inline-right:auto!important;
+  align-items:center!important;
+  justify-items:center!important;
 }
 
-/* Base/native pages that already use the shared screen contract. */
-.sakinahResponsiveShell .responsiveAppStage .pageTitle,
-.sakinahResponsiveShell .responsiveAppStage .pageTitle :is(h1,h2,h3,p),
-.sakinahResponsiveShell .responsiveAppStage .screen > :is(h1,h2,h3){
+.sakinahResponsiveShell .responsiveAppStage :is(.pageTitle,[class*="PageTitle"],[class*="pageTitle"],[class*="HeroTitle"],[class*="heroTitle"]) :is(h1,h2,h3,p){
   width:100%!important;
   max-width:none!important;
+  margin-inline:auto!important;
   text-align:center!important;
-  margin-inline-left:auto!important;
-  margin-inline-right:auto!important;
 }
 
-/* Back/reader headers: controls stay on the edge while the actual title
-   remains geometrically centered, independent of RTL. */
 .sakinahResponsiveShell :is(.backHeader,.readerTop){
   position:relative!important;
 }
+
 .sakinahResponsiveShell .backHeader > :nth-child(2),
 .sakinahResponsiveShell .readerTop > :nth-child(2){
   position:absolute!important;
