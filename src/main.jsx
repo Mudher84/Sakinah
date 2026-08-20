@@ -7,7 +7,6 @@ import { installHeroAtmosphere } from './heroAtmosphere.js'
 import { installTimeFormatToggle } from './timeFormatToggle.js'
 import { installPreviewToggle } from './previewToggle.js'
 import { installGlobalBackButtons } from './globalBackButtons.js'
-import { installFixedTitleMorph } from './fixedTitleMorph.js'
 import { installAdhanMomentScreenV2 } from './adhanMomentScreenV2.js'
 import { installAdhanKazanBackground } from './adhanBackgroundKazan.js'
 import { installHideHadithSourceFooter } from './hideHadithSourceFooter.js'
@@ -45,7 +44,6 @@ installHeroAtmosphere()
 installTimeFormatToggle()
 installPreviewToggle()
 installGlobalBackButtons()
-installFixedTitleMorph()
 installAdhanMomentScreenV2()
 installAdhanKazanBackground()
 installHideHadithSourceFooter()
