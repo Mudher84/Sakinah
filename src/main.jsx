@@ -9,7 +9,6 @@ import { installGlobalBackButtons } from './globalBackButtons.js'
 import { installAdhanMomentScreenV2 } from './adhanMomentScreenV2.js'
 import { installAdhanKazanBackground } from './adhanBackgroundKazan.js'
 import { installHideHadithSourceFooter } from './hideHadithSourceFooter.js'
-import { installModernHadithCategoryIcons } from './modernHadithCategoryIcons.js'
 import { installModernFamilyIcons } from './modernFamilyIcons.js'
 import { installModernPersonalIcons } from './modernPersonalIcons.js'
 import { installModernSystemIcons } from './modernSystemIcons.js'
@@ -41,7 +40,6 @@ installGlobalBackButtons()
 installAdhanMomentScreenV2()
 installAdhanKazanBackground()
 installHideHadithSourceFooter()
-installModernHadithCategoryIcons()
 installModernFamilyIcons()
 installModernPersonalIcons()
 installModernSystemIcons()
