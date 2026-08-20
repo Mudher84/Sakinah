@@ -8,15 +8,16 @@ const ICONS={
  profile:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle class="lux-fill" cx="12" cy="8.1" r="3.2"/><path class="lux-fill lux-alt" d="M5.8 19.7c.8-3.5 3-5.3 6.2-5.3s5.4 1.8 6.2 5.3z"/><path class="lux-gold" d="M8.1 19.7h7.8" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>'
 };
 function style(){if(document.getElementById('sakinah-luxury-dock-style'))return;const s=document.createElement('style');s.id='sakinah-luxury-dock-style';s.textContent=`
-.app-global-dock{background:linear-gradient(180deg,rgba(251,248,241,.95),rgba(238,232,220,.91))!important;border:1px solid rgba(181,154,98,.22)!important;box-shadow:0 18px 46px rgba(24,30,36,.15),inset 0 1px 0 rgba(255,255,255,.9)!important}
-.app-global-dock button{color:#7a776f!important}
-.app-global-dock button.active{color:#173B57!important;background:radial-gradient(circle at 50% 22%,rgba(255,255,255,1),rgba(247,241,226,.96) 68%)!important;box-shadow:0 7px 22px rgba(23,59,87,.11),inset 0 0 0 1px rgba(181,154,98,.28),inset 0 1px 0 #fff!important}
+.app-global-dock{background:linear-gradient(135deg,rgba(255,255,255,.30),rgba(246,243,236,.14))!important;border:1px solid rgba(255,255,255,.48)!important;-webkit-backdrop-filter:blur(26px) saturate(155%)!important;backdrop-filter:blur(26px) saturate(155%)!important;box-shadow:0 18px 46px rgba(24,30,36,.13),inset 0 1px 0 rgba(255,255,255,.78),inset 0 -1px 0 rgba(181,154,98,.08)!important}
+.app-global-dock:before{content:"";position:absolute;inset:1px;border-radius:inherit;pointer-events:none;background:linear-gradient(115deg,rgba(255,255,255,.34),transparent 32%,transparent 70%,rgba(255,255,255,.12));opacity:.72}
+.app-global-dock button{color:rgba(72,72,68,.72)!important;position:relative;z-index:1}
+.app-global-dock button.active{color:#173B57!important;background:linear-gradient(145deg,rgba(255,255,255,.52),rgba(255,255,255,.18))!important;border:1px solid rgba(255,255,255,.42)!important;box-shadow:0 8px 24px rgba(23,59,87,.09),inset 0 1px 0 rgba(255,255,255,.86)!important;-webkit-backdrop-filter:blur(12px)!important;backdrop-filter:blur(12px)!important}
 .app-global-dock .dockIcon{width:30px!important;height:30px!important}
 .app-global-dock .dockIcon svg{width:27px!important;height:27px!important;display:block;overflow:visible}
 .app-global-dock .lux-fill{fill:currentColor;opacity:.16;stroke:currentColor;stroke-width:1.45;stroke-linecap:round;stroke-linejoin:round}
 .app-global-dock .lux-alt{opacity:.1}
 .app-global-dock .lux-line{fill:none;stroke:currentColor;stroke-width:1.45;stroke-linecap:round;stroke-linejoin:round}
-.app-global-dock .lux-cut{fill:none;stroke:#f7f3ea;stroke-width:1.45;stroke-linecap:round;stroke-linejoin:round}
+.app-global-dock .lux-cut{fill:none;stroke:rgba(255,255,255,.78);stroke-width:1.45;stroke-linecap:round;stroke-linejoin:round}
 .app-global-dock .lux-gold{fill:#b59a62;stroke:#b59a62}
 .app-global-dock button.active .lux-fill{opacity:.24}
 .app-global-dock button.active .lux-gold{fill:#c2a35f;stroke:#c2a35f}
