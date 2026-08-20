@@ -1,27 +1,48 @@
-/* Muslim Mirror — ROOT title alignment contract.
-   This intentionally does not depend on feature-specific class names.
-   It centers the page-heading row itself, so RTL/LTR, back/action buttons,
-   and independently implemented feature pages cannot push the title off-center. */
+/* Muslim Mirror — canonical ROOT heading geometry.
+   Primary page headings are centered by the shell, independent of RTL,
+   local flex/grid alignment, feature classes, or inline text alignment. */
 
-.sakinahResponsiveShell :is(.pageTitle,.backHeader,.readerTop,[class*="Header"],[class*="header"],[class*="Head"],[class*="head"]):has(> :is(h1,h2,h3,b,strong)){
-  position:relative!important;
+.sakinahResponsiveShell .responsiveAppStage :is(.screen,[class*="Screen"],[class*="screen"]){
+  --mm-page-center:50%;
 }
 
-/* Normal page-title blocks. */
-.sakinahResponsiveShell .pageTitle,
-.sakinahResponsiveShell .pageTitle :is(h1,h2,h3,p){
-  text-align:center!important;
-}
-.sakinahResponsiveShell .pageTitle :is(h1,h2,h3,p){
+/* Standard title blocks: center the whole heading stack. */
+.sakinahResponsiveShell .responsiveAppStage :is(.pageTitle,[class*="PageTitle"],[class*="pageTitle"],[class*="HeroTitle"],[class*="heroTitle"]){
   width:100%!important;
   max-width:none!important;
   margin-inline:auto!important;
+  text-align:center!important;
+  align-items:center!important;
+  justify-items:center!important;
+}
+.sakinahResponsiveShell .responsiveAppStage :is(.pageTitle,[class*="PageTitle"],[class*="pageTitle"],[class*="HeroTitle"],[class*="heroTitle"]) :is(h1,h2,h3,p){
+  width:100%!important;
+  max-width:none!important;
+  margin-inline-left:auto!important;
+  margin-inline-right:auto!important;
+  text-align:center!important;
 }
 
-/* Header rows with a back/action button: title is geometrically centered
-   against the viewport/content area, not against the remaining flex space. */
-.sakinahResponsiveShell :is(.backHeader,.readerTop,[class*="Header"],[class*="header"],[class*="Head"],[class*="head"]):has(> :is(button,a)):has(> :is(h1,h2,h3,b,strong,div)) > :is(h1,h2,h3,b,strong){
+/* A primary heading placed directly in any feature screen. */
+.sakinahResponsiveShell .responsiveAppStage :is(.screen,[class*="Screen"],[class*="screen"]) > :is(h1,h2),
+.sakinahResponsiveShell .responsiveAppStage :is(.screen,[class*="Screen"],[class*="screen"]) > :is(section,div) > :is(h1,h2):first-child{
+  width:100%!important;
+  max-width:none!important;
+  margin-inline-left:auto!important;
+  margin-inline-right:auto!important;
+  text-align:center!important;
+  align-self:center!important;
+  justify-self:center!important;
+}
+
+/* Navigation/header rows. The controls remain at their edges; the title is
+   taken out of their layout and anchored to the exact horizontal midpoint. */
+.sakinahResponsiveShell .responsiveAppStage :is(.backHeader,.readerTop,[class*="Header"],[class*="header"],[class*="Topbar"],[class*="topbar"]):has(> :is(button,a)){
+  position:relative!important;
+}
+.sakinahResponsiveShell .responsiveAppStage :is(.backHeader,.readerTop,[class*="Header"],[class*="header"],[class*="Topbar"],[class*="topbar"]):has(> :is(button,a)) > :is(h1,h2,h3,b,strong){
   position:absolute!important;
+  inset-inline:auto!important;
   left:50%!important;
   right:auto!important;
   top:50%!important;
@@ -36,18 +57,27 @@
   pointer-events:none;
 }
 
-/* Existing three-column reader/back headers keep their middle title centered. */
-.sakinahResponsiveShell .backHeader > :nth-child(2),
-.sakinahResponsiveShell .readerTop > :nth-child(2){
-  justify-self:center!important;
+/* Three-column headers whose title is wrapped in the middle cell. */
+.sakinahResponsiveShell .responsiveAppStage .backHeader > :nth-child(2),
+.sakinahResponsiveShell .responsiveAppStage .readerTop > :nth-child(2){
+  position:absolute!important;
+  left:50%!important;
+  right:auto!important;
+  top:50%!important;
+  transform:translate(-50%,-50%)!important;
+  width:max-content!important;
+  max-width:calc(100% - 104px)!important;
+  margin:0!important;
   text-align:center!important;
+  justify-self:auto!important;
 }
 
-/* Feature pages that put the title directly inside the page/screen root. */
-.sakinahResponsiveShell :is(.screen,[class*="Screen"],[class*="screen"]) > :is(h1,h2,h3),
-.sakinahResponsiveShell :is(.screen,[class*="Screen"],[class*="screen"]) > header > :is(h1,h2,h3){
+/* Some feature pages use a semantic header followed by their large title. */
+.sakinahResponsiveShell .responsiveAppStage :is(.screen,[class*="Screen"],[class*="screen"]) > header + :is(h1,h2),
+.sakinahResponsiveShell .responsiveAppStage :is(.screen,[class*="Screen"],[class*="screen"]) > :is(.kicker,.eyebrow,.tiny) + :is(h1,h2){
   width:100%!important;
   max-width:none!important;
-  margin-inline:auto!important;
+  margin-inline-left:auto!important;
+  margin-inline-right:auto!important;
   text-align:center!important;
 }
