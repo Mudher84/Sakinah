@@ -28,6 +28,7 @@ import './bodoniNumbers.css'
 import './topbarBrandPulse.css'
 import './playerControlsCenter.css'
 import './dailyCardMotion.css'
+import './profilePagePolish.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
