@@ -12,7 +12,7 @@ export default function SakinahSevenDock(){
  const lang="ar";
  const openOld=key=>{
   setPanel(key);
-  window.dispatchEvent(new CustomEvent("muslimmirror:legacy-nav",{detail:key}));
+  requestAnimationFrame(()=>window.dispatchEvent(new CustomEvent("muslimmirror:legacy-nav",{detail:key})));
  };
  const routeDock=id=>{
   if(id==="quran"){setPanel("quran");return}
