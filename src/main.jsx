@@ -11,6 +11,7 @@ import { installFixedTitleMorph } from './fixedTitleMorph.js'
 import { installAdhanMomentScreenV2 } from './adhanMomentScreenV2.js'
 import { installAdhanKazanBackground } from './adhanBackgroundKazan.js'
 import { installHideHadithSourceFooter } from './hideHadithSourceFooter.js'
+import { installModernHadithCategoryIcons } from './modernHadithCategoryIcons.js'
 import './index.css'
 import './amiriExperiment.css'
 import './bodoniNumbers.css'
@@ -32,6 +33,7 @@ installFixedTitleMorph()
 installAdhanMomentScreenV2()
 installAdhanKazanBackground()
 installHideHadithSourceFooter()
+installModernHadithCategoryIcons()
 
 if ("serviceWorker" in navigator) {
   const localHost=["localhost","127.0.0.1","::1"].includes(window.location.hostname)
