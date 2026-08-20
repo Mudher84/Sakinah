@@ -1,6 +1,6 @@
 import React,{useEffect,useMemo,useState} from "react";
 
-const INK="#15130F",GOLD="#B99755",BLUE="#173B57";
+const INK="#15130F",GOLD="#B99755",BLUE="#173B57",RED="#B73535";
 const DHIKR=[["سبحان الله","SubhanAllah",33],["الحمد لله","Alhamdulillah",33],["الله أكبر","Allahu Akbar",34],["أستغفر الله","Astaghfirullah",100],["لا إله إلا الله","La ilaha illa Allah",100],["اللهم صل على محمد","Salawat",100]];
 const activeProfile=()=>{try{return localStorage.getItem("sakinah-active-profile")||"me"}catch{return"me"}};
 const pkey=n=>`sakinah-${n}-${activeProfile()}`;
@@ -22,11 +22,13 @@ export default function ModernTasbeeh({lang="ar",go}){
  const round=Math.floor(count/target)+1;
  const tap=()=>{const n=count+1;setCount(n);const today=new Date().toISOString().slice(0,10);const h=read(pkey("tasbeeh-history"),{});h[today]=(h[today]||0)+1;write(pkey("tasbeeh-history"),h);if(vibrate&&navigator.vibrate)navigator.vibrate(n%target===0?[55,45,95]:14)};
  const chooseDhikr=i=>{setIdx(i);setCount(0);setTarget(DHIKR[i][2]);setDhikrOpen(false)};
+ const resetCount=()=>{setCount(0);if(vibrate&&navigator.vibrate)navigator.vibrate([25,35,25])};
  const beadCount=17;
  return <div dir={ar?"rtl":"ltr"} style={{position:"fixed",inset:0,zIndex:50000,overflowY:"auto",boxSizing:"border-box",background:"#F3EFE6",color:INK,fontFamily:"inherit"}}>
   <div style={{maxWidth:620,minHeight:"100%",margin:"0 auto",padding:"max(82px,calc(env(safe-area-inset-top) + 52px)) 18px 120px",boxSizing:"border-box"}}>
-   <header style={{position:"relative",minHeight:88,display:"flex",alignItems:"center",justifyContent:"center",padding:"0 62px",boxSizing:"border-box"}}>
+   <header style={{position:"relative",minHeight:88,display:"flex",alignItems:"center",justifyContent:"center",padding:"0 116px",boxSizing:"border-box"}}>
     <button onClick={go} aria-label={ar?"رجوع":"Back"} style={{position:"absolute",insetInlineStart:0,top:18,width:44,height:44,border:0,borderRadius:22,background:"rgba(255,255,255,.72)",boxShadow:"0 8px 25px rgba(31,25,14,.07)",fontSize:19,color:INK,cursor:"pointer",zIndex:2}}>←</button>
+    <button onClick={resetCount} title={ar?"تصفير العداد":"Reset counter"} aria-label={ar?"تصفير العداد":"Reset counter"} style={{position:"absolute",insetInlineStart:52,top:18,width:44,height:44,border:0,borderRadius:22,background:RED,color:"white",boxShadow:"0 10px 24px rgba(183,53,53,.24),inset 0 1px 0 rgba(255,255,255,.2)",fontSize:18,fontWeight:500,cursor:"pointer",zIndex:2,display:"grid",placeItems:"center",WebkitTapHighlightColor:"transparent"}}>↺</button>
     <div style={{width:"100%",minWidth:0,textAlign:"center"}}><div style={{fontSize:9,letterSpacing:2.5,color:GOLD,fontWeight:700}}>SAKINAH</div><h1 style={{fontFamily:"'IBM Plex Sans Arabic','Noto Naskh Arabic',sans-serif",fontSize:"clamp(24px,7vw,30px)",lineHeight:1.45,fontWeight:500,margin:"4px 0 0",padding:"2px 0 4px",whiteSpace:"nowrap",overflow:"visible",textOverflow:"clip"}}>{ar?"المسبحة الذكية":"Smart Tasbeeh"}</h1></div>
     <button onClick={()=>setVibrate(v=>!v)} title={ar?"الاهتزاز":"Vibration"} aria-label={ar?"تشغيل أو إيقاف الاهتزاز":"Toggle vibration"} style={{position:"absolute",insetInlineEnd:0,top:18,width:44,height:44,border:0,borderRadius:22,background:vibrate?BLUE:"rgba(255,255,255,.72)",color:vibrate?"white":INK,fontSize:15,cursor:"pointer",zIndex:2}}>〰</button>
    </header>
@@ -57,7 +59,7 @@ export default function ModernTasbeeh({lang="ar",go}){
    <div style={{marginTop:16,height:5,borderRadius:999,overflow:"hidden",background:"rgba(21,19,15,.07)"}}><div style={{width:`${progress}%`,height:"100%",borderRadius:999,background:GOLD,transition:"width .2s ease"}}/></div>
 
    <section style={{marginTop:18}}>
-    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:9}}><span style={{fontSize:11,opacity:.45}}>{ar?"هدف الجولة":"Round goal"}</span><button onClick={()=>setCount(0)} style={{border:0,background:"transparent",fontFamily:"inherit",fontSize:11,color:"#9A7440",cursor:"pointer"}}>{ar?"تصفير العداد":"Reset"}</button></div>
+    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:9}}><span style={{fontSize:11,opacity:.45}}>{ar?"هدف الجولة":"Round goal"}</span></div>
     <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8}}>{[33,100,1000].map(n=><button key={n} onClick={()=>setTarget(n)} style={{height:50,border:0,borderRadius:18,fontFamily:"inherit",fontSize:14,background:target===n?INK:"rgba(255,255,255,.58)",color:target===n?"white":INK,boxShadow:target===n?"0 12px 30px rgba(21,19,15,.14)":"inset 0 0 0 1px rgba(21,19,15,.055)",cursor:"pointer"}}>{n}</button>)}</div>
    </section>
   </div>
