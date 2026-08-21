@@ -1,5 +1,7 @@
 /* Slimmer, lighter global bottom dock */
 .dock{
+  width:min(calc(100% - 32px),430px) !important;
+  max-width:430px !important;
   height:51px !important;
   padding:4px 6px !important;
   border-radius:18px !important;
@@ -8,14 +10,22 @@
   -webkit-backdrop-filter:blur(20px) saturate(115%) !important;
   border-color:rgba(16,16,15,.06) !important;
   box-shadow:0 8px 22px rgba(0,0,0,.09) !important;
+  justify-content:space-between !important;
 }
 .dockDark{
   background:rgba(15,15,16,.34) !important;
   border-color:rgba(246,243,236,.09) !important;
 }
 .dock>button{
+  width:auto !important;
+  min-width:0 !important;
+  flex:1 1 0 !important;
   padding:3px 3px !important;
   gap:2px !important;
+}
+.dockPrayer{
+  width:auto !important;
+  flex:1.08 1 0 !important;
 }
 .dock small{font-size:7px !important;}
 .prayerRing{width:26px !important;height:26px !important;}
