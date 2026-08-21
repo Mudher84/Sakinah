@@ -38,6 +38,7 @@ import './quranSurahCompact.css'
 import './quranPlayerControlsPolish.css'
 import './quranDockSafeSpace.css'
 import './dockSlimGlass.css'
+import './globalTypography.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
