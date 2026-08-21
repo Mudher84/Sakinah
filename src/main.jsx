@@ -5,6 +5,7 @@ import SakinahResponsiveShell from './SakinahResponsiveShell.jsx'
 // Runtime UI installers
 import { installCelestialArc } from './celestialArc.js'
 import { installHeroAtmosphere } from './heroAtmosphere.js'
+import { installDynamicTimeTheme } from './dynamicTimeTheme.js'
 import { installTimeFormatToggle } from './timeFormatToggle.js'
 import { installPreviewToggle } from './previewToggle.js'
 import { installGlobalBackButtons } from './globalBackButtons.js'
@@ -53,6 +54,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 
 installCelestialArc()
 installHeroAtmosphere()
+installDynamicTimeTheme()
 installTimeFormatToggle()
 installPreviewToggle()
 installGlobalBackButtons()
