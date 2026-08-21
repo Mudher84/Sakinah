@@ -1,0 +1,21 @@
+/* Keep home service icons centered inside their cards. */
+.mm2-home .mm2-services .mm2-service{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+}
+.mm2-home .mm2-services .mm2-service .ico{
+  width:40px!important;
+  height:40px!important;
+  margin:0 auto!important;
+  display:grid!important;
+  place-items:center!important;
+  flex:0 0 40px!important;
+  text-align:center!important;
+}
+.mm2-home .mm2-services .mm2-service .name{
+  width:100%!important;
+  text-align:center!important;
+}
