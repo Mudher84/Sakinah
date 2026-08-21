@@ -11,6 +11,7 @@ import { installAdhanMomentScreenV2 } from './adhanMomentScreenV2.js'
 import { installHideHadithSourceFooter } from './hideHadithSourceFooter.js'
 import { installLuxuryDockIcons } from './luxuryDockIcons.js'
 import { installLuxuryAppIcons } from './luxuryAppIcons.js'
+import { installKidsShelfLuxuryIcons } from './kidsShelfLuxuryIcons.js'
 import { installLivingHomeExperience } from './livingHomeExperience.js'
 import { installLivingHomeRotation } from './livingHomeRotation.js'
 import { installAlyamFooter } from './alyamFooter.js'
@@ -40,6 +41,7 @@ installAdhanMomentScreenV2()
 installHideHadithSourceFooter()
 installLuxuryDockIcons()
 installLuxuryAppIcons()
+installKidsShelfLuxuryIcons()
 installLivingHomeExperience()
 installLivingHomeRotation()
 installAlyamFooter()
