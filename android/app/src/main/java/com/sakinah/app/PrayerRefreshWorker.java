@@ -48,13 +48,17 @@ public final class PrayerRefreshWorker extends Worker {
     }
 
     @NonNull @Override public Result doWork(){
+        Context context=getApplicationContext();
+        SharedPreferences prefs=context.getSharedPreferences("sakinah",Context.MODE_PRIVATE);
         try{
-            Context context=getApplicationContext();
-            String raw=context.getSharedPreferences("sakinah",Context.MODE_PRIVATE).getString("bridge_state","");
+            String raw=prefs.getString("bridge_state","");
             if(raw==null||raw.isBlank())return Result.success();
             JSONObject bridge=new JSONObject(raw);
             double lat=bridge.optDouble("latitude",Double.NaN),lon=bridge.optDouble("longitude",Double.NaN);
-            if(Double.isNaN(lat)||Double.isNaN(lon))return Result.retry();
+            if(Double.isNaN(lat)||Double.isNaN(lon)){
+                prefs.edit().putString("last_refresh_error","missing-location").apply();
+                return Result.retry();
+            }
             int method=bridge.optInt("method",4);
             int school=bridge.optInt("school",0);
             JSONObject cfg=bridge.optJSONObject("notifications");
@@ -66,9 +70,13 @@ public final class PrayerRefreshWorker extends Worker {
             LocalDate today=LocalDate.now(zone);
             refreshDate(today,lat,lon,method,school,cfg,true);
             refreshDate(today.plusDays(1),lat,lon,method,school,cfg,false);
+            prefs.edit().putLong("last_refresh_success",System.currentTimeMillis()).putString("last_refresh_error","").apply();
             SakinahWidgetProvider.refreshAll(context);
             return Result.success();
-        }catch(Exception e){return Result.retry();}
+        }catch(Exception e){
+            prefs.edit().putString("last_refresh_error",e.getClass().getSimpleName()).apply();
+            return Result.retry();
+        }
     }
 
     private void refreshDate(LocalDate date,double lat,double lon,int method,int school,JSONObject cfg,boolean isToday)throws Exception{
