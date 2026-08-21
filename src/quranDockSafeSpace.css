@@ -2,45 +2,50 @@
   padding-bottom:170px !important;
 }
 
-/* Quran tools: keep the page full-height and reserve a little more scrollable
-   space above the persistent dock so the last rows can clear it comfortably. */
+/* Quran tools: do not let live content travel behind the persistent dock.
+   Keep the stage full-screen, but give the Quran frame its own scroll viewport
+   that physically ends above the dock. */
 .sakinahResponsiveShell .qtp-stage{
   inset:0 !important;
-  bottom:0 !important;
-  padding-bottom:0 !important;
-  scroll-padding-bottom:164px !important;
+  overflow:hidden !important;
+  padding:0 !important;
+  background:#F7F3EA !important;
+}
+.sakinahResponsiveShell .qtp-frame{
+  width:min(100%,406px) !important;
+  height:calc(100dvh - 88px) !important;
+  min-height:0 !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  overscroll-behavior:contain;
+  scrollbar-width:none;
+}
+.sakinahResponsiveShell .qtp-frame::-webkit-scrollbar{
+  display:none;
 }
 .sakinahResponsiveShell .qtp-shell{
+  min-height:100% !important;
   padding-bottom:0 !important;
 }
 .sakinahResponsiveShell .qtp-bottom{
-  height:172px !important;
-  min-height:172px !important;
-  flex:0 0 172px !important;
+  height:28px !important;
+  min-height:28px !important;
+  flex:0 0 28px !important;
 }
 
 @media(max-width:899px){
-  .sakinahResponsiveShell .qtp-bottom{
-    height:160px !important;
-    min-height:160px !important;
-    flex-basis:160px !important;
-  }
-  .sakinahResponsiveShell .qtp-stage{
-    scroll-padding-bottom:160px !important;
+  .sakinahResponsiveShell .qtp-frame{
+    height:calc(100dvh - 76px) !important;
   }
 }
 
-@supports (padding-bottom: env(safe-area-inset-bottom)){
-  .sakinahResponsiveShell .qtp-bottom{
-    height:calc(172px + env(safe-area-inset-bottom)) !important;
-    min-height:calc(172px + env(safe-area-inset-bottom)) !important;
-    flex-basis:calc(172px + env(safe-area-inset-bottom)) !important;
+@supports (height: calc(100dvh - env(safe-area-inset-bottom))){
+  .sakinahResponsiveShell .qtp-frame{
+    height:calc(100dvh - 88px - env(safe-area-inset-bottom)) !important;
   }
   @media(max-width:899px){
-    .sakinahResponsiveShell .qtp-bottom{
-      height:calc(160px + env(safe-area-inset-bottom)) !important;
-      min-height:calc(160px + env(safe-area-inset-bottom)) !important;
-      flex-basis:calc(160px + env(safe-area-inset-bottom)) !important;
+    .sakinahResponsiveShell .qtp-frame{
+      height:calc(100dvh - 76px - env(safe-area-inset-bottom)) !important;
     }
   }
 }
