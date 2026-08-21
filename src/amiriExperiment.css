@@ -8,19 +8,31 @@
   font-display: swap;
 }
 
-/* Typography only. Never change component geometry or font sizes here. */
+/* Default app typography. */
 html, body, #root, #root *, .sakinahResponsiveShell, .sakinahResponsiveShell *, .sakinah-live-home, .sakinah-live-home *, .appShell, .appShell * {
   font-family: "Sakinah Roznameh", "HT Roznameh Medium", "Amiri", "Noto Naskh Arabic", serif !important;
 }
 
-/* Quran text keeps its dedicated Quran typography. */
+/* Supporting text explicitly uses Cairo and must outrank the global rule above. */
+#root .mm-supporting-cairo,
+#root .mm-supporting-cairo *,
+.sakinahResponsiveShell .mm-supporting-cairo,
+.sakinahResponsiveShell .mm-supporting-cairo *,
+.appShell .mm-supporting-cairo,
+.appShell .mm-supporting-cairo * {
+  font-family: "Cairo", Tahoma, Arial, sans-serif !important;
+}
+
+/* Quran text always keeps its dedicated Quran typography and outranks Cairo. */
 #root .quranMini, #root .quranMini *,
 #root .quranHero, #root .quranHero *,
 #root .ayah span, #root .ayah span *,
 #root .quranAudioText, #root .quranAudioText *,
 #root .quranMemo, #root .quranMemo *,
 #root .mushaf .ayah span, #root .mushaf .ayah span *,
-#root [style*="Amiri Quran"], #root [style*="Amiri Quran"] * {
+#root [style*="Amiri Quran"], #root [style*="Amiri Quran"] *,
+#root [data-quran], #root [data-quran] *,
+#root [data-ayah], #root [data-ayah] * {
   font-family:"Amiri Quran", "Noto Naskh Arabic", serif !important;
 }
 
