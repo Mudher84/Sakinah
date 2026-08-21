@@ -32,6 +32,21 @@ const THEMES={
   }
 }
 
+const PREVIEW_ALIASES={
+  'deep-night':'deep-night',deepnight:'deep-night',
+  fajr:'fajr',dawn:'fajr',
+  morning:'morning',
+  day:'day',noon:'day',
+  afternoon:'afternoon',asr:'afternoon',
+  sunset:'sunset',maghrib:'sunset',
+  night:'night',isha:'night'
+}
+
+function previewPhase(){
+  const raw=String(document.documentElement.dataset.mmTime||'').trim().toLowerCase()
+  return PREVIEW_ALIASES[raw]||null
+}
+
 function ensureStyle(){
   let style=document.getElementById('mm-dynamic-time-theme-style')
   if(style)return style
@@ -55,8 +70,9 @@ function applyTheme(){
   if(!root)return
   const d=new Date()
   const hour=d.getHours()+d.getMinutes()/60
-  const phase=phaseForHour(hour)
+  const phase=previewPhase()||phaseForHour(hour)
   const t=THEMES[phase]
+  if(!t)return
   if(root.dataset.timeTheme===phase)return
   root.dataset.timeTheme=phase
   root.style.setProperty('--mm-time-page',t.page)
@@ -98,8 +114,19 @@ export function installDynamicTimeTheme(){
     const root=document.getElementById('root')
     const mo=new MutationObserver(()=>requestAnimationFrame(applyTheme))
     if(root)mo.observe(root,{subtree:true,childList:true})
+    const htmlObserver=new MutationObserver(()=>{
+      const home=document.querySelector('.mm-reference-home')
+      if(home)delete home.dataset.timeTheme
+      requestAnimationFrame(applyTheme)
+    })
+    htmlObserver.observe(document.documentElement,{attributes:true,attributeFilter:['data-mm-time']})
     setInterval(applyTheme,60000)
     window.addEventListener('focus',applyTheme)
+    window.mmPreviewTimeTheme=(phase)=>{
+      if(phase==null||phase===''||phase==='auto') delete document.documentElement.dataset.mmTime
+      else document.documentElement.dataset.mmTime=String(phase)
+      return document.documentElement.dataset.mmTime||'auto'
+    }
   }
   requestAnimationFrame(()=>requestAnimationFrame(start))
 }
