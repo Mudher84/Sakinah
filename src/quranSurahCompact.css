@@ -1,0 +1,8 @@
+.mm-quran-player .mm-surah-card{
+  padding:7px 9px !important;
+  min-height:52px !important;
+  border-radius:12px !important;
+}
+.mm-quran-player .mm-surah-card > span:first-child{
+  line-height:1.2 !important;
+}
