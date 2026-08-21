@@ -3,7 +3,7 @@ import React,{useEffect,useMemo,useState} from "react";
 const C={bg:"#F7F3EA",paper:"#FDFBF7",navy:"#102D43",gold:"#C0A062",gold2:"#B08D4F",muted:"#8E96A0",text:"#1E3E56"};
 const PR=["Fajr","Dhuhr","Asr","Maghrib","Isha"];
 const AR={Fajr:"الفجر",Dhuhr:"الظهر",Asr:"العصر",Maghrib:"المغرب",Isha:"العشاء"};
-const MARK_POS=[{right:"5%",top:"84%"},{right:"27%",top:"32%"},{right:"50%",top:"19%"},{right:"73%",top:"32%"},{right:"95%",top:"84%"}];
+const MARK_POS=[{right:"5%",top:"88%"},{right:"27%",top:"28%"},{right:"50%",top:"8%"},{right:"73%",top:"28%"},{right:"95%",top:"88%"}];
 const MOMENTS=[
  {reason:"الجمعة",title:"سورة الكهف",sub:"قراءتها يوم الجمعة سُنّة — ٢٥ دقيقة استماعاً مع المعيقلي.",cta:"ابدأ الاستماع",route:"quran-player"},
  {reason:"بعد الفجر",title:"أذكار الصباح",sub:"١٢ ذكراً · وقتها من الفجر إلى الضحى.",cta:"ابدأ الأذكار",route:"smart-quranic-adhkar"},
@@ -78,8 +78,8 @@ export default function SakinahLiveHome({profileAvatar="",profileName="أنا",o
      <div className="mm-cairo" style={{fontSize:11,color:"rgba(247,243,234,.5)",marginTop:7}}>متبقٍ {next?remaining(next.at-tick):"بانتظار المواقيت"}</div>
     </div>
 
-    <div style={{position:"relative",height:84,marginTop:24}}>
-     <svg viewBox="0 0 340 84" width="100%" height="84" style={{display:"block"}}><path d="M6 72 C 68 12, 272 12, 334 72" fill="none" stroke="rgba(247,243,234,.16)" strokeWidth="1.5"/><path d="M6 72 C 68 12, 272 12, 334 72" fill="none" stroke={C.gold} strokeWidth="2" strokeDasharray={`${420*doneCount/5} 420`}/></svg>
+    <div style={{position:"relative",height:108,marginTop:24}}>
+     <svg viewBox="0 0 340 108" width="100%" height="108" style={{display:"block"}}><path d="M6 96 C 68 2, 272 2, 334 96" fill="none" stroke="rgba(247,243,234,.16)" strokeWidth="1.5"/><path d="M6 96 C 68 2, 272 2, 334 96" fill="none" stroke={C.gold} strokeWidth="2" strokeDasharray={`${420*doneCount/5} 420`}/></svg>
      {MARK_POS.map((p,i)=><button key={PR[i]} onClick={()=>togglePrayer(i)} aria-label={AR[PR[i]]} style={{position:"absolute",top:p.top,right:p.right,width:i===2?12:10,height:i===2?12:10,borderRadius:"50%",background:done[i]?C.gold:C.navy,border:`1.5px solid ${done[i]?C.gold:"rgba(247,243,234,.35)"}`,transform:"translate(50%,-50%)",padding:0,cursor:"pointer"}}/>)}
     </div>
     <div style={{position:"relative",display:"flex",justifyContent:"space-between"}}>{PR.map(p=><div key={p} style={{flex:1,textAlign:"center"}}><div className="mm-cairo" style={{fontSize:10,color:next?.id===p?C.gold:"rgba(247,243,234,.45)"}}>{AR[p]}</div><div className="mm-mono" style={{fontSize:12,color:next?.id===p?C.gold:"rgba(247,243,234,.75)",marginTop:4,direction:"ltr"}}>{clean(data?.timings?.[p])||"--:--"}</div></div>)}</div>
