@@ -550,6 +550,29 @@ function TodayScreen({ lang, stage, hourNow, nextPrayer, remH, remM, moment, go,
     return () => clearTimeout(close);
   }, [showTimePreview]);
   const active = [...PRAYER_ONLY].map((id) => ({ id, h: prayerTimes[id] })).filter((x) => x.h <= hourNow).at(-1)?.id || "isha";
+  const warmStops = [
+    { h: 0, c: ["#211510", "#17100c", "#110b09"] },
+    { h: prayerTimes.fajr, c: ["#e6c092", "#bb805b", "#6f4737"] },
+    { h: prayerTimes.sunrise, c: ["#f1d1a2", "#d79d6e", "#926147"] },
+    { h: prayerTimes.dhuhr, c: ["#efd0a1", "#d49c68", "#966045"] },
+    { h: prayerTimes.asr, c: ["#d59b70", "#875743", "#4d3029"] },
+    { h: prayerTimes.maghrib, c: ["#a2634d", "#59342d", "#2a1b18"] },
+    { h: prayerTimes.isha, c: ["#3a251b", "#201510", "#120c0a"] },
+    { h: 24, c: ["#211510", "#17100c", "#110b09"] },
+  ];
+  const mixWarm = (from, to, amount) => {
+    const rgb = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
+    const a = rgb(from), b = rgb(to);
+    return `#${a.map((v, i) => Math.round(v + (b[i] - v) * amount).toString(16).padStart(2, "0")).join("")}`;
+  };
+  const warmSky = (() => {
+    const position = Math.max(0, Math.min(23.999, hourNow));
+    const index = warmStops.findIndex((stop, i) => i < warmStops.length - 1 && position >= stop.h && position < warmStops[i + 1].h);
+    const i = index < 0 ? warmStops.length - 2 : index;
+    const first = warmStops[i], second = warmStops[i + 1];
+    const ratio = Math.max(0, Math.min(1, (position - first.h) / Math.max(.01, second.h - first.h)));
+    return first.c.map((color, n) => mixWarm(color, second.c[n], ratio));
+  })();
   const remaining = lang === "ar" ? `متبقي ${nDigits(remH, lang)} ساعات و ${nDigits(remM, lang)} دقيقة` : `${remH}h ${remM}m remaining`;
   const date = new Intl.DateTimeFormat("ar-IQ", { weekday: "long", day: "numeric", month: "long" }).format(new Date());
   const verse = SURAHS[0].verses[1];
@@ -563,7 +586,7 @@ function TodayScreen({ lang, stage, hourNow, nextPrayer, remH, remM, moment, go,
       .sk-warm-verse{margin:0 20px;padding:22px 4px 24px;border-top:1px solid rgba(255,255,255,.12);text-align:center}.sk-warm-verse label{font-size:10px;letter-spacing:.22em;color:rgba(255,244,230,.5)}.sk-warm-verse p{font-family:'Amiri Quran','Amiri',serif;font-size:21px;line-height:2;margin:13px auto 5px;max-width:330px}.sk-warm-verse span{font-size:11px;color:rgba(240,213,164,.8)}
       .sk-warm-arc{padding:10px 22px 5px}.sk-warm-prayers{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding:14px 12px 20px;border-top:1px solid rgba(255,255,255,.1);margin:8px 12px 0}.sk-warm-prayer{border:1px solid transparent;border-radius:14px;background:transparent;color:rgba(255,246,234,.58);padding:8px 2px;cursor:pointer}.sk-warm-prayer b{font-size:11px;font-weight:400}.sk-warm-prayer span{display:block;margin-top:8px;color:#fdf6ec;font-size:13px;direction:ltr;font-variant-numeric:tabular-nums}.sk-warm-prayer.active{background:rgba(240,213,164,.14);border-color:rgba(240,213,164,.28);color:#f0d5a4}.sk-warm-prayer.active span{color:#f6dcae;font-weight:500}
     `}</style>
-    <main className="sk-warm-card" style={{position:"relative"}}>
+    <main className="sk-warm-card" style={{position:"relative",background:`linear-gradient(178deg,${warmSky[0]} 0%,${warmSky[1]} 42%,${warmSky[2]} 100%)`,transition:"background 1.2s linear"}}>
       <button className="sk-preview-toggle" onClick={() => setShowTimePreview((v) => !v)}>{showTimePreview ? "إخفاء المعاينة" : "معاينة الوقت"}</button>
       {showTimePreview && <div className="sk-warm-preview"><div className="sk-warm-preview-top"><span>معاينة الوقت · {NAMES[active][lang]}</span><button onClick={() => { onScrub(hourNow); setShowTimePreview(false); }} style={{border:0,background:"none",color:"inherit",cursor:"pointer"}}>الآن</button></div><input aria-label="معاينة الوقت" className="sk-warm-range" type="range" min={prayerTimes.fajr} max={prayerTimes.isha} step=".0028" value={Math.min(prayerTimes.isha, Math.max(prayerTimes.fajr, hourNow))} onChange={(e) => { onScrub(Number(e.target.value)); setShowTimePreview(true); }} /></div>}
       <header className="sk-warm-header"><div className="sk-warm-brand"><small>SAKINAH</small><h1>سكينة</h1><p>{date}</p></div></header>
