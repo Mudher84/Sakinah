@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.provider.OpenableColumns;
 import android.provider.Settings;
 import android.webkit.GeolocationPermissions;
@@ -61,6 +62,15 @@ public class MainActivity extends Activity {
         AlarmManager am=(AlarmManager)getSystemService(ALARM_SERVICE);
         if(am.canScheduleExactAlarms())return;
         try{startActivity(new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM,Uri.parse("package:"+getPackageName())));}catch(Exception ignored){}
+    }
+
+    private void requestBatteryOptimizationExemption(){
+        if(Build.VERSION.SDK_INT<23)return;
+        PowerManager pm=(PowerManager)getSystemService(POWER_SERVICE);
+        if(pm.isIgnoringBatteryOptimizations(getPackageName()))return;
+        try{startActivity(new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,Uri.parse("package:"+getPackageName())));}catch(Exception ignored){
+            try{startActivity(new Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS));}catch(Exception ignored2){}
+        }
     }
 
     private void pickAdhanAudio(String prayer){
@@ -134,12 +144,35 @@ public class MainActivity extends Activity {
         @JavascriptInterface public void cancelPrayer(String id){ PrayerScheduler.cancel(context,id); }
         @JavascriptInterface public void refreshPrayerSchedule(){ PrayerRefreshWorker.runSoon(context); }
         @JavascriptInterface public void ensureExactAlarmPermission(){ runOnUiThread(()->requestExactAlarmPermission()); }
+        @JavascriptInterface public void ensureBatteryOptimizationExemption(){ runOnUiThread(()->requestBatteryOptimizationExemption()); }
         @JavascriptInterface public void refreshWidget(){ SakinahWidgetProvider.refreshAll(context); }
         @JavascriptInterface public void setAdhanUri(String uri){ context.getSharedPreferences("sakinah",MODE_PRIVATE).edit().putString("adhan_uri",uri==null?"":uri).apply(); }
         @JavascriptInterface public void pickAdhan(String prayer){ runOnUiThread(()->pickAdhanAudio(prayer)); }
         @JavascriptInterface public void clearAdhan(String prayer){ context.getSharedPreferences("sakinah",MODE_PRIVATE).edit().remove("adhan_uri_"+prayer).apply(); }
         @JavascriptInterface public float magneticDeclination(double lat,double lon,double altitude,long timeMillis){
             try{return new android.hardware.GeomagneticField((float)lat,(float)lon,(float)altitude,timeMillis).getDeclination();}catch(Exception e){return 0f;}
+        }
+        @JavascriptInterface public void scheduleAdhanTest(int seconds,String prayer){
+            int delay=Math.max(10,Math.min(seconds,600));
+            String p=(prayer==null||prayer.isBlank())?"Maghrib":prayer;
+            long at=System.currentTimeMillis()+delay*1000L;
+            PrayerScheduler.schedule(context,"AdhanTest@"+at,p,at,"اختبار الأذان · مِرْآةُ الْمُسْلِمِ");
+        }
+        @JavascriptInterface public String getSystemHealth(){
+            try{
+                android.content.SharedPreferences p=context.getSharedPreferences("sakinah",MODE_PRIVATE);
+                JSONObject j=new JSONObject();
+                boolean location=ActivityCompat.checkSelfPermission(context,Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED;
+                boolean notifications=Build.VERSION.SDK_INT<33||ActivityCompat.checkSelfPermission(context,Manifest.permission.POST_NOTIFICATIONS)==PackageManager.PERMISSION_GRANTED;
+                AlarmManager am=(AlarmManager)context.getSystemService(ALARM_SERVICE);
+                boolean exact=Build.VERSION.SDK_INT<31||am.canScheduleExactAlarms();
+                PowerManager pm=(PowerManager)context.getSystemService(POWER_SERVICE);
+                boolean battery=Build.VERSION.SDK_INT<23||pm.isIgnoringBatteryOptimizations(context.getPackageName());
+                j.put("android",true);j.put("location",location);j.put("notifications",notifications);j.put("exactAlarm",exact);j.put("batteryExempt",battery);
+                j.put("nextPrayer",p.getString("next_prayer",""));j.put("nextPrayerTime",p.getString("next_prayer_time",""));j.put("nextPrayerAt",p.getLong("next_prayer_at",0L));
+                j.put("lastRefreshSuccess",p.getLong("last_refresh_success",0L));j.put("lastRefreshError",p.getString("last_refresh_error",""));
+                return j.toString();
+            }catch(Exception e){return "{\"android\":true,\"error\":\"health\"}";}
         }
     }
 }
