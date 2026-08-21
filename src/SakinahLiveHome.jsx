@@ -63,25 +63,27 @@ export default function SakinahLiveHome({profileAvatar="",profileName="أنا",o
    @media(max-width:520px){.mm-reference-frame{padding:0 0 96px;background:linear-gradient(${C.navy} 0 64px,transparent 64px)}.mm-reference-sheet{border-radius:0;box-shadow:none;background:linear-gradient(${C.navy} 0 64px,${C.bg} 64px)}}
   `}</style>
   <div className="mm-reference-frame"><div className="mm-reference-sheet">
-   <section style={{background:C.navy,color:C.bg,borderRadius:"0 0 30px 30px",padding:"18px 22px 22px",position:"relative",overflow:"hidden"}}>
+   <section style={{background:C.navy,color:C.bg,borderRadius:"0 0 30px 30px",padding:"22px 22px 30px",position:"relative",overflow:"hidden"}}>
     <div style={{position:"absolute",inset:0,background:"radial-gradient(90% 70% at 88% -12%,rgba(192,160,98,.28),transparent 62%)",pointerEvents:"none"}}/>
-    <div style={{position:"relative",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-     <button className="mm-ref-tap" onClick={onOpenProfile} style={{width:34,height:34,padding:0,borderRadius:"50%",background:"rgba(247,243,234,.10)",border:"1px solid rgba(192,160,98,.35)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,color:C.gold,overflow:"hidden",cursor:"pointer"}} aria-label="الملف الشخصي">{profileAvatar?<img src={profileAvatar} alt="" style={{width:"100%",height:"100%",objectFit:"cover",display:"block"}}/>:"◉"}</button>
-     <div style={{textAlign:"center"}}><div className="mm-amiri" style={{fontSize:19}}>مِرْآةُ الْمُسْلِمِ</div><div className="mm-cairo" style={{fontSize:10,color:"rgba(247,243,234,.5)",marginTop:3}}>{date}{hijri?` · ${hijri}`:""}</div></div>
-     <button className="mm-ref-tap" onClick={()=>emit("islamic-calendar")} style={{width:34,height:34,padding:0,borderRadius:"50%",background:"rgba(247,243,234,.06)",border:"1px solid rgba(247,243,234,.14)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,color:"rgba(247,243,234,.7)",cursor:"pointer"}} aria-label="التقويم">◔</button>
+    <div style={{position:"relative",display:"grid",gridTemplateColumns:"40px 1fr 40px",alignItems:"start"}}>
+     <button className="mm-ref-tap" onClick={onOpenProfile} style={{width:34,height:34,padding:0,borderRadius:"50%",background:"rgba(247,243,234,.10)",border:"1px solid rgba(192,160,98,.35)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,color:C.gold,overflow:"hidden",cursor:"pointer",justifySelf:"start"}} aria-label="الملف الشخصي">{profileAvatar?<img src={profileAvatar} alt="" style={{width:"100%",height:"100%",objectFit:"cover",display:"block"}}/>:"◉"}</button>
+     <div style={{textAlign:"center",justifySelf:"center"}}><div className="mm-amiri" style={{fontSize:22,lineHeight:1.35}}>مِرْآةُ الْمُسْلِمِ</div><div className="mm-cairo" style={{fontSize:10,color:"rgba(247,243,234,.5)",marginTop:4}}>{date}{hijri?` · ${hijri}`:""}</div></div>
+     <button className="mm-ref-tap" onClick={()=>emit("islamic-calendar")} style={{width:34,height:34,padding:0,borderRadius:"50%",background:"rgba(247,243,234,.06)",border:"1px solid rgba(247,243,234,.14)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,color:"rgba(247,243,234,.7)",cursor:"pointer",justifySelf:"end"}} aria-label="التقويم">◔</button>
     </div>
 
-    <div style={{position:"relative",marginTop:22,display:"flex",alignItems:"flex-end",justifyContent:"space-between"}}>
-     <div><div className="mm-cairo" style={{fontSize:12,color:"rgba(247,243,234,.55)"}}>الصلاة القادمة</div><div style={{fontSize:16,color:C.gold,fontWeight:600,marginTop:3}}>{next?AR[next.id]:"—"}</div></div>
-     <div style={{textAlign:"left"}}><div className="mm-mono" style={{fontSize:"clamp(46px,12vw,54px)",fontWeight:300,lineHeight:1,letterSpacing:"-.03em",direction:"ltr"}}>{next?.time||"--:--"}</div><div className="mm-cairo" style={{fontSize:11,color:"rgba(247,243,234,.5)",marginTop:6}}>متبقٍ {next?remaining(next.at-tick):"بانتظار المواقيت"}</div></div>
+    <div style={{position:"relative",marginTop:34,textAlign:"center",display:"flex",flexDirection:"column",alignItems:"center"}}>
+     <div className="mm-mono" style={{fontSize:"clamp(58px,15vw,72px)",fontWeight:300,lineHeight:.95,letterSpacing:"-.045em",direction:"ltr"}}>{next?.time||"--:--"}</div>
+     <div className="mm-cairo" style={{fontSize:11,color:"rgba(247,243,234,.48)",marginTop:12}}>الصلاة القادمة</div>
+     <div style={{fontSize:20,color:C.gold,fontWeight:600,marginTop:2}}>{next?AR[next.id]:"—"}</div>
+     <div className="mm-cairo" style={{fontSize:11,color:"rgba(247,243,234,.5)",marginTop:7}}>متبقٍ {next?remaining(next.at-tick):"بانتظار المواقيت"}</div>
     </div>
 
-    <div style={{position:"relative",height:74,marginTop:14}}>
-     <svg viewBox="0 0 340 74" width="100%" height="74" style={{display:"block"}}><path d="M6 64 C 68 10, 272 10, 334 64" fill="none" stroke="rgba(247,243,234,.16)" strokeWidth="1.5"/><path d="M6 64 C 68 10, 272 10, 334 64" fill="none" stroke={C.gold} strokeWidth="2" strokeDasharray={`${420*doneCount/5} 420`}/></svg>
+    <div style={{position:"relative",height:84,marginTop:24}}>
+     <svg viewBox="0 0 340 84" width="100%" height="84" style={{display:"block"}}><path d="M6 72 C 68 12, 272 12, 334 72" fill="none" stroke="rgba(247,243,234,.16)" strokeWidth="1.5"/><path d="M6 72 C 68 12, 272 12, 334 72" fill="none" stroke={C.gold} strokeWidth="2" strokeDasharray={`${420*doneCount/5} 420`}/></svg>
      {MARK_POS.map((p,i)=><button key={PR[i]} onClick={()=>togglePrayer(i)} aria-label={AR[PR[i]]} style={{position:"absolute",top:p.top,right:p.right,width:i===2?12:10,height:i===2?12:10,borderRadius:"50%",background:done[i]?C.gold:C.navy,border:`1.5px solid ${done[i]?C.gold:"rgba(247,243,234,.35)"}`,transform:"translate(50%,-50%)",padding:0,cursor:"pointer"}}/>)}
     </div>
     <div style={{position:"relative",display:"flex",justifyContent:"space-between"}}>{PR.map(p=><div key={p} style={{flex:1,textAlign:"center"}}><div className="mm-cairo" style={{fontSize:10,color:next?.id===p?C.gold:"rgba(247,243,234,.45)"}}>{AR[p]}</div><div className="mm-mono" style={{fontSize:12,color:next?.id===p?C.gold:"rgba(247,243,234,.75)",marginTop:4,direction:"ltr"}}>{clean(data?.timings?.[p])||"--:--"}</div></div>)}</div>
-    <div style={{position:"relative",marginTop:16,paddingTop:13,borderTop:"1px solid rgba(247,243,234,.10)",display:"flex",alignItems:"center",justifyContent:"space-between"}}><span className="mm-cairo" style={{fontSize:10,color:"rgba(247,243,234,.4)"}}>{status||"اضغط النقاط لتسجيل ما أدّيته"}</span><span style={{fontSize:11,color:C.gold}}>{ar(doneCount)} من ٥ صلوات</span></div>
+    <div style={{position:"relative",marginTop:18,paddingTop:14,borderTop:"1px solid rgba(247,243,234,.10)",display:"flex",alignItems:"center",justifyContent:"space-between"}}><span className="mm-cairo" style={{fontSize:10,color:"rgba(247,243,234,.4)"}}>{status||"اضغط النقاط لتسجيل ما أدّيته"}</span><span style={{fontSize:11,color:C.gold}}>{ar(doneCount)} من ٥ صلوات</span></div>
    </section>
 
    <section style={{margin:"22px 20px 0",padding:"18px 20px",borderRadius:22,background:C.paper,border:"1px solid rgba(192,160,98,.35)",boxShadow:"0 16px 32px -26px rgba(16,45,67,.6)"}}>
