@@ -19,6 +19,7 @@ import { installLivingHomeRotation } from './livingHomeRotation.js'
 import { installAlyamFooter } from './alyamFooter.js'
 import { installBrandIdentity } from './brandIdentity.js'
 import { installQuranLiveWaveform } from './quranLiveWaveform.js'
+import { installQuranSurahNumberGuard } from './quranSurahNumberGuard.js'
 import './index.css'
 import './amiriExperiment.css'
 import './bodoniNumbers.css'
@@ -54,6 +55,7 @@ installLivingHomeRotation()
 installAlyamFooter()
 installBrandIdentity()
 installQuranLiveWaveform()
+installQuranSurahNumberGuard()
 
 if ("serviceWorker" in navigator) {
   const localHost=["localhost","127.0.0.1","::1"].includes(window.location.hostname)
