@@ -104,6 +104,16 @@ function reconcile(){
  const search=bar.querySelector(`#${BAR_SEARCH_ID}`);
  const onSearch=document.querySelector('.global-feature-shell[data-feature="islamic-search"]');
  search.classList.toggle(HIDDEN_CLASS,!!onSearch);
+ document.querySelectorAll('[data-mm-search-legacy-brand="true"]').forEach(el=>{el.classList.remove(HIDDEN_CLASS);el.removeAttribute('data-mm-search-legacy-brand')});
+ if(onSearch){
+  [...onSearch.querySelectorAll('button,a')].forEach(el=>{
+   const text=(el.textContent||'').replace(/[←→‹›⟵⟶]/g,'').replace(/\s+/g,' ').trim();
+   if(text==='مرآة المسلم'||text==='مِرْآةُ الْمُسْلِمِ'){
+    el.dataset.mmSearchLegacyBrand='true';
+    el.classList.add(HIDDEN_CLASS);
+   }
+  });
+ }
 }
 export function installGlobalBackButtons(){
  reconcile();let queued=false;
