@@ -14,6 +14,7 @@ function score(n,root){
 }
 function repair(){
  for(const row of document.querySelectorAll('button,[role="button"],a')){
+  if(row.closest('[data-smart-my-day="true"]'))continue;
   const text=(row.innerText||row.textContent||'').replace(/\s+/g,' ').trim(); if(!ROW_RX.test(text))continue;
   const lux=[...row.querySelectorAll('.remaining-card-lux-icon')]; if(!lux.length)continue;
   const src=lux[0]; const html=src.innerHTML;
