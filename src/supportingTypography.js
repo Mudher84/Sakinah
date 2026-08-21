@@ -1,4 +1,4 @@
-const CAIRO='Cairo, Tahoma, Arial, sans-serif';
+const CAIRO="'Cairo', Tahoma, Arial, sans-serif";
 const QURAN_SELECTOR=[
   '.quranMini','.quranHero','.quranAudioText','.quranMemo','.ayah','.mushaf',
   '[class*="quran-text"]','[class*="quranText"]','[class*="ayah-text"]','[class*="ayahText"]',
@@ -18,19 +18,17 @@ function directText(el){
 function looksSupporting(el){
   if(!(el instanceof HTMLElement)||isQuran(el))return false;
   if(['SCRIPT','STYLE','SVG','PATH','INPUT','TEXTAREA','SELECT'].includes(el.tagName))return false;
-  if(el.closest('button')&&el.tagName!=='SMALL')return false;
-  if(/^H[1]$/i.test(el.tagName))return false;
+  if(/^H1$/i.test(el.tagName))return false;
   const cls=`${el.className||''} ${el.id||''}`.toLowerCase();
-  if(/subtitle|sub-title|description|desc\b|explainer|explanation|helper|support|caption|meta|eyebrow|sectionlabel|section-label|summary|hint/.test(cls))return true;
+  if(/subtitle|sub-title|description|desc\b|explainer|explanation|helper|support|caption|meta|eyebrow|sectionlabel|section-label|summary|hint|subtext|note/.test(cls))return true;
   if(el.hasAttribute('data-mm-subtitle')||el.hasAttribute('data-mm-description')||el.hasAttribute('data-mm-explainer'))return true;
-  if(el.tagName==='P'||el.tagName==='SMALL')return true;
-  if(/^H[23]$/i.test(el.tagName))return true;
+  if(el.tagName==='P'||el.tagName==='SMALL'||/^H[23]$/i.test(el.tagName))return true;
   const txt=directText(el);
-  if(!txt||txt.length<3||txt.length>240)return false;
+  if(!txt||txt.length<3||txt.length>260)return false;
   const s=getComputedStyle(el),size=parseFloat(s.fontSize)||16,op=parseFloat(s.opacity||'1');
-  const childBlock=[...el.children].some(c=>['DIV','SECTION','ARTICLE','BUTTON','UL','OL'].includes(c.tagName));
+  const childBlock=[...el.children].some(c=>['DIV','SECTION','ARTICLE','UL','OL'].includes(c.tagName));
   if(childBlock)return false;
-  if(size<=13.5&&(op<.82||txt.length>=18))return true;
+  if(size<=14&&(op<.9||txt.length>=16))return true;
   return false;
 }
 function apply(root=document){
@@ -50,7 +48,12 @@ function ensureStyle(){
 }
 export function installSupportingTypography(){
   ensureStyle();
-  apply();
+  const runApply=()=>apply();
+  runApply();
+  if(document.fonts?.load){
+    document.fonts.load("500 14px Cairo").then(runApply).catch(()=>{});
+    document.fonts.ready.then(runApply).catch(()=>{});
+  }
   let queued=false;
   const run=()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;apply()})};
   new MutationObserver(run).observe(document.body,{childList:true,subtree:true,characterData:true});
