@@ -1,6 +1,6 @@
 import React,{useState} from "react";
-import SakinahNativeReadyLayer from "./SakinahNativeReadyLayer.jsx";
 import SakinahAllFeaturesLayer from "./SakinahAllFeaturesLayer.jsx";
+import SakinahSevenDock from "./SakinahSevenDock.jsx";
 import "./responsiveShell.css";
 
 function emit(id){window.dispatchEvent(new CustomEvent("sakinah:feature",{detail:id}))}
@@ -27,7 +27,7 @@ export default function SakinahResponsiveShell(){
  };
  const dock=["home","quran","quran-player","hadith","myday","discover","profile"];
  return <div className="sakinahResponsiveShell" dir="rtl">
-  <div className="responsiveAppStage"><SakinahAllFeaturesLayer><SakinahNativeReadyLayer/></SakinahAllFeaturesLayer></div>
+  <div className="responsiveAppStage"><SakinahAllFeaturesLayer><SakinahSevenDock/></SakinahAllFeaturesLayer></div>
   <nav className="app-global-dock" aria-label="Muslim Mirror primary">{dock.map(id=><button key={id} className={active===id?"active":""} aria-label={id} onClick={()=>goDock(id)}><span className="dockIcon"><DockIcon name={id}/></span></button>)}</nav>
  </div>;
 }
