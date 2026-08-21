@@ -544,6 +544,7 @@ function NavDock({ world, go, lang, isDark, nextPrayer, fraction, simple }) {
 ════════════════════════════════════════════════════════════════ */
 function TodayScreen({ lang, stage, hourNow, nextPrayer, remH, remM, moment, go, onScrub, lastRead, qiblaDeg, prayerTimes }) {
   const [showTimePreview, setShowTimePreview] = useState(false);
+  const [clockFormat, setClockFormat] = useState("24");
   useEffect(() => {
     if (!showTimePreview) return;
     const close = setTimeout(() => setShowTimePreview(false), 5000);
@@ -574,13 +575,20 @@ function TodayScreen({ lang, stage, hourNow, nextPrayer, remH, remM, moment, go,
     return first.c.map((color, n) => mixWarm(color, second.c[n], ratio));
   })();
   const remaining = lang === "ar" ? `متبقي ${nDigits(remH, lang)} ساعات و ${nDigits(remM, lang)} دقيقة` : `${remH}h ${remM}m remaining`;
+  const displayTime = (hour) => {
+    if (clockFormat === "24") return fmtHM(hour, lang);
+    const h = Math.floor(hour), minutes = String(Math.round((hour % 1) * 60)).padStart(2, "0");
+    const twelve = h % 12 || 12;
+    const marker = h < 12 ? (lang === "ar" ? " ص" : " AM") : (lang === "ar" ? " م" : " PM");
+    return `${nDigits(String(twelve).padStart(2, "0"), lang)}:${nDigits(minutes, lang)}${marker}`;
+  };
   const date = new Intl.DateTimeFormat("ar-IQ", { weekday: "long", day: "numeric", month: "long" }).format(new Date());
   const verse = SURAHS[0].verses[1];
   return <div dir="rtl" className="sk-warm-home">
     <style>{`
       .sk-warm-home{position:absolute;inset:0;z-index:60;overflow:auto;background:#17100c;padding:14px;display:flex;justify-content:center;font-family:'IBM Plex Sans Arabic',sans-serif;color:#fffaf2}
       .sk-warm-card{width:min(100%,414px);min-height:840px;overflow:hidden;border-radius:0 0 34px 34px;background:linear-gradient(178deg,#e0b183 0%,#c08f68 14%,#7c5443 38%,#4b3229 62%,#2b1d18 100%);box-shadow:0 40px 90px -30px rgba(0,0,0,.8)}
-      .sk-preview-toggle{position:absolute;top:16px;inset-inline-end:16px;z-index:2;border:1px solid rgba(255,255,255,.28);border-radius:999px;padding:7px 11px;background:rgba(64,37,25,.16);color:rgba(255,249,238,.9);font:inherit;font-size:10px;cursor:pointer}.sk-warm-preview{margin:16px 16px 0;padding:14px 16px 16px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.14);border-radius:20px;animation:sk-preview-in .2s ease}.sk-warm-preview-top{display:flex;justify-content:space-between;color:rgba(58,36,24,.78);font-size:11px}.sk-warm-range{width:100%;margin-top:13px;direction:ltr;accent-color:#e2c48c;cursor:ew-resize}@keyframes sk-preview-in{from{opacity:0;transform:translateY(-7px)}to{opacity:1;transform:translateY(0)}}
+      .sk-preview-toggle,.sk-time-format-toggle{position:absolute;top:16px;z-index:2;border:1px solid rgba(255,255,255,.28);border-radius:999px;padding:7px 11px;background:rgba(64,37,25,.16);color:rgba(255,249,238,.9);font:inherit;font-size:10px;cursor:pointer}.sk-preview-toggle{inset-inline-end:16px}.sk-time-format-toggle{inset-inline-start:16px;letter-spacing:.08em}.sk-warm-preview{margin:16px 16px 0;padding:14px 16px 16px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.14);border-radius:20px;animation:sk-preview-in .2s ease}.sk-warm-preview-top{display:flex;justify-content:space-between;color:rgba(58,36,24,.78);font-size:11px}.sk-warm-range{width:100%;margin-top:13px;direction:ltr;accent-color:#e2c48c;cursor:ew-resize}@keyframes sk-preview-in{from{opacity:0;transform:translateY(-7px)}to{opacity:1;transform:translateY(0)}}
       .sk-warm-header{display:flex;justify-content:center;align-items:start;padding:18px 18px 0}.sk-warm-brand{text-align:center;padding-top:5px}.sk-warm-brand small{display:block;font-size:9px;letter-spacing:.42em;color:rgba(46,28,18,.62)}.sk-warm-brand h1{margin:4px 0 3px;font-size:43px;line-height:1.15}.sk-warm-brand p{margin:0;font-size:11px;color:rgba(52,32,22,.73)}
       .sk-warm-time{display:flex;flex-direction:column;align-items:center;padding:40px 20px 32px;gap:10px}.sk-warm-pill{padding:5px 14px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(255,255,255,.12);font-size:13px;color:#f6e8d3}.sk-warm-pill i{display:inline-block;width:5px;height:5px;margin-left:8px;border-radius:50%;background:#f0d5a4}.sk-warm-clock{font-size:74px;font-weight:300;line-height:1;letter-spacing:.01em;direction:ltr;font-variant-numeric:tabular-nums}.sk-warm-remaining{font-size:12px;color:rgba(255,246,234,.7)}
       .sk-warm-verse{margin:0 20px;padding:22px 4px 24px;border-top:1px solid rgba(255,255,255,.12);text-align:center}.sk-warm-verse label{font-size:10px;letter-spacing:.22em;color:rgba(255,244,230,.5)}.sk-warm-verse p{font-family:'Amiri Quran','Amiri',serif;font-size:21px;line-height:2;margin:13px auto 5px;max-width:330px}.sk-warm-verse span{font-size:11px;color:rgba(240,213,164,.8)}
@@ -588,12 +596,13 @@ function TodayScreen({ lang, stage, hourNow, nextPrayer, remH, remM, moment, go,
     `}</style>
     <main className="sk-warm-card" style={{position:"relative",background:`linear-gradient(178deg,${warmSky[0]} 0%,${warmSky[1]} 42%,${warmSky[2]} 100%)`,transition:"background 1.2s linear"}}>
       <button className="sk-preview-toggle" onClick={() => setShowTimePreview((v) => !v)}>{showTimePreview ? "إخفاء المعاينة" : "معاينة الوقت"}</button>
+      <button className="sk-time-format-toggle" onClick={() => setClockFormat((format) => format === "24" ? "12" : "24")} aria-label="تبديل نظام الوقت">12 / 24</button>
       {showTimePreview && <div className="sk-warm-preview"><div className="sk-warm-preview-top"><span>معاينة الوقت · {NAMES[active][lang]}</span><button onClick={() => { onScrub(hourNow); setShowTimePreview(false); }} style={{border:0,background:"none",color:"inherit",cursor:"pointer"}}>الآن</button></div><input aria-label="معاينة الوقت" className="sk-warm-range" type="range" min={prayerTimes.fajr} max={prayerTimes.isha} step=".0028" value={Math.min(prayerTimes.isha, Math.max(prayerTimes.fajr, hourNow))} onChange={(e) => { onScrub(Number(e.target.value)); setShowTimePreview(true); }} /></div>}
       <header className="sk-warm-header"><div className="sk-warm-brand"><small>SAKINAH</small><h1>سكينة</h1><p>{date}</p></div></header>
-      <section className="sk-warm-time"><div className="sk-warm-pill"><i />{NAMES[active][lang]}</div><div className="sk-warm-clock">{fmtHM(prayerTimes[active], lang)}</div><div className="sk-warm-remaining">{remaining}</div></section>
+      <section className="sk-warm-time"><div className="sk-warm-pill"><i />{NAMES[active][lang]}</div><div className="sk-warm-clock">{displayTime(prayerTimes[active])}</div><div className="sk-warm-remaining">{remaining}</div></section>
       <button className="sk-warm-verse" onClick={() => go("reader", { surahId: 1 })} style={{width:"calc(100% - 40px)",background:"none",borderInline:"none",borderBottom:"none",color:"inherit",cursor:"pointer"}}><label>آية اليوم</label><p>{verse.ar}</p><span>سورة الفاتحة · الآية ٢</span></button>
       <div className="sk-warm-arc"><DayArc hourNow={hourNow} lang={lang} onScrub={onScrub} isDark prayerTimes={prayerTimes} /></div>
-      <section className="sk-warm-prayers">{[...PRAYER_ONLY].map((id) => <button key={id} className={`sk-warm-prayer ${active === id ? "active" : ""}`} onClick={() => onScrub(prayerTimes[id])}><b>{NAMES[id][lang]}</b><span>{fmtHM(prayerTimes[id], lang)}</span></button>)}</section>
+      <section className="sk-warm-prayers">{[...PRAYER_ONLY].map((id) => <button key={id} className={`sk-warm-prayer ${active === id ? "active" : ""}`} onClick={() => onScrub(prayerTimes[id])}><b>{NAMES[id][lang]}</b><span>{displayTime(prayerTimes[id])}</span></button>)}</section>
     </main>
   </div>;
 }
