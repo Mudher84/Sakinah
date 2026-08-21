@@ -64,7 +64,7 @@ export default function SakinahSevenDock(){
  };
  const isFullPanel=["quran","quran-surahs","quran-reader","quran-player","adult-nasheeds","hadith"].includes(panel);
  return <div className="sakinah-seven-shell" onClickCapture={captureAudioHub} style={{position:"relative",minHeight:"100vh",background:C.ivory,color:C.ink}} dir="rtl">
-  <style>{`.sakinah-seven-page{position:relative;min-height:100vh;padding-bottom:94px}.sakinah-seven-page.full-panel{position:fixed;inset:0;z-index:12000;padding-bottom:0;overflow:hidden;background:${C.ivory}}`}</style>
+  <style>{`.sakinah-seven-page{position:relative;min-height:100vh;padding-bottom:94px}.sakinah-seven-page.full-panel{position:fixed;inset:0;z-index:12000;padding-bottom:0;overflow:hidden;background:${C.ivory}}[data-hadith-react-safe="true"] svg{width:auto!important;height:auto!important;max-width:24px!important;max-height:24px!important;display:block!important;flex:none!important}`}</style>
   <div className={`sakinah-seven-page${isFullPanel?" full-panel":""}`}>
    {panel==="quran"?<QuranToolsPremium go={goFromQuran}/>:panel==="quran-surahs"?<LiveSurahList lang={lang} go={goMushaf}/>:panel==="quran-reader"?<LiveQuranReader lang={lang} go={goMushaf} surahId={surahId}/>:panel==="quran-player"?<LiveQuranAudio lang={lang} go={to=>to==="quran-home"?setPanel("quran"):window.dispatchEvent(new CustomEvent("sakinah:feature",{detail:to}))}/>:panel==="adult-nasheeds"?<AdultNasheeds go={()=>setPanel("quran-player")}/>:panel==="hadith"?<div data-smart-my-day="true" data-hadith-react-safe="true" style={{position:"absolute",inset:0,overflow:"hidden",background:C.ivory}}><LiveHadithHub go={()=>openOld("discover")}/></div>:<MergedSakinah/>}
   </div>
