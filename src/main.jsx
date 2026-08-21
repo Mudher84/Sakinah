@@ -35,6 +35,7 @@ import './quranTopTabsFix.css'
 import './quranSurahNumberBadges.css'
 import './quranSurahCompact.css'
 import './quranPlayerControlsPolish.css'
+import './quranDockSafeSpace.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
