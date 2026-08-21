@@ -1,3 +1,20 @@
 .mm-quran-player .mm-quran-scroll > div > section:last-of-type{
   padding-bottom:170px !important;
 }
+
+/* Quran tools screen: reserve real space for the persistent global dock. */
+.qtp-shell{
+  padding-bottom:118px !important;
+}
+.qtp-bottom{
+  height:118px !important;
+  flex:0 0 118px;
+}
+@supports (padding-bottom: env(safe-area-inset-bottom)){
+  .qtp-shell{
+    padding-bottom:calc(118px + env(safe-area-inset-bottom)) !important;
+  }
+  .qtp-bottom{
+    height:calc(118px + env(safe-area-inset-bottom)) !important;
+  }
+}
