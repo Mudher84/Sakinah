@@ -8,16 +8,31 @@ const ITEMS=[
 [/جذور القرآن|Quran Roots|Roots/i,'<svg viewBox="0 0 24 24"><path class="qh-line" d="M12 4v8M12 8c-2.2-2.4-4.1-2.8-6-2.4M12 9c2.3-2.2 4.4-2.5 6.2-1.9M12 12c-1 3-2.7 5.5-5.4 7.4M12 12c1.1 3 2.9 5.4 5.6 7.2"/><path class="qh-gold" d="M8.2 16.7 6 19M15.8 16.6l2.2 2.3"/></svg>'],
 [/موضوعات القرآن|Quran Topics|Topics/i,'<svg viewBox="0 0 24 24"><circle class="qh-fill" cx="7" cy="7" r="2.5"/><circle class="qh-fill" cx="17" cy="7" r="2.5"/><circle class="qh-fill" cx="7" cy="17" r="2.5"/><circle class="qh-fill" cx="17" cy="17" r="2.5"/><path class="qh-line" d="M9.5 7h5M7 9.5v5M17 9.5v5M9.5 17h5"/><circle class="qh-gold" cx="12" cy="12" r="1"/></svg>']
 ];
+const OTHER_ICON='.sakinah-lux-app-icon,.remaining-card-lux-icon,.kids-shelf-lux-icon';
 function apply(){
  for(const el of document.querySelectorAll('button,[role="button"],a')){
   const text=(el.innerText||el.textContent||'').replace(/\s+/g,' ').trim();
   const hit=ITEMS.find(([rx])=>rx.test(text)); if(!hit)continue;
-  let box=el.querySelector('.quran-hub-lux-icon');
-  if(!box){
-   const candidates=[...el.querySelectorAll('span,div')].filter(x=>x.children.length===0&&((x.textContent||'').trim().length<=4));
-   const old=candidates[0]; box=document.createElement('span'); box.className='quran-hub-lux-icon';
-   if(old)old.replaceWith(box); else el.prepend(box);
+  const quranIcons=[...el.querySelectorAll('.quran-hub-lux-icon')];
+  const otherIcons=[...el.querySelectorAll(OTHER_ICON)].filter(n=>!n.classList.contains('quran-hub-lux-icon'));
+  if(quranIcons.length){
+   const box=quranIcons[0];
+   quranIcons.slice(1).forEach(n=>n.remove());
+   otherIcons.forEach(n=>n.remove());
+   box.innerHTML=hit[1];
+   continue;
   }
+  if(otherIcons.length){
+   const host=otherIcons[0];
+   otherIcons.slice(1).forEach(n=>n.remove());
+   host.classList.remove('sakinah-lux-app-icon','remaining-card-lux-icon','kids-shelf-lux-icon');
+   host.classList.add('quran-hub-lux-icon');
+   host.innerHTML=hit[1];
+   continue;
+  }
+  const candidates=[...el.querySelectorAll('span,div')].filter(x=>x.children.length===0&&((x.textContent||'').trim().length<=4));
+  const old=candidates[0]; const box=document.createElement('span'); box.className='quran-hub-lux-icon';
+  if(old)old.replaceWith(box); else el.prepend(box);
   box.innerHTML=hit[1];
  }
 }
