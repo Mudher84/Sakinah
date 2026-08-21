@@ -15,25 +15,32 @@ const ITEMS=[
 [/أوقات الصلاة|Prayer Times/i,'<svg viewBox="0 0 24 24"><circle class="rc-fill" cx="12" cy="12" r="8"/><path class="rc-line" d="M12 7v5l3.5 2"/><path class="rc-gold" d="M12 2.5V4"/></svg>'],
 [/أذكار اليوم|Daily Adhkar/i,'<svg viewBox="0 0 24 24"><circle class="rc-fill" cx="12" cy="12" r="7.5"/><path class="rc-line" d="M8.5 12.5c1.4-2.7 3.8-4 7-3.8M9.2 16c1.6.7 3.1.8 4.7.2"/><path class="rc-gold" d="M12 3v2"/></svg>']
 ];
-const OTHER_ICON_CLASSES=['.sakinah-lux-app-icon','.quran-hub-lux-icon','.kids-shelf-lux-icon','.remaining-card-lux-icon'];
-function cleanup(el){for(const sel of OTHER_ICON_CLASSES){for(const n of el.querySelectorAll(sel)){if(!n.classList.contains('remaining-card-lux-icon'))n.remove()}}}
+const FOREIGN='.sakinah-lux-app-icon,.quran-hub-lux-icon,.kids-shelf-lux-icon,.remaining-card-lux-icon';
+function scoreBox(n){
+ const t=(n.textContent||'').trim(); if(t.length>4)return-99;
+ const cs=getComputedStyle(n),r=n.getBoundingClientRect(); let s=0;
+ if(n.querySelector('svg'))s+=5;
+ if(r.width>=38&&r.width<=72&&r.height>=38&&r.height<=72)s+=6;
+ if(parseFloat(cs.borderRadius)>=12)s+=3;
+ if(cs.borderStyle!=='none'&&parseFloat(cs.borderWidth)>0)s+=2;
+ if(cs.display==='grid'||cs.display==='flex')s+=1;
+ return s;
+}
 function apply(){
  for(const el of document.querySelectorAll('button,[role="button"],a')){
   const text=(el.innerText||el.textContent||'').replace(/\s+/g,' ').trim();
   const hit=ITEMS.find(([r])=>r.test(text)); if(!hit)continue;
-  cleanup(el);
-  let box=el.querySelector('.remaining-card-lux-icon');
-  if(!box){
-   const old=[...el.querySelectorAll('span,div')].find(x=>x.children.length===0&&((x.textContent||'').trim().length<=4));
-   box=document.createElement('span'); box.className='remaining-card-lux-icon';
-   if(old)old.replaceWith(box); else el.prepend(box);
-  }
-  for(const extra of [...el.querySelectorAll('.remaining-card-lux-icon')].slice(1))extra.remove();
-  box.innerHTML=hit[1];
+  for(const n of [...el.querySelectorAll(FOREIGN)])n.remove();
+  const candidates=[...el.querySelectorAll('span,div')].filter(n=>!n.closest('.remaining-card-lux-icon'));
+  let host=candidates.sort((a,b)=>scoreBox(b)-scoreBox(a))[0];
+  if(!host||scoreBox(host)<4){host=document.createElement('span');el.prepend(host)}
+  host.innerHTML=hit[1];
+  host.classList.add('remaining-card-lux-icon');
+  host.setAttribute('aria-hidden','true');
  }
 }
 export function installRemainingCardLuxuryIcons(){
  if(document.getElementById('remaining-card-lux-style'))return;
- const s=document.createElement('style');s.id='remaining-card-lux-style';s.textContent=`.remaining-card-lux-icon{width:30px;height:30px;display:grid;place-items:center;flex:0 0 auto}.remaining-card-lux-icon svg{width:25px;height:25px}.remaining-card-lux-icon .rc-line{fill:none;stroke:#8f846d;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}.remaining-card-lux-icon .rc-fill{fill:rgba(198,193,180,.20);stroke:none}.remaining-card-lux-icon .rc-gold{fill:none;stroke:#b89a5b;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round}`;document.head.appendChild(s);
+ const s=document.createElement('style');s.id='remaining-card-lux-style';s.textContent=`.remaining-card-lux-icon{display:grid!important;place-items:center!important}.remaining-card-lux-icon svg{width:25px!important;height:25px!important}.remaining-card-lux-icon .rc-line{fill:none;stroke:#8f846d;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}.remaining-card-lux-icon .rc-fill{fill:rgba(198,193,180,.20);stroke:none}.remaining-card-lux-icon .rc-gold{fill:none;stroke:#b89a5b;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round}`;document.head.appendChild(s);
  apply();let q=false;new MutationObserver(()=>{if(q)return;q=true;requestAnimationFrame(()=>{q=false;apply()})}).observe(document.body,{subtree:true,childList:true});
 }
