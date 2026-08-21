@@ -1,5 +1,6 @@
 const BRAND_EN="Muslim Mirror";
 const BRAND_AR="مِرْآةُ الْمُسْلِمِ";
+const HOME_NAVY="#102D43";
 
 function cleanText(value){
  if(!value)return value;
@@ -41,6 +42,13 @@ function ensureHomeHeaderStyle(){
   overflow:hidden!important;
  }
  html.mm-home-mounted .screen{padding-top:0!important}
+ html.mm-home-mounted .responsiveAppStage,
+ html.mm-home-mounted .appShell,
+ html.mm-home-mounted .phone,
+ html.mm-home-mounted .phone main,
+ html.mm-home-mounted .phone .screen{
+  background:${HOME_NAVY}!important;
+ }
  `;
  document.head.appendChild(style);
 }
