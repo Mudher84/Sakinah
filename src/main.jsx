@@ -42,6 +42,7 @@ import './quranPlayerControlsPolish.css'
 import './quranDockSafeSpace.css'
 import './dockSlimGlass.css'
 import './globalTypography.css'
+import './homeServiceIconCenter.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
