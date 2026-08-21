@@ -54,6 +54,7 @@ public final class PrayerRefreshWorker extends Worker {
             double lat=bridge.optDouble("latitude",Double.NaN),lon=bridge.optDouble("longitude",Double.NaN);
             if(Double.isNaN(lat)||Double.isNaN(lon))return Result.retry();
             int method=bridge.optInt("method",4);
+            int school=bridge.optInt("school",0);
             JSONObject cfg=bridge.optJSONObject("notifications");
             if(cfg==null)cfg=new JSONObject();
 
@@ -61,40 +62,44 @@ public final class PrayerRefreshWorker extends Worker {
             try{zone=ZoneId.of(bridge.optString("timezone",ZoneId.systemDefault().getId()));}
             catch(Exception e){zone=ZoneId.systemDefault();}
             LocalDate today=LocalDate.now(zone);
-            refreshDate(today,lat,lon,method,cfg);
-            refreshDate(today.plusDays(1),lat,lon,method,cfg);
+            refreshDate(today,lat,lon,method,school,cfg);
+            refreshDate(today.plusDays(1),lat,lon,method,school,cfg);
             return Result.success();
         }catch(Exception e){return Result.retry();}
     }
 
-    private void refreshDate(LocalDate date,double lat,double lon,int method,JSONObject cfg)throws Exception{
-        JSONObject data=fetch(date,lat,lon,method);
+    private void refreshDate(LocalDate date,double lat,double lon,int method,int school,JSONObject cfg)throws Exception{
+        JSONObject data=fetch(date,lat,lon,method,school);
         JSONObject timings=data.getJSONObject("timings");
         String tz=data.optJSONObject("meta")!=null?data.optJSONObject("meta").optString("timezone",ZoneId.systemDefault().getId()):ZoneId.systemDefault().getId();
         ZoneId zone;try{zone=ZoneId.of(tz);}catch(Exception e){zone=ZoneId.systemDefault();}
+        String dateKey=date.toString();
         for(String p:PRAYERS){
             if(!cfg.optBoolean(p,true))continue;
             String value=clean(timings.optString(p,""));
             if(value.isBlank())continue;
             long at=toEpoch(date,value,zone);
-            if(at>System.currentTimeMillis()+30000L)PrayerScheduler.schedule(getApplicationContext(),p,at,"حان وقت صلاة "+ar(p));
+            if(at>System.currentTimeMillis()+30000L){
+                String alarmId=p+"@"+dateKey;
+                PrayerScheduler.schedule(getApplicationContext(),alarmId,p,at,"حان وقت صلاة "+ar(p));
+            }
         }
         if(cfg.optBoolean("friday",true)&&date.getDayOfWeek()==java.time.DayOfWeek.FRIDAY){
             long at=LocalDateTime.of(date,LocalTime.of(9,0)).atZone(zone).toInstant().toEpochMilli();
-            if(at>System.currentTimeMillis()+30000L)PrayerScheduler.schedule(getApplicationContext(),"FridayReminder",at,"تذكير يوم الجمعة");
+            if(at>System.currentTimeMillis()+30000L)PrayerScheduler.schedule(getApplicationContext(),"FridayReminder@"+dateKey,"FridayReminder",at,"تذكير يوم الجمعة");
         }
         JSONObject hijri=data.optJSONObject("date")!=null?data.optJSONObject("date").optJSONObject("hijri"):null;
         if(cfg.optBoolean("ramadan",true)&&hijri!=null&&hijri.optJSONObject("month")!=null&&hijri.optJSONObject("month").optInt("number",0)==9){
             String fajr=clean(timings.optString("Fajr",""));
             if(!fajr.isBlank()){
                 long at=toEpoch(date,fajr,zone)-30L*60L*1000L;
-                if(at>System.currentTimeMillis()+30000L)PrayerScheduler.schedule(getApplicationContext(),"RamadanReminder",at,"تذكير رمضان قبل الفجر");
+                if(at>System.currentTimeMillis()+30000L)PrayerScheduler.schedule(getApplicationContext(),"RamadanReminder@"+dateKey,"RamadanReminder",at,"تذكير رمضان قبل الفجر");
             }
         }
     }
 
-    private JSONObject fetch(LocalDate date,double lat,double lon,int method)throws Exception{
-        String endpoint="https://api.aladhan.com/v1/timings/"+API_DATE.format(date)+"?latitude="+enc(String.valueOf(lat))+"&longitude="+enc(String.valueOf(lon))+"&method="+method;
+    private JSONObject fetch(LocalDate date,double lat,double lon,int method,int school)throws Exception{
+        String endpoint="https://api.aladhan.com/v1/timings/"+API_DATE.format(date)+"?latitude="+enc(String.valueOf(lat))+"&longitude="+enc(String.valueOf(lon))+"&method="+method+"&school="+school;
         HttpURLConnection c=(HttpURLConnection)new URL(endpoint).openConnection();
         c.setConnectTimeout(12000);c.setReadTimeout(12000);c.setRequestProperty("Accept","application/json");
         int code=c.getResponseCode();if(code<200||code>=300)throw new IllegalStateException("HTTP "+code);
