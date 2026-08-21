@@ -18,6 +18,7 @@ import { installLivingHomeRotation } from './livingHomeRotation.js'
 import { installAlyamFooter } from './alyamFooter.js'
 import { installBrandIdentity } from './brandIdentity.js'
 import { installGeolocationFallback } from './geolocationFallback.js'
+import { installPrayerFetchFallback } from './prayerFetchFallback.js'
 import { installQuranLiveWaveform } from './quranLiveWaveform.js'
 import { installQuranSurahNumberGuard } from './quranSurahNumberGuard.js'
 import { installQuranSurahAutoPlay } from './quranSurahAutoPlay.js'
@@ -43,6 +44,7 @@ import './dockSlimGlass.css'
 import './globalTypography.css'
 
 installGeolocationFallback()
+installPrayerFetchFallback()
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
