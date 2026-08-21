@@ -1,114 +1,68 @@
-function qBezier(t, p0, p1, p2) {
-  const u = 1 - t;
-  return u * u * p0 + 2 * u * t * p1 + t * t * p2;
+function qBezier(t,p0,p1,p2){const u=1-t;return u*u*p0+2*u*t*p1+t*t*p2}
+function clamp(v,min=0,max=1){return Math.max(min,Math.min(max,v))}
+function nowHour(){const d=new Date();return d.getHours()+d.getMinutes()/60+d.getSeconds()/3600}
+function isDay(hour){return hour>=6&&hour<18}
+function phase(hour){
+ if(isDay(hour))return clamp((hour-6)/12);
+ const h=hour>=18?hour-18:hour+6;
+ return clamp(h/12);
 }
-
-function currentPreviewHour(hero) {
-  const slider = hero?.querySelector('input[type="range"][aria-label="معاينة وقت الهيرو"]');
-  if (slider && slider.dataset.celestialPreview === '1') return Number(slider.value);
-  const d = new Date();
-  return d.getHours() + d.getMinutes() / 60;
+function ensureMarker(){
+ let marker=document.getElementById('sakinah-celestial-marker');
+ if(marker)return marker;
+ marker=document.createElement('div');
+ marker.id='sakinah-celestial-marker';
+ marker.setAttribute('aria-hidden','true');
+ Object.assign(marker.style,{position:'fixed',zIndex:'2147483550',width:'30px',height:'30px',display:'grid',placeItems:'center',pointerEvents:'none',transform:'translate(-50%,-50%)',transition:'left .8s ease,top .8s ease,color .5s ease,opacity .35s ease,filter .5s ease',fontFamily:'Georgia,serif',fontSize:'24px',lineHeight:'1'});
+ document.body.appendChild(marker);
+ return marker;
 }
-
-function isDay(hour) {
-  return hour >= 6 && hour < 18;
+function targetArc(){
+ const modern=document.querySelector('.mm-reference-home svg[viewBox="0 0 340 108"]');
+ if(modern)return{svg:modern,kind:'modern'};
+ const legacy=document.querySelector('.sakinah-live-hero svg[viewBox="0 0 420 110"]');
+ if(legacy)return{svg:legacy,kind:'legacy'};
+ return null;
 }
-
-function markerT(hour) {
-  if (isDay(hour)) return Math.max(0, Math.min(1, (hour - 6) / 12));
-  const nightHour = hour >= 18 ? hour - 18 : hour + 6;
-  return Math.max(0, Math.min(1, nightHour / 12));
+function updateMarker(){
+ const marker=ensureMarker(),target=targetArc();
+ if(!target){marker.style.display='none';return}
+ const rect=target.svg.getBoundingClientRect();
+ if(!rect.width||!rect.height){marker.style.display='none';return}
+ const hour=nowHour(),day=isDay(hour),t=phase(hour);
+ let vx,vy,vw,vh;
+ if(target.kind==='modern'){
+  vw=340;vh=108;
+  vx=qBezier(t,6,170,334);
+  vy=qBezier(t,96,-10,96);
+ }else{
+  vw=420;vh=110;
+  vx=qBezier(t,20,210,400);
+  vy=qBezier(t,88,7,88);
+ }
+ const x=rect.left+(vx/vw)*rect.width;
+ const y=rect.top+(vy/vh)*rect.height;
+ marker.style.display='grid';
+ marker.style.left=`${x}px`;
+ marker.style.top=`${y}px`;
+ marker.textContent=day?'☀':'☾';
+ marker.style.color=day?'#D5AD58':'#F2ECDD';
+ marker.style.opacity='1';
+ marker.style.textShadow=day?'0 0 8px rgba(213,173,88,.42),0 0 20px rgba(213,173,88,.18)':'0 0 8px rgba(242,236,221,.34),0 0 18px rgba(242,236,221,.14)';
+ marker.style.filter=day?'drop-shadow(0 1px 2px rgba(85,58,8,.2))':'drop-shadow(0 1px 2px rgba(0,0,0,.24))';
 }
-
-function ensureMarker() {
-  let marker = document.getElementById('sakinah-celestial-marker');
-  if (marker) return marker;
-
-  marker = document.createElement('div');
-  marker.id = 'sakinah-celestial-marker';
-  marker.setAttribute('aria-hidden', 'true');
-  Object.assign(marker.style, {
-    position: 'fixed',
-    zIndex: '65000',
-    width: '34px',
-    height: '34px',
-    display: 'grid',
-    placeItems: 'center',
-    pointerEvents: 'none',
-    transform: 'translate(-50%,-50%)',
-    transition: 'left .45s ease, color .45s ease, filter .45s ease',
-    fontFamily: 'Georgia, serif',
-    fontSize: '27px',
-    lineHeight: '1'
-  });
-  document.body.appendChild(marker);
-  return marker;
-}
-
-function updateMarker() {
-  const hero = document.querySelector('.sakinah-live-hero');
-  const svg = hero?.querySelector('svg[viewBox="0 0 420 110"]');
-  const marker = ensureMarker();
-
-  if (!hero || !svg) {
-    marker.style.display = 'none';
-    return;
-  }
-
-  const rect = svg.getBoundingClientRect();
-  if (!rect.width || !rect.height) {
-    marker.style.display = 'none';
-    return;
-  }
-
-  const hour = currentPreviewHour(hero);
-  const day = isDay(hour);
-  const t = markerT(hour);
-
-  // Horizontal movement follows time; vertical level remains fixed.
-  const vx = qBezier(t, 20, 210, 400);
-  const x = rect.left + (vx / 420) * rect.width;
-  const fixedVy = 37;
-  const y = rect.top + (fixedVy / 110) * rect.height;
-
-  marker.style.display = 'grid';
-  marker.style.left = `${x}px`;
-  marker.style.top = `${y}px`;
-  marker.textContent = day ? '☀' : '☾';
-  marker.style.color = day ? '#B89443' : '#F0E9D7';
-  marker.style.textShadow = day
-    ? '0 0 7px rgba(205,166,78,.38), 0 0 18px rgba(205,166,78,.18)'
-    : '0 0 8px rgba(240,233,215,.36), 0 0 18px rgba(240,233,215,.16)';
-  marker.style.filter = day ? 'drop-shadow(0 1px 1px rgba(93,68,18,.12))' : 'drop-shadow(0 1px 1px rgba(0,0,0,.18))';
-}
-
-export function installCelestialArc() {
-  const start = () => {
-    updateMarker();
-
-    const root = document.getElementById('root');
-    const observer = new MutationObserver(() => requestAnimationFrame(updateMarker));
-    if (root) observer.observe(root, {subtree:true, childList:true});
-
-    document.addEventListener('input', e => {
-      if (e.target?.matches?.('input[type="range"][aria-label="معاينة وقت الهيرو"]')) {
-        e.target.dataset.celestialPreview = '1';
-        requestAnimationFrame(updateMarker);
-      }
-    }, true);
-
-    document.addEventListener('click', e => {
-      if (e.target?.textContent?.trim() === 'الآن') {
-        const slider = document.querySelector('input[type="range"][aria-label="معاينة وقت الهيرو"]');
-        if (slider) delete slider.dataset.celestialPreview;
-        requestAnimationFrame(updateMarker);
-      }
-    }, true);
-
-    window.addEventListener('resize', updateMarker, {passive:true});
-    window.addEventListener('scroll', updateMarker, {passive:true});
-    setInterval(updateMarker, 30000);
-  };
-
-  requestAnimationFrame(() => requestAnimationFrame(start));
+export function installCelestialArc(){
+ const start=()=>{
+  updateMarker();
+  let queued=false;
+  const schedule=()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;updateMarker()})};
+  const root=document.getElementById('root');
+  const observer=new MutationObserver(schedule);
+  if(root)observer.observe(root,{subtree:true,childList:true,attributes:true,attributeFilter:['style','class']});
+  window.addEventListener('resize',schedule,{passive:true});
+  window.addEventListener('scroll',schedule,{passive:true});
+  ['sakinah:feature','sakinah:global-root'].forEach(n=>window.addEventListener(n,schedule));
+  setInterval(updateMarker,30000);
+ };
+ requestAnimationFrame(()=>requestAnimationFrame(start));
 }
