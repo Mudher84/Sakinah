@@ -1,15 +1,13 @@
 .global-feature-shell[data-feature="islamic-search"],
+.global-feature-shell[data-feature="islamic-search"] *{
+  font-family:'Cairo',sans-serif !important;
+  font-synthesis:none !important;
+}
+
 .global-feature-shell[data-feature="islamic-search"] button,
-.global-feature-shell[data-feature="islamic-search"] a,
 .global-feature-shell[data-feature="islamic-search"] input,
 .global-feature-shell[data-feature="islamic-search"] textarea,
-.global-feature-shell[data-feature="islamic-search"] select,
-.global-feature-shell[data-feature="islamic-search"] h1,
-.global-feature-shell[data-feature="islamic-search"] h2,
-.global-feature-shell[data-feature="islamic-search"] h3,
-.global-feature-shell[data-feature="islamic-search"] h4,
-.global-feature-shell[data-feature="islamic-search"] span,
-.global-feature-shell[data-feature="islamic-search"] div,
-.global-feature-shell[data-feature="islamic-search"] p{
+.global-feature-shell[data-feature="islamic-search"] select{
   font-family:'Cairo',sans-serif !important;
+  font-weight:400 !important;
 }
