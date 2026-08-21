@@ -13,31 +13,30 @@ function apply(){
  for(const el of document.querySelectorAll('button,[role="button"],a')){
   const text=(el.innerText||el.textContent||'').replace(/\s+/g,' ').trim();
   const hit=ITEMS.find(([rx])=>rx.test(text)); if(!hit)continue;
+  const isMemorization=/الحفظ والمراجعة|Memorization/i.test(text);
   const quranIcons=[...el.querySelectorAll('.quran-hub-lux-icon')];
   const otherIcons=[...el.querySelectorAll(OTHER_ICON)].filter(n=>!n.classList.contains('quran-hub-lux-icon'));
+  let box=null;
   if(quranIcons.length){
-   const box=quranIcons[0];
+   box=quranIcons[0];
    quranIcons.slice(1).forEach(n=>n.remove());
    otherIcons.forEach(n=>n.remove());
-   box.innerHTML=hit[1];
-   continue;
-  }
-  if(otherIcons.length){
-   const host=otherIcons[0];
+  }else if(otherIcons.length){
+   box=otherIcons[0];
    otherIcons.slice(1).forEach(n=>n.remove());
-   host.classList.remove('sakinah-lux-app-icon','remaining-card-lux-icon','kids-shelf-lux-icon');
-   host.classList.add('quran-hub-lux-icon');
-   host.innerHTML=hit[1];
-   continue;
+   box.classList.remove('sakinah-lux-app-icon','remaining-card-lux-icon','kids-shelf-lux-icon');
+   box.classList.add('quran-hub-lux-icon');
+  }else{
+   const candidates=[...el.querySelectorAll('span,div')].filter(x=>x.children.length===0&&((x.textContent||'').trim().length<=4));
+   const old=candidates[0]; box=document.createElement('span'); box.className='quran-hub-lux-icon';
+   if(old)old.replaceWith(box); else el.prepend(box);
   }
-  const candidates=[...el.querySelectorAll('span,div')].filter(x=>x.children.length===0&&((x.textContent||'').trim().length<=4));
-  const old=candidates[0]; const box=document.createElement('span'); box.className='quran-hub-lux-icon';
-  if(old)old.replaceWith(box); else el.prepend(box);
   box.innerHTML=hit[1];
+  box.classList.toggle('quran-hub-lux-icon-centered',isMemorization);
  }
 }
 export function installQuranHubLuxuryIcons(){
  if(document.getElementById('quran-hub-lux-style'))return;
- const s=document.createElement('style');s.id='quran-hub-lux-style';s.textContent=`.quran-hub-lux-icon{width:28px;height:28px;display:grid;place-items:center;color:#B59A62;flex:0 0 auto}.quran-hub-lux-icon svg{width:25px;height:25px;overflow:visible}.quran-hub-lux-icon .qh-line{fill:none;stroke:#9A8B6A;stroke-width:1.45;stroke-linecap:round;stroke-linejoin:round}.quran-hub-lux-icon .qh-fill{fill:rgba(197,191,176,.22);stroke:none}.quran-hub-lux-icon .qh-gold{fill:none;stroke:#B59A62;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round}`;document.head.appendChild(s);
+ const s=document.createElement('style');s.id='quran-hub-lux-style';s.textContent=`.quran-hub-lux-icon{width:28px;height:28px;display:grid;place-items:center;color:#B59A62;flex:0 0 auto}.quran-hub-lux-icon-centered{margin-inline:auto!important;align-self:center!important;justify-self:center!important;position:relative!important;inset-inline:auto!important;left:auto!important;right:auto!important}.quran-hub-lux-icon svg{width:25px;height:25px;overflow:visible}.quran-hub-lux-icon .qh-line{fill:none;stroke:#9A8B6A;stroke-width:1.45;stroke-linecap:round;stroke-linejoin:round}.quran-hub-lux-icon .qh-fill{fill:rgba(197,191,176,.22);stroke:none}.quran-hub-lux-icon .qh-gold{fill:none;stroke:#B59A62;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round}`;document.head.appendChild(s);
  apply();let queued=false;new MutationObserver(()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;apply()})}).observe(document.body,{subtree:true,childList:true});
 }
