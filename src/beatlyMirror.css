@@ -1,0 +1,157 @@
+:root{
+  --mm-ivory:#F6F3EC;
+  --mm-paper:#FFFDF9;
+  --mm-paper-2:#F1EEE7;
+  --mm-ink:#171714;
+  --mm-muted:#8E8A82;
+  --mm-lapis:#173B57;
+  --mm-lapis-deep:#0D2637;
+  --mm-gold:#B8944F;
+  --mm-gold-soft:#D8C18E;
+  --mm-silver:#B8BABD;
+  --mm-bronze:#9A7150;
+  --mm-radius-xl:30px;
+  --mm-radius-lg:24px;
+  --mm-radius-md:18px;
+  --mm-shadow:0 18px 44px rgba(31,27,21,.08);
+  --mm-shadow-soft:0 10px 28px rgba(31,27,21,.055);
+}
+
+html,body,#root{background:var(--mm-ivory)}
+body{color:var(--mm-ink);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+button,input,textarea,select{font-family:inherit}
+button{transition:transform .16s ease,box-shadow .2s ease,background-color .2s ease,border-color .2s ease}
+button:active{transform:scale(.975)}
+
+.sakinah-seven-shell{
+  --beatly-gap:14px;
+  background:linear-gradient(180deg,#FBF9F4 0%,var(--mm-ivory) 52%,#F2EEE6 100%)!important;
+}
+.sakinah-seven-page> *{animation:mmBeatlyIn .28s ease both}
+@keyframes mmBeatlyIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+/* Quran hub — keep Muslim Mirror gold/silver icon identity, use Beatly spacing/layout */
+[data-quran-center="true"]{
+  max-width:760px;
+  margin:0 auto;
+  padding:26px 18px 126px!important;
+  background:linear-gradient(180deg,#FBF9F4 0%,var(--mm-ivory) 100%)!important;
+}
+[data-quran-center="true"]>div:first-child{
+  color:var(--mm-gold)!important;
+  opacity:.8!important;
+  letter-spacing:.16em!important;
+}
+[data-quran-center="true"] button{
+  -webkit-tap-highlight-color:transparent;
+}
+[data-quran-center="true"] button[style*="rgba(255,255,255,.55)"],
+[data-quran-center="true"] button[style*="rgba(255, 255, 255, 0.55)"],
+[data-quran-center="true"] button[style*="background:rgba(255,255,255,.55)"]{
+  background:rgba(255,253,249,.9)!important;
+  border:1px solid rgba(23,23,20,.075)!important;
+  border-radius:24px!important;
+  box-shadow:var(--mm-shadow-soft)!important;
+}
+[data-quran-center="true"] svg{
+  filter:drop-shadow(0 4px 10px rgba(184,148,79,.08));
+}
+[data-quran-center="true"] button:hover{box-shadow:0 15px 34px rgba(31,27,21,.075)}
+
+/* Quran audio — Beatly player rhythm while keeping current dark sacred artwork */
+.sakinah-audio-page{
+  max-width:620px!important;
+  margin:0 auto!important;
+  padding:18px 14px 132px!important;
+}
+.sakinah-player-card{
+  border-radius:32px!important;
+  box-shadow:0 24px 58px rgba(8,18,26,.20)!important;
+}
+.sakinah-cover{
+  border-radius:26px!important;
+}
+.sakinah-player-controls{
+  margin-top:24px!important;
+  gap:10px!important;
+}
+.sakinah-player-main{
+  box-shadow:0 12px 30px rgba(181,154,98,.22)!important;
+  border-color:rgba(216,193,142,.72)!important;
+}
+.sakinah-player-side,
+.sakinah-player-skip{
+  background:rgba(255,255,255,.045)!important;
+  border-color:rgba(184,186,189,.18)!important;
+}
+.sakinah-speed-row{
+  background:rgba(255,255,255,.035)!important;
+  border:1px solid rgba(184,186,189,.12)!important;
+  border-radius:22px!important;
+  padding:7px!important;
+}
+.sakinah-speed-row button{
+  border-radius:16px!important;
+}
+.sakinah-actions{
+  gap:8px!important;
+}
+.sakinah-actions button{
+  min-height:50px!important;
+  border-radius:18px!important;
+  border-color:rgba(184,186,189,.16)!important;
+}
+
+/* Legacy/home surfaces — soften them globally without replacing icon artwork */
+.phone{
+  background:linear-gradient(180deg,#FBF9F4 0%,var(--mm-ivory) 100%)!important;
+}
+.screen.light{background:transparent!important}
+.searchInput,.intelligenceScreen input{
+  background:rgba(255,253,249,.88)!important;
+  border:1px solid rgba(23,23,20,.08)!important;
+  border-radius:18px!important;
+  box-shadow:0 8px 22px rgba(31,27,21,.035)!important;
+}
+.rows>button,.rowStatic{
+  min-height:70px!important;
+  padding:12px 2px!important;
+}
+.prayerActions button,.reviewChoice button{
+  background:rgba(255,253,249,.72)!important;
+  border-color:rgba(23,23,20,.075)!important;
+  border-radius:20px!important;
+}
+.continuePanel{
+  background:rgba(255,253,249,.55)!important;
+  border:1px solid rgba(23,23,20,.07)!important;
+  border-radius:22px!important;
+  padding:18px 16px!important;
+  box-shadow:var(--mm-shadow-soft)!important;
+}
+
+/* Beatly-like dock proportions, preserving Muslim Mirror icons/colors */
+.dock{
+  height:72px!important;
+  padding:7px 9px!important;
+  border-radius:26px!important;
+  background:rgba(255,253,249,.82)!important;
+  border:1px solid rgba(23,23,20,.075)!important;
+  box-shadow:0 18px 42px rgba(31,27,21,.13)!important;
+  backdrop-filter:blur(24px) saturate(1.08)!important;
+}
+.dock>button{border-radius:18px!important;transition:opacity .2s ease,background .2s ease,transform .16s ease!important}
+.dock>button.active{background:rgba(184,148,79,.09)!important}
+.dock>button.active svg{filter:drop-shadow(0 3px 8px rgba(184,148,79,.12))}
+.prayerRing{background:rgba(255,255,255,.5)}
+
+@media(max-width:430px){
+  [data-quran-center="true"]{padding:22px 12px 122px!important}
+  .sakinah-audio-page{padding:14px 10px 126px!important}
+  .sakinah-player-card{border-radius:28px!important}
+  .dock{bottom:12px!important;max-width:calc(100vw - 20px)!important}
+}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
