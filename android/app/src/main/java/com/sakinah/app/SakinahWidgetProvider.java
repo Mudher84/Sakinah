@@ -34,7 +34,7 @@ public class SakinahWidgetProvider extends AppWidgetProvider {
         RemoteViews v=new RemoteViews(c.getPackageName(),R.layout.widget_sakinah);
         v.setTextViewText(R.id.widgetPrayer,prayer);
         v.setTextViewText(R.id.widgetTime,time);
-        v.setTextViewText(R.id.widgetHijri,hijri.isEmpty()?"سكينة":hijri);
+        v.setTextViewText(R.id.widgetHijri,hijri.isEmpty()?"مِرْآةُ الْمُسْلِمِ":hijri);
         if(at>System.currentTimeMillis()){
             long base=SystemClock.elapsedRealtime()+(at-System.currentTimeMillis());
             v.setChronometer(R.id.widgetCountdown,base,"متبقي %s",true);
