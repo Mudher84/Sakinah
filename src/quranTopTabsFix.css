@@ -1,0 +1,48 @@
+.mm-quran-player .mm-quran-scroll > div > header + div{
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  gap:10px !important;
+}
+.mm-quran-player .mm-quran-scroll > div > header + div > button{
+  min-height:100px !important;
+  padding:14px 6px 12px !important;
+  border-radius:20px !important;
+  background:#EFE6D6 !important;
+  color:#1B2429 !important;
+  border:1px solid rgba(181,154,98,.36) !important;
+  box-shadow:0 8px 22px rgba(0,0,0,.08) !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:8px !important;
+}
+.mm-quran-player .mm-quran-scroll > div > header + div > button > div:first-child{
+  width:32px !important;
+  height:32px !important;
+  display:grid !important;
+  place-items:center !important;
+  margin:0 auto !important;
+  padding:0 !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  color:#B8944F !important;
+  font-size:22px !important;
+  line-height:1 !important;
+}
+.mm-quran-player .mm-quran-scroll > div > header + div > button > div:first-child *{
+  background:transparent !important;
+  box-shadow:none !important;
+}
+.mm-quran-player .mm-quran-scroll > div > header + div > button > div:last-child{
+  margin-top:0 !important;
+  color:#1B2429 !important;
+  font-size:11px !important;
+  font-weight:500 !important;
+  line-height:1.5 !important;
+  text-align:center !important;
+}
+.mm-quran-player .mm-quran-scroll > div > header + div > button:nth-child(1) > div:first-child{color:#B8BABD !important;}
+.mm-quran-player .mm-quran-scroll > div > header + div > button:nth-child(2) > div:first-child{color:#B8944F !important;}
+.mm-quran-player .mm-quran-scroll > div > header + div > button:nth-child(3) > div:first-child{color:#C8C9C6 !important;}
