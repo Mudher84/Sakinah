@@ -390,68 +390,74 @@ const SourceTag = ({ lang, item, muted }) => (
 /* ════════════════════════════════════════════════════════════════
    DAY LIGHT ARC — signature system
 ════════════════════════════════════════════════════════════════ */
-function DayArc({ hourNow, lang, compact, onScrub, isDark }) {
+function DayArc({ hourNow, lang, compact, onScrub, isDark, prayerTimes = H }) {
   const t = STRINGS[lang];
-  const W = 1000, Hh = compact ? 128 : 220;
-  const amp = compact ? 30 : 56, baseline = compact ? 92 : 150;
-  const stroke = isDark ? "rgba(246,243,236,0.9)" : "rgba(16,16,15,0.85)";
-  const dim = isDark ? "rgba(246,243,236,0.16)" : "rgba(16,16,15,0.14)";
-  const dimmer = isDark ? "rgba(246,243,236,0.07)" : "rgba(16,16,15,0.06)";
-  const xFor = (h) => { const hh = h < H.fajr ? h + 24 : h; return ((hh - H.fajr) / 24) * W; };
-  const yFor = (h) => { const hh = h < H.fajr ? h + 24 : h; const a = ((hh - H.dhuhr) / 24) * Math.PI * 2; return baseline - Math.cos(a) * amp; };
-  const pathD = useMemo(() => {
-    let d = "";
-    for (let i = 0; i <= 120; i++) { const h = H.fajr + (i / 120) * 24, x = xFor(h), y = yFor(h); d += i === 0 ? `M ${x},${y}` : ` L ${x},${y}`; }
-    return d;
-  }, [compact]);
-  const nowX = xFor(hourNow), nowY = yFor(hourNow);
   const svgRef = useRef(null);
+  const arcId = useMemo(() => `sunArc-${Math.random().toString(36).slice(2)}`, []);
+  const start = prayerTimes.fajr, end = prayerTimes.isha;
+  const span = Math.max(0.01, end - start);
+  const progress = Math.max(0, Math.min(1, (hourNow - start) / span));
+  const point = (u) => {
+    const x = 18 + 304 * u;
+    const y = (1 - u) ** 3 * 86 + 3 * (1 - u) ** 2 * u * 10 + 3 * (1 - u) * u ** 2 * 10 + u ** 3 * 86;
+    return { x, y };
+  };
+  const fullPath = "M 18 86 C 95 10 245 10 322 86";
+  const completedPath = useMemo(() => {
+    if (progress <= 0) return "M 18 86";
+    const steps = Math.max(2, Math.ceil(progress * 44));
+    return Array.from({ length: steps + 1 }, (_, i) => {
+      const p = point((progress * i) / steps);
+      return `${i ? "L" : "M"} ${p.x.toFixed(2)} ${p.y.toFixed(2)}`;
+    }).join(" ");
+  }, [progress]);
+  const sun = point(progress);
+  const events = TIMELINE.map((ev) => ({ ...ev, fraction: Math.max(0, Math.min(1, (ev.h - start) / span)) }));
   const scrub = (clientX) => {
     if (!onScrub || !svgRef.current) return;
     const rect = svgRef.current.getBoundingClientRect();
-    let frac = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
-    let h = H.fajr + frac * 24; if (h >= 24) h -= 24;
-    onScrub(h);
+    const fraction = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+    onScrub(start + fraction * span);
   };
-  const sinceFajr = ((hourNow < H.fajr ? hourNow + 24 : hourNow) - H.fajr);
+  const nowH = hourNow;
+  const sinceFajr = Math.max(0, hourNow - start);
   const sfH = Math.floor(sinceFajr), sfM = Math.round((sinceFajr % 1) * 60);
+  const height = compact ? 96 : 110;
   return (
     <div style={{ width: "100%" }}>
-      <svg ref={svgRef} viewBox={`0 0 ${W} ${Hh}`} width="100%" height={Hh} preserveAspectRatio="none"
-        style={{ display: "block", cursor: onScrub ? "ew-resize" : "default", touchAction: "none" }}
-        onPointerDown={(e) => { if (!onScrub) return; e.target.setPointerCapture(e.pointerId); scrub(e.clientX); }}
+      <svg ref={svgRef} viewBox="0 0 340 110" width="100%" height={height} preserveAspectRatio="xMidYMid meet"
+        style={{ display: "block", cursor: onScrub ? "ew-resize" : "default", touchAction: "none", overflow: "visible" }}
+        onPointerDown={(e) => { if (!onScrub) return; e.currentTarget.setPointerCapture(e.pointerId); scrub(e.clientX); }}
         onPointerMove={(e) => { if (!onScrub || e.buttons !== 1) return; scrub(e.clientX); }}>
-        <defs><radialGradient id="nowHalo"><stop offset="0%" stopColor={COLOR.gold} stopOpacity="0.5" /><stop offset="100%" stopColor={COLOR.gold} stopOpacity="0" /></radialGradient></defs>
-        {!compact && Array.from({ length: 25 }).map((_, i) => {
-          const h = H.fajr + i, x = xFor(h);
-          const isPrayerHour = TIMELINE.some((ev) => Math.abs((ev.h < H.fajr ? ev.h + 24 : ev.h) - h) < 0.02);
-          return <line key={i} x1={x} y1={baseline + 10} x2={x} y2={baseline + (isPrayerHour ? 16 : 13)} stroke={isPrayerHour ? dim : dimmer} strokeWidth="1" />;
+        <defs>
+          <linearGradient id={`${arcId}-stroke`} x1="18" y1="0" x2="322" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0" stopColor="#d9b47c" stopOpacity="0.15" /><stop offset="1" stopColor="#f7e3ba" /></linearGradient>
+          <linearGradient id={`${arcId}-fill`} x1="0" y1="10" x2="0" y2="86" gradientUnits="userSpaceOnUse"><stop offset="0" stopColor="#f0d5a4" stopOpacity="0.18" /><stop offset="1" stopColor="#f0d5a4" stopOpacity="0" /></linearGradient>
+          <radialGradient id={`${arcId}-halo`} cx="50%" cy="50%"><stop offset="0" stopColor="#fdf1d6" stopOpacity="0.58" /><stop offset="1" stopColor="#fdf1d6" stopOpacity="0" /></radialGradient>
+        </defs>
+        <line x1="18" y1="86" x2="322" y2="86" stroke="rgba(255,255,255,.12)" strokeWidth="1" />
+        <path d={fullPath} fill="none" stroke="rgba(255,255,255,.14)" strokeWidth="1.2" strokeDasharray="1 5" strokeLinecap="round" />
+        {progress > 0 && <path d={`${completedPath} L ${sun.x.toFixed(2)} 86 L 18 86 Z`} fill={`url(#${arcId}-fill)`} />}
+        {progress > 0 && <path d={completedPath} fill="none" stroke={`url(#${arcId}-stroke)`} strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" />}
+        {events.map((ev) => {
+          const p = point(ev.fraction);
+          const passed = ev.h <= nowH;
+          return passed
+            ? <circle key={ev.id} cx={p.x} cy={p.y} r="3.5" fill={isDark ? "#211a18" : "#5b4636"} stroke="#d9b47c" strokeWidth="1.15" />
+            : <circle key={ev.id} cx={p.x} cy={p.y} r="2.15" fill="rgba(255,255,255,.32)" />;
         })}
-        <path d={pathD} fill="none" stroke={dim} strokeWidth={compact ? 1 : 1.2} />
-        {TIMELINE.map((ev) => {
-          const x = xFor(ev.h), y = yFor(ev.h);
-          const passed = (ev.h < H.fajr ? ev.h + 24 : ev.h) < (hourNow < H.fajr ? hourNow + 24 : hourNow);
-          return <circle key={ev.id} cx={x} cy={y} r={compact ? 2.4 : 3.2} fill="none" stroke={passed ? dim : stroke} strokeWidth="1.2" opacity={passed ? 0.6 : 1} />;
-        })}
-        <line x1={nowX} y1={baseline + (compact ? 14 : 22)} x2={nowX} y2={nowY} stroke={COLOR.gold} strokeWidth="1" opacity="0.5" />
-        <circle cx={nowX} cy={nowY} r={compact ? 11 : 16} fill="url(#nowHalo)" className="sk-breathe" />
-        <circle cx={nowX} cy={nowY} r={compact ? 2.6 : 3.2} fill={COLOR.gold} />
+        <circle cx={sun.x} cy={sun.y} r="22" fill={`url(#${arcId}-halo)`} className="sk-breathe" />
+        <circle cx={sun.x} cy={sun.y} r="7.5" fill="#fdf1d6" stroke="#fff" strokeWidth="1.5" />
       </svg>
       {!compact && (
         <>
-          <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6, padding: "0 2px" }}>
-            {TIMELINE.map((ev) => {
-              const evH = ev.h < H.fajr ? ev.h + 24 : ev.h, nowH = hourNow < H.fajr ? hourNow + 24 : hourNow;
-              const isNext = PRAYER_ONLY.has(ev.id) && evH > nowH && !TIMELINE.some((e2) => PRAYER_ONLY.has(e2.id) && (e2.h < H.fajr ? e2.h + 24 : e2.h) > nowH && (e2.h < H.fajr ? e2.h + 24 : e2.h) < evH);
-              const passed = evH < nowH;
-              return <div key={ev.id} style={{ textAlign: "center", flex: 1 }}>
-                <div style={{ fontSize: 10.5, fontWeight: isNext ? 600 : 500, opacity: passed ? 0.35 : isNext ? 1 : 0.62, color: isNext ? COLOR.gold : "inherit", transition: "opacity .6s ease" }}>{NAMES[ev.id][lang]}</div>
-              </div>;
+          <div style={{ display: "flex", justifyContent: "space-between", marginTop: 7, padding: "0 2px" }}>
+            {events.filter((ev) => PRAYER_ONLY.has(ev.id)).map((ev) => {
+              const passed = ev.h <= nowH;
+              const isNext = !passed && !events.some((other) => PRAYER_ONLY.has(other.id) && other.h > nowH && other.h < ev.h);
+              return <div key={ev.id} style={{ textAlign: "center", flex: 1, fontSize: 10.5, fontWeight: isNext ? 600 : 500, opacity: passed ? 0.36 : isNext ? 1 : 0.62, color: isNext ? COLOR.gold : "inherit", transition: "opacity .6s ease" }}>{NAMES[ev.id][lang]}</div>;
             })}
           </div>
-          <div style={{ textAlign: "center", marginTop: 14, fontSize: 11, opacity: 0.42 }}>
-            {nDigits(sfH, lang)}{lang === "ar" ? " س " : "h "}{nDigits(String(sfM).padStart(2, "0"), lang)}{lang === "ar" ? " د " : "m "}{t.sinceFajr}
-          </div>
+          <div style={{ textAlign: "center", marginTop: 14, fontSize: 11, opacity: 0.42 }}>{nDigits(sfH, lang)}{lang === "ar" ? " س " : "h "}{nDigits(String(sfM).padStart(2, "0"), lang)}{lang === "ar" ? " د " : "m "}{t.sinceFajr}</div>
         </>
       )}
     </div>
