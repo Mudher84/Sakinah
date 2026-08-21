@@ -2048,19 +2048,20 @@ export default function SakinahApp() {
     "me-widgets": () => <WidgetsScreen lang={lang} go={go} stage={stage} nextPrayer={nextPrayer} prayerTimes={prayerTimes} />,
   };
   const dockDark = world === "today" ? isDark : false;
+  const isWarmHome = world === "today";
 
   return (
     <div className="sakinah-root" dir={dir} lang={lang} style={{
-      width: "100%", maxWidth: 430, height: 830, margin: "0 auto", position: "relative", overflow: "hidden",
-      borderRadius: 28, boxShadow: "0 30px 80px rgba(0,0,0,0.35)", background: bg,
+      width: "100%", maxWidth: isWarmHome ? "none" : 430, height: isWarmHome ? "100dvh" : 830, margin: "0 auto", position: "relative", overflow: "hidden",
+      borderRadius: isWarmHome ? 0 : 28, boxShadow: isWarmHome ? "none" : "0 30px 80px rgba(0,0,0,0.35)", background: isWarmHome ? "#17100c" : bg,
       transition: "background 1.4s cubic-bezier(.22,.61,.36,1)", color: fg, fontSize: `${a11y.uiScale}em`,
     }}>
       <GlobalStyle />
 
-      <div style={{ position: "absolute", top: 16, insetInlineEnd: 18, zIndex: 40 }}>
+      {!isWarmHome && <div style={{ position: "absolute", top: 16, insetInlineEnd: 18, zIndex: 40 }}>
         <button onClick={() => setLang(lang === "ar" ? "en" : "ar")} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 11.5, fontWeight: 600, letterSpacing: "0.06em", color: fg, opacity: 0.55, padding: 6 }}>{lang === "ar" ? "EN" : "ع"}</button>
-      </div>
-      <div style={{ position: "absolute", top: 16, insetInlineStart: 18, zIndex: 40 }}>
+      </div>}
+      {!isWarmHome && <div style={{ position: "absolute", top: 16, insetInlineStart: 18, zIndex: 40 }}>
         <button onClick={() => setShowPreview((s) => !s)} className="sk-mono" style={{ background: "none", border: `1px dashed ${isDark ? "rgba(246,243,236,0.3)" : "rgba(16,16,15,0.25)"}`, borderRadius: 4, cursor: "pointer", fontSize: 8.5, fontWeight: 500, color: fg, opacity: 0.42, padding: "3px 7px", textTransform: "uppercase" }}>{STRINGS[lang].preview}</button>
         {showPreview && (
           <div style={{ marginTop: 8, width: 190, background: isDark ? "rgba(0,0,0,0.4)" : "rgba(255,255,255,0.6)", border: `1px dashed ${isDark ? "rgba(246,243,236,0.25)" : "rgba(16,16,15,0.2)"}`, borderRadius: 6, padding: "8px 10px" }}>
@@ -2068,11 +2069,11 @@ export default function SakinahApp() {
             <input type="range" min={0} max={23.98} step={0.05} value={preview ?? hourNow} onChange={(e) => setPreview(parseFloat(e.target.value))} style={{ width: "100%", accentColor: COLOR.gold }} />
           </div>
         )}
-      </div>
+      </div>}
 
       {(screens[world] || screens["today"])()}
 
-      <NavDock world={world} go={go} lang={lang} isDark={dockDark} nextPrayer={nextPrayer} fraction={fraction} simple={a11y.simplified} />
+      {!isWarmHome && <NavDock world={world} go={go} lang={lang} isDark={dockDark} nextPrayer={nextPrayer} fraction={fraction} simple={a11y.simplified} />}
     </div>
   );
 }
