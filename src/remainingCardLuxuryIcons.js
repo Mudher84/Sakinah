@@ -1,7 +1,4 @@
 const ITEMS=[
-[/خريطة الأسماء|Name Map/i,'<svg viewBox="0 0 24 24"><circle class="rc-fill" cx="12" cy="12" r="7.2"/><path class="rc-line" d="M12 6.5 17.5 12 12 17.5 6.5 12z"/><circle class="rc-gold" cx="12" cy="12" r="1.2"/></svg>'],
-[/مقارنة الكلمات|Word Comparison/i,'<svg viewBox="0 0 24 24"><path class="rc-line" d="M5 7.5c3 1.5 5.5 1.5 7.5 0S17 6 19 7.5M5 16.5c3-1.5 5.5-1.5 7.5 0s4.5 1.5 6.5 0"/><path class="rc-gold" d="M7 12h10"/></svg>'],
-[/إحصائيات القرآن|Quran Statistics/i,'<svg viewBox="0 0 24 24"><rect class="rc-fill" x="4" y="4" width="16" height="16" rx="3"/><path class="rc-line" d="M8 16v-4M12 16V8M16 16v-6"/><path class="rc-gold" d="M7 17.5h10"/></svg>'],
 [/برنامج الجمعة اليوم|Friday Program|Jumuah Program/i,'<svg viewBox="0 0 24 24"><path class="rc-fill" d="M5 6h14v13H5z"/><path class="rc-line" d="M8 4v4M16 4v4M5 9.5h14M8 13h8M8 16h5"/><path class="rc-gold" d="M16.5 15.5h1.8"/></svg>'],
 [/تأمل اليوم|Daily Reflection/i,'<svg viewBox="0 0 24 24"><circle class="rc-fill" cx="12" cy="12" r="7.5"/><path class="rc-line" d="M8.4 13c1.7-2.8 4.6-4 7.2-2.7M9 16c1.6.7 3.3.8 4.9.2"/><path class="rc-gold" d="M12 3v2"/></svg>'],
 [/ورد القرآن.*21|Quran Portion|Daily Quran/i,'<svg viewBox="0 0 24 24"><path class="rc-fill" d="M4.5 5.5c2.8-.8 5.3-.3 7.5 1.4v12c-2.3-1.3-4.8-1.7-7.5-1zM19.5 5.5c-2.8-.8-5.3-.3-7.5 1.4v12c2.3-1.3 4.8-1.7 7.5-1z"/><path class="rc-line" d="M8 9h2M14 9h2"/><path class="rc-gold" d="M12 7v12"/></svg>'],
