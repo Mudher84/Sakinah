@@ -1,0 +1,49 @@
+name: Web CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'server/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'vite.config.js'
+      - '.github/workflows/web-ci.yml'
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify application structure
+        shell: bash
+        run: |
+          grep -q 'SakinahResponsiveShell' src/main.jsx
+          grep -q 'SakinahAllFeaturesLayer' src/SakinahResponsiveShell.jsx
+          grep -q 'SakinahSevenDock' src/SakinahResponsiveShell.jsx
+          grep -q 'SakinahLiveHome' src/MergedSakinah.jsx
+          test ! -e src/SakinahNativeReadyLayer.jsx
+          test ! -e src/SakinahDevotionLayer.jsx
+          test ! -e src/SakinahCompletionLayer.jsx
+          test ! -e src/SakinahNotebookLayer.jsx
+
+      - name: Production build
+        run: npm run build
