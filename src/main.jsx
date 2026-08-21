@@ -1,6 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import SakinahResponsiveShell from './SakinahResponsiveShell.jsx'
+
+// Runtime UI installers
 import { installCelestialArc } from './celestialArc.js'
 import { installHeroAtmosphere } from './heroAtmosphere.js'
 import { installTimeFormatToggle } from './timeFormatToggle.js'
@@ -17,8 +19,6 @@ import { installLivingHomeExperience } from './livingHomeExperience.js'
 import { installLivingHomeRotation } from './livingHomeRotation.js'
 import { installAlyamFooter } from './alyamFooter.js'
 import { installBrandIdentity } from './brandIdentity.js'
-import { installGeolocationFallback } from './geolocationFallback.js'
-import { installPrayerFetchFallback } from './prayerFetchFallback.js'
 import { installQuranLiveWaveform } from './quranLiveWaveform.js'
 import { installQuranSurahNumberGuard } from './quranSurahNumberGuard.js'
 import { installQuranSurahAutoPlay } from './quranSurahAutoPlay.js'
@@ -26,6 +26,8 @@ import { installQuranReciterSearch } from './quranReciterSearch.js'
 import { installQuranContinuousPlayback } from './quranContinuousPlayback.js'
 import { installHadithTodayRowFix } from './hadithTodayRowFix.js'
 import { installSupportingTypography } from './supportingTypography.js'
+
+// Global styles
 import './index.css'
 import './amiriExperiment.css'
 import './bodoniNumbers.css'
@@ -42,9 +44,6 @@ import './quranPlayerControlsPolish.css'
 import './quranDockSafeSpace.css'
 import './dockSlimGlass.css'
 import './globalTypography.css'
-
-installGeolocationFallback()
-installPrayerFetchFallback()
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
@@ -76,12 +75,12 @@ installQuranContinuousPlayback()
 installHadithTodayRowFix()
 installSupportingTypography()
 
-if ("serviceWorker" in navigator) {
-  const localHost=["localhost","127.0.0.1","::1"].includes(window.location.hostname)
+if ('serviceWorker' in navigator) {
+  const localHost=['localhost','127.0.0.1','::1'].includes(window.location.hostname)
   if(localHost){
     navigator.serviceWorker.getRegistrations().then(list=>Promise.all(list.map(r=>r.unregister()))).catch(()=>{})
-    if("caches" in window)caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith("sakinah-")).map(k=>caches.delete(k)))).catch(()=>{})
+    if('caches' in window)caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('sakinah-')).map(k=>caches.delete(k)))).catch(()=>{})
   }else{
-    window.addEventListener("load",()=>navigator.serviceWorker.register("/sw.js").catch(()=>{}))
+    window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}))
   }
 }
