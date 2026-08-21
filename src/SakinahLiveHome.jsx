@@ -551,14 +551,14 @@ function TodayScreen({ lang, stage, hourNow, nextPrayer, remH, remM, moment, go,
   }, [showTimePreview]);
   const active = [...PRAYER_ONLY].map((id) => ({ id, h: prayerTimes[id] })).filter((x) => x.h <= hourNow).at(-1)?.id || "isha";
   const warmStops = [
-    { h: 0, c: ["#211510", "#17100c", "#110b09"] },
-    { h: prayerTimes.fajr, c: ["#e6c092", "#bb805b", "#6f4737"] },
-    { h: prayerTimes.sunrise, c: ["#f1d1a2", "#d79d6e", "#926147"] },
-    { h: prayerTimes.dhuhr, c: ["#efd0a1", "#d49c68", "#966045"] },
-    { h: prayerTimes.asr, c: ["#d59b70", "#875743", "#4d3029"] },
-    { h: prayerTimes.maghrib, c: ["#a2634d", "#59342d", "#2a1b18"] },
-    { h: prayerTimes.isha, c: ["#3a251b", "#201510", "#120c0a"] },
-    { h: 24, c: ["#211510", "#17100c", "#110b09"] },
+    { h: 0, c: ["#14213d", "#101a31", "#0b1121"] },
+    { h: prayerTimes.fajr, c: ["#315d86", "#7da8c3", "#d6e0dc"] },
+    { h: prayerTimes.sunrise, c: ["#79a7c2", "#d8c6a5", "#edcf9c"] },
+    { h: prayerTimes.dhuhr, c: ["#fbf6ea", "#eee1c7", "#dac7a8"] },
+    { h: prayerTimes.asr, c: ["#f5e4cc", "#d7aa7c", "#a9785d"] },
+    { h: prayerTimes.maghrib, c: ["#df9c77", "#945765", "#4a3148"] },
+    { h: prayerTimes.isha, c: ["#24375a", "#172443", "#10172d"] },
+    { h: 24, c: ["#14213d", "#101a31", "#0b1121"] },
   ];
   const mixWarm = (from, to, amount) => {
     const rgb = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
