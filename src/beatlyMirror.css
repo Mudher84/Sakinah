@@ -102,6 +102,32 @@ button:active{transform:scale(.975)}
   border-color:rgba(184,186,189,.16)!important;
 }
 
+/* Exact optical centering for the Quran player brand title */
+.mm-quran-player header{
+  position:relative!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-height:32px;
+}
+.mm-quran-player header>div{
+  position:absolute!important;
+  left:50%!important;
+  transform:translateX(-50%)!important;
+  width:max-content!important;
+  max-width:calc(100% - 96px)!important;
+  text-align:center!important;
+  white-space:nowrap!important;
+  line-height:1.25!important;
+}
+.mm-quran-player header>button:first-child{
+  position:absolute!important;
+  right:24px!important;
+  top:50%!important;
+  transform:translateY(-50%)!important;
+}
+.mm-quran-player header>span:last-child{display:none!important}
+
 /* Legacy/home surfaces — soften them globally without replacing icon artwork */
 .phone{
   background:linear-gradient(180deg,#FBF9F4 0%,var(--mm-ivory) 100%)!important;
