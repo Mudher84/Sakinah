@@ -13,6 +13,7 @@ import { installModernFamilyIcons } from './modernFamilyIcons.js'
 import { installModernPersonalIcons } from './modernPersonalIcons.js'
 import { installModernSystemIcons } from './modernSystemIcons.js'
 import { installLuxuryDockIcons } from './luxuryDockIcons.js'
+import { installLuxuryAppIcons } from './luxuryAppIcons.js'
 import { installLivingHomeExperience } from './livingHomeExperience.js'
 import { installLivingHomeRotation } from './livingHomeRotation.js'
 import { installAlyamFooter } from './alyamFooter.js'
@@ -44,6 +45,7 @@ installModernFamilyIcons()
 installModernPersonalIcons()
 installModernSystemIcons()
 installLuxuryDockIcons()
+installLuxuryAppIcons()
 installLivingHomeExperience()
 installLivingHomeRotation()
 installAlyamFooter()
