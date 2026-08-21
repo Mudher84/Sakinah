@@ -2,7 +2,7 @@ import React,{useEffect,useMemo,useRef,useState} from "react";
 import NineBooksCenter from "./NineBooksCenter.jsx";
 import KufanHadiths from "./KufanHadiths.jsx";
 
-const C={ivory:"#F6F3EC",ink:"#10100F",lapis:"#173B57",gold:"#B59A62",red:"#9C4A3B"};
+const C={ivory:"#F6F3EC",paper:"#FBF9F4",ink:"#10100F",lapis:"#173B57",lapisDeep:"#0C293E",gold:"#B59A62",muted:"#74716A",red:"#9C4A3B"};
 const btn={border:"1px solid rgba(16,16,15,.09)",borderRadius:14,padding:11,background:"transparent",fontFamily:"inherit",color:"inherit"};
 const API="https://hadeethenc.com/api/v1";
 
@@ -22,8 +22,8 @@ async function getJson(url,signal){
  return r.json();
 }
 
-function CategoryIcon({title=""}){
- const p={viewBox:"0 0 24 24",width:22,height:22,fill:"none",stroke:"currentColor",strokeWidth:1.55,strokeLinecap:"round",strokeLinejoin:"round","aria-hidden":"true"};
+function CategoryIcon({title="",size=22}){
+ const p={viewBox:"0 0 24 24",width:size,height:size,fill:"none",stroke:"currentColor",strokeWidth:1.55,strokeLinecap:"round",strokeLinejoin:"round","aria-hidden":"true"};
  if(/القرآن|علومه/.test(title))return <svg {...p}><path d="M4.2 5.7c2.7-.9 5.3-.4 7.8 1.2v12.3c-2.5-1.5-5.1-1.9-7.8-1z"/><path d="M19.8 5.7c-2.7-.9-5.3-.4-7.8 1.2v12.3c2.5-1.5 5.1-1.9 7.8-1z"/><path d="M12 6.9v12.3"/></svg>;
  if(/الحديث/.test(title))return <svg {...p}><rect x="4.3" y="3.8" width="15.4" height="16.4" rx="2.8"/><path d="M8 8h8M8 11.8h8M8 15.6h5.3"/><path d="M7 3.8v16.4"/></svg>;
  if(/العقيدة/.test(title))return <svg {...p}><path d="M12 3.7 18.7 6v5c0 4-2.4 7.2-6.7 9.1-4.3-1.9-6.7-5.1-6.7-9.1V6z"/><path d="m9.2 11.9 1.8 1.8 3.8-4"/></svg>;
@@ -53,8 +53,24 @@ function ErrorBox({text,onRetry}){
  </div>;
 }
 
+function HeaderBar({onBack,onSearch}){
+ return <div style={{position:"sticky",top:0,zIndex:40,background:"rgba(246,243,236,.94)",backdropFilter:"blur(16px)",borderBottom:"1px solid rgba(16,16,15,.06)",padding:"14px 20px",display:"grid",gridTemplateColumns:"34px 1fr 34px",alignItems:"center"}}>
+  <button onClick={onBack} aria-label="رجوع" style={{border:0,background:"transparent",fontFamily:"inherit",fontSize:18,color:"rgba(16,16,15,.55)",cursor:"pointer"}}>→</button>
+  <div style={{textAlign:"center",fontSize:13,fontWeight:650}}>الأحاديث النبوية</div>
+  <button onClick={onSearch} aria-label="بحث" style={{border:0,background:"transparent",color:C.gold,cursor:"pointer",display:"grid",placeItems:"center"}}><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg></button>
+ </div>;
+}
+
+function TodayHadith(){
+ return <section style={{margin:"28px 20px 0",paddingTop:18,borderTop:"1px solid rgba(16,16,15,.09)"}}>
+  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}><span style={{fontSize:11,color:C.gold}}>مشروح · صحيح</span><span style={{fontSize:13,fontWeight:650}}>حديث اليوم</span></div>
+  <div style={{fontFamily:"'Amiri','Noto Naskh Arabic',serif",fontSize:21,lineHeight:2.05,marginTop:14,textAlign:"center"}}>«إنَّ الدِّينَ يُسْرٌ، ولن يُشادَّ الدِّينَ أحدٌ إلا غَلَبَه»</div>
+  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginTop:12}}><div style={{display:"flex",gap:16,color:C.gold}}><span>♡</span><span>↗</span><span>▤</span></div><span style={{fontSize:11,opacity:.42}}>صحيح البخاري · ٣٩</span></div>
+ </section>;
+}
+
 export function LiveHadithHub({go}){
- const [cats,setCats]=useState([]),[allCats,setAllCats]=useState([]),[cat,setCat]=useState(null),[subcats,setSubcats]=useState([]),[rows,setRows]=useState([]),[detail,setDetail]=useState(null),[q,setQ]=useState(""),[loading,setLoading]=useState(true),[err,setErr]=useState(""),[nineBooks,setNineBooks]=useState(false),[kufa,setKufa]=useState(false);
+ const [cats,setCats]=useState([]),[allCats,setAllCats]=useState([]),[cat,setCat]=useState(null),[subcats,setSubcats]=useState([]),[rows,setRows]=useState([]),[detail,setDetail]=useState(null),[q,setQ]=useState(""),[searchOpen,setSearchOpen]=useState(false),[loading,setLoading]=useState(true),[err,setErr]=useState(""),[nineBooks,setNineBooks]=useState(false),[kufa,setKufa]=useState(false);
  const requestRef=useRef(0);
 
  const loadRoots=()=>{
@@ -70,7 +86,7 @@ export function LiveHadithHub({go}){
  const loadCategory=async c=>{
   if(!c)return;
   const rid=++requestRef.current;
-  setCat(c);setRows([]);setSubcats([]);setDetail(null);setQ("");setErr("");setLoading(true);
+  setCat(c);setRows([]);setSubcats([]);setDetail(null);setQ("");setSearchOpen(false);setErr("");setLoading(true);
   try{
    const cid=encodeURIComponent(idOf(c));
    const [hRes,cRes]=await Promise.allSettled([
@@ -81,8 +97,7 @@ export function LiveHadithHub({go}){
    if(cRes.status==="fulfilled"){
     const every=Array.isArray(cRes.value)?cRes.value:rowsOf(cRes.value);
     if(every.length)setAllCats(every);
-    const children=every.filter(x=>parentOf(x)===idOf(c)&&idOf(x)!==idOf(c));
-    setSubcats(children);
+    setSubcats(every.filter(x=>parentOf(x)===idOf(c)&&idOf(x)!==idOf(c)));
    }
    if(hRes.status==="fulfilled")setRows(rowsOf(hRes.value));
    else if(cRes.status!=="fulfilled")throw new Error("category failed");
@@ -127,13 +142,30 @@ export function LiveHadithHub({go}){
   <div style={{marginTop:16}}>{shown.map(h=><button key={h.id} onClick={()=>openHadith(h)} style={{width:"100%",padding:"13px 2px",border:0,borderTop:"1px solid rgba(16,16,15,.07)",background:"transparent",fontFamily:"inherit",textAlign:"right",color:"inherit",cursor:"pointer"}}><b style={{fontSize:12.5,lineHeight:1.7}}>{h.title||"حديث"}</b><small style={{display:"block",opacity:.4,marginTop:4}}>رقم {h.id}</small></button>)}</div>
  </Shell>;
 
- return <Shell go={()=>go?.(null)}>
-  <div style={{display:"grid",gap:10,marginTop:20}}>
-   <button onClick={()=>setNineBooks(true)} style={{width:"100%",minHeight:156,padding:"20px 18px",border:0,borderRadius:26,background:"linear-gradient(145deg,#173B57,#0C293E)",color:"white",fontFamily:"inherit",textAlign:"right",display:"grid",gridTemplateColumns:"1fr auto",gap:14,alignItems:"center",cursor:"pointer"}}><span><span style={{display:"block",fontSize:10,color:"#E7D29B"}}>مكتبة الحديث</span><b style={{display:"block",fontSize:24,marginTop:7}}>الكتب التسعة</b><small style={{display:"block",fontSize:11,opacity:.68,lineHeight:1.8,marginTop:7}}>صحيح البخاري، صحيح مسلم، السنن والمسانيد</small></span><span style={{width:64,height:76,borderRadius:20,display:"grid",placeItems:"center",background:"rgba(255,255,255,.09)",color:"#E7D29B"}}><CategoryIcon title="الحديث وعلومه"/></span></button>
-   <button onClick={()=>setKufa(true)} style={{width:"100%",minHeight:142,padding:"19px 18px",border:"1px solid rgba(181,154,98,.16)",borderRadius:26,background:"rgba(255,255,255,.55)",fontFamily:"inherit",textAlign:"right",cursor:"pointer"}}><b style={{display:"block",fontSize:20}}>أحاديث أهل الكوفة</b><small style={{display:"block",fontSize:10.5,opacity:.58,lineHeight:1.8,marginTop:7}}>مرويات الرواة الكوفيين من الكتب التسعة</small></button>
+ return <div style={{position:"absolute",inset:0,background:C.ivory,color:C.ink,overflowY:"auto",paddingBottom:120}} dir="rtl">
+  <HeaderBar onBack={()=>go?.(null)} onSearch={()=>setSearchOpen(v=>!v)}/>
+  <div style={{padding:"26px 20px 0",textAlign:"center"}}>
+   <div style={{fontSize:9,letterSpacing:".22em",color:C.gold,direction:"ltr"}}>HADEETHENC</div>
+   <div style={{fontFamily:"Fraunces,'Amiri',serif",fontSize:31,marginTop:8}}>الأحاديث النبوية</div>
+   <div style={{fontSize:11.5,opacity:.48,marginTop:8,lineHeight:1.8}}>موسوعة أحاديث صحيحة ومشروحة من المصدر</div>
+   {searchOpen&&<input autoFocus value={q} onChange={e=>setQ(e.target.value)} placeholder="ابحث في الأحاديث…" style={{...btn,width:"100%",boxSizing:"border-box",marginTop:15,background:"rgba(255,255,255,.42)"}}/>}
   </div>
-  {loading&&<div style={{marginTop:22,opacity:.5}}>تحميل أبواب الحديث…</div>}
-  {err&&<ErrorBox text={err} onRetry={loadRoots}/>} 
-  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:9,marginTop:18}}>{cats.map((c,i)=><button key={idOf(c)||i} onClick={()=>loadCategory(c)} style={{...btn,minHeight:112,textAlign:"right",background:i===0?"linear-gradient(145deg,#173B57,#0C293E)":"rgba(255,255,255,.48)",color:i===0?"white":C.ink,cursor:"pointer"}}><div style={{width:34,height:34,borderRadius:11,display:"grid",placeItems:"center",color:i===0?"#E7D29B":C.gold,background:i===0?"rgba(255,255,255,.08)":"rgba(181,154,98,.07)"}}><CategoryIcon title={c.title}/></div><div style={{fontSize:12.5,fontWeight:700,lineHeight:1.6,marginTop:12}}>{c.title||"قسم"}</div></button>)}</div>
- </Shell>;
+
+  <button onClick={()=>setNineBooks(true)} style={{display:"block",width:"calc(100% - 40px)",margin:"22px 20px 0",padding:20,border:0,borderRadius:24,background:`linear-gradient(145deg,${C.lapis},${C.lapisDeep})`,color:"white",fontFamily:"inherit",textAlign:"right",cursor:"pointer",position:"relative",overflow:"hidden"}}>
+   <span style={{position:"absolute",inset:0,background:"radial-gradient(85% 75% at 88% -10%,rgba(181,154,98,.28),transparent 60%)"}}/>
+   <span style={{position:"relative",display:"flex",alignItems:"flex-start",gap:16}}><span style={{width:56,height:56,borderRadius:18,background:"rgba(255,255,255,.08)",border:"1px solid rgba(181,154,98,.35)",display:"grid",placeItems:"center",color:"#E7D29B",flex:"0 0 auto"}}><CategoryIcon title="الحديث وعلومه" size={23}/></span><span style={{flex:1}}><span style={{display:"block",fontSize:10.5,opacity:.48}}>مكتبة الحديث</span><b style={{display:"block",fontFamily:"Fraunces,'Amiri',serif",fontSize:25,marginTop:4}}>الكتب التسعة</b><small style={{display:"block",fontSize:10.5,opacity:.62,marginTop:8,lineHeight:1.8}}>البخاري، مسلم، السنن والمسانيد في مكتبة واحدة.</small></span></span>
+   <span style={{position:"relative",marginTop:16,paddingTop:14,borderTop:"1px solid rgba(255,255,255,.12)",display:"flex",alignItems:"center",justifyContent:"space-between"}}><span style={{display:"flex",gap:18}}><span><b style={{display:"block",fontSize:15,color:"#E7D29B"}}>٩</b><small style={{fontSize:9.5,opacity:.42}}>كتب</small></span><span><b style={{display:"block",fontSize:15,color:"#E7D29B"}}>٤٠ك</b><small style={{fontSize:9.5,opacity:.42}}>حديثاً</small></span></span><span style={{fontSize:11,color:"#E7D29B"}}>افتح المكتبة ←</span></span>
+  </button>
+
+  <button onClick={()=>setKufa(true)} style={{display:"flex",width:"calc(100% - 40px)",margin:"12px 20px 0",padding:"18px 20px",borderRadius:24,border:"1px solid rgba(181,154,98,.22)",background:"rgba(181,154,98,.08)",fontFamily:"inherit",color:C.ink,textAlign:"right",alignItems:"center",gap:16,cursor:"pointer"}}><span style={{width:48,height:48,borderRadius:16,background:"rgba(181,154,98,.13)",display:"grid",placeItems:"center",color:C.gold,flex:"0 0 auto"}}><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.55" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="7.6"/><circle cx="12" cy="12" r="2.2"/><path d="M12 4.4v3M12 16.6v3M4.4 12h3M16.6 12h3"/></svg></span><span style={{flex:1}}><small style={{display:"block",fontSize:10.5,opacity:.48}}>رواة الكوفة</small><b style={{display:"block",fontFamily:"Fraunces,'Amiri',serif",fontSize:21,marginTop:3}}>أحاديث أهل الكوفة</b><small style={{display:"block",fontSize:10.5,opacity:.54,marginTop:6,lineHeight:1.7}}>مرويات الرواة الكوفيين مع المصدر ورقم الحديث.</small><span style={{display:"block",fontSize:11,color:C.gold,marginTop:10}}>افتح الفهرس ←</span></span></button>
+
+  <section style={{margin:"28px 20px 0"}}>
+   <div style={{display:"flex",alignItems:"baseline",justifyContent:"space-between",marginBottom:12}}><span style={{fontSize:10.5,opacity:.4}}>{cats.length?`${cats.length} تصنيفات`:"التصنيفات"}</span><span style={{fontSize:13,fontWeight:650}}>تصنيفات الموسوعة</span></div>
+   {loading&&<div style={{padding:"18px 0",fontSize:11.5,opacity:.45}}>تحميل التصنيفات…</div>}
+   {err&&<ErrorBox text={err} onRetry={loadRoots}/>} 
+   <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>{cats.map((c,i)=>{const active=i===0;return <button key={idOf(c)||i} onClick={()=>loadCategory(c)} style={{gridColumn:i===cats.length-1&&cats.length%2===1?"span 2":"auto",padding:16,minHeight:120,borderRadius:20,border:active?`1px solid ${C.lapis}`:"1px solid rgba(16,16,15,.07)",background:active?C.lapis:C.paper,color:active?"white":C.ink,fontFamily:"inherit",textAlign:"right",cursor:"pointer"}}><div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}><span style={{fontSize:9.5,opacity:.42}}>{String(c?.count||c?.hadeeths_count||"")}</span><span style={{width:38,height:38,borderRadius:13,background:active?"rgba(255,255,255,.09)":"rgba(181,154,98,.09)",color:active?"#E7D29B":C.gold,display:"grid",placeItems:"center"}}><CategoryIcon title={c.title}/></span></div><div style={{fontSize:12.5,fontWeight:600,lineHeight:1.65,marginTop:14}}>{c.title||"تصنيف"}</div></button>})}</div>
+  </section>
+
+  <TodayHadith/>
+ </div>;
 }
