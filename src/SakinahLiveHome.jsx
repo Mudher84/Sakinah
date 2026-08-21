@@ -73,7 +73,7 @@ export default function SakinahLiveHome({profileAvatar="",onOpenProfile}){
      <div className="mm2-title"><h1 className="mm2-amiri">مِرْآةُ المُسْلِم</h1><small>{date}{hijri?` · ${hijri}`:""}</small></div>
      <button className="mm2-headbtn" onClick={onOpenProfile} aria-label="الملف الشخصي">{profileAvatar?<img src={profileAvatar} alt="" style={{width:'100%',height:'100%',objectFit:'cover'}}/>:'○'}</button>
     </div>
-    <div className="mm2-next"><div className="mm2-next-label">الصلاة القادمة</div><div className="mm2-amiri mm2-next-name">{next?AR[next.id]:"—"}</div><div className="mm2-clock">{next?.time||"--:--"}</div><div className="mm2-chip">متبقٍ {next?remaining(next.at-tick-tick):"بانتظار المواقيت"}</div></div>
+    <div className="mm2-next"><div className="mm2-next-label">الصلاة القادمة</div><div className="mm2-amiri mm2-next-name">{next?AR[next.id]:"—"}</div><div className="mm2-clock">{next?.time||"--:--"}</div><div className="mm2-chip">متبقٍ {next?remaining(next.at-tick):"بانتظار المواقيت"}</div></div>
     <div className="mm2-arc"><svg viewBox="0 0 390 158" aria-label="قوس الوقت"><polyline points={Array.from({length:61},(_,i)=>{const q=arcPoint(i/60);return`${q.x},${q.y}`}).join(' ')} fill="none" stroke="rgba(120,110,95,.40)" strokeWidth="1.3" strokeDasharray="2.8 5"/></svg><div className={`mm2-celestial ${isDay?'mm2-sun':'mm2-moon'}`}/></div>
    </section>
 
