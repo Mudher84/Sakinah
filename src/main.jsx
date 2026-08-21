@@ -13,6 +13,7 @@ import { installLuxuryDockIcons } from './luxuryDockIcons.js'
 import { installLuxuryAppIcons } from './luxuryAppIcons.js'
 import { installKidsShelfLuxuryIcons } from './kidsShelfLuxuryIcons.js'
 import { installQuranHubLuxuryIcons } from './quranHubLuxuryIcons.js'
+import { installRemainingCardLuxuryIcons } from './remainingCardLuxuryIcons.js'
 import { installLivingHomeExperience } from './livingHomeExperience.js'
 import { installLivingHomeRotation } from './livingHomeRotation.js'
 import { installAlyamFooter } from './alyamFooter.js'
@@ -44,6 +45,7 @@ installLuxuryDockIcons()
 installLuxuryAppIcons()
 installKidsShelfLuxuryIcons()
 installQuranHubLuxuryIcons()
+installRemainingCardLuxuryIcons()
 installLivingHomeExperience()
 installLivingHomeRotation()
 installAlyamFooter()
