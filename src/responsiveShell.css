@@ -1,5 +1,9 @@
 .sakinahResponsiveShell{min-height:100vh;width:100%;background:#F6F3EC;color:#10100F;overflow-x:hidden}.responsiveAppStage{min-height:100vh;width:100%;min-width:0;overflow-x:hidden}.desktopServiceRail{display:none!important}.mobileServicesButton{display:none!important}.discoverServicesButton{display:none!important}.mobileServicesOverlay,.mobileServicesSheet{display:none!important}.appShell+button[aria-label="language"]{display:none!important}.sakinah-root>div[style*="inset-inline-end: 18px"]{display:none!important}.topbar{gap:12px}.topbar>*{flex:0 0 auto}.topbar .brandMark{margin-inline-end:auto}.topbar>.ghost{min-width:38px;min-height:38px;border-radius:12px}
 
+/* The new Muslim Mirror home owns its header. Hide the legacy white top bar only while that home is mounted. */
+.sakinahResponsiveShell:has(.mm-reference-home) .responsiveAppStage .topbar{display:none!important;height:0!important;min-height:0!important;margin:0!important;padding:0!important;border:0!important;overflow:hidden!important}
+.sakinahResponsiveShell:has(.mm-reference-home) .responsiveAppStage .phone,.sakinahResponsiveShell:has(.mm-reference-home) .responsiveAppStage .screen{padding-top:0!important;margin-top:0!important}
+
 /* One navigation dock only. All legacy docks stay non-rendering. */
 .sakinahResponsiveShell .sakinah-seven-dock,.sakinahResponsiveShell .global-feature-dock,.sakinahResponsiveShell .responsiveAppStage nav[aria-label="Sakinah primary"]{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important;box-shadow:none!important}
 
