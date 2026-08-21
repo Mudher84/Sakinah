@@ -13,7 +13,7 @@ const FEATURE_TITLES={
  'kids-nasheeds':'أناشيد الأطفال','offline-backup':'النسخ الاحتياطي','islamic-calendar':'التقويم الإسلامي','fasting-center':'الصيام',
  'ramadan-center':'رمضان','smart-khatmah':'الختمة','memorization-center':'خطة الحفظ','names-live':'أسماء الله الحسنى','hisn-center':'حصن المسلم',
  'jumuah-center':'الجمعة','worship-times':'مواقيت الصلاة','parental-controls':'الرقابة الأبوية','privacy-lock':'الخصوصية والقفل',
- 'card-maker':'صانع البطاقات','islamic-search':'البحث','saved-library':'المحفوظات','quran-analytics':'إحصاءات القرآن',
+ 'card-maker':'صانع البطاقات','islamic-search':'البحث الإسلامي الشامل','saved-library':'المحفوظات','quran-analytics':'إحصاءات القرآن',
  'quran-intelligence':'علوم القرآن','quran-topics':'موضوعات القرآن','quran-compare':'مقارنة الكلمات','quran-entities':'أعلام القرآن',
  'quran-roots':'جذور الكلمات','tadabbur-ayah':'تدبّر آية','my-day':'يومي','prayer-journal':'سجل الصلاة','quran-player':'القرآن الكريم',
  'quran-audio':'الاستماع للقرآن','nine-books':'الأحاديث النبوية','tafsir-library':'التفسير','notes':'دفتر الملاحظات','accounts':'دفتر الحسابات',
