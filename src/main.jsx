@@ -12,7 +12,6 @@ import { installHideHadithSourceFooter } from './hideHadithSourceFooter.js'
 import { installLuxuryDockIcons } from './luxuryDockIcons.js'
 import { installLuxuryAppIcons } from './luxuryAppIcons.js'
 import { installKidsShelfLuxuryIcons } from './kidsShelfLuxuryIcons.js'
-import { installQuranHubLuxuryIcons } from './quranHubLuxuryIcons.js'
 import { installRemainingCardLuxuryIcons } from './remainingCardLuxuryIcons.js'
 import { installIconHostRepair } from './iconHostRepair.js'
 import { installLivingHomeExperience } from './livingHomeExperience.js'
@@ -45,7 +44,6 @@ installHideHadithSourceFooter()
 installLuxuryDockIcons()
 installLuxuryAppIcons()
 installKidsShelfLuxuryIcons()
-installQuranHubLuxuryIcons()
 installRemainingCardLuxuryIcons()
 installIconHostRepair()
 installLivingHomeExperience()
