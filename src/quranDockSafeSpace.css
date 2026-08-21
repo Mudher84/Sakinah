@@ -2,32 +2,45 @@
   padding-bottom:170px !important;
 }
 
-/* Quran tools screen: the viewport itself must end above the persistent dock.
-   Padding alone did not solve the overlap because .qtp-stage is position:fixed. */
+/* Quran tools: keep the page full-height and reserve scrollable space above
+   the persistent dock. Do not shorten/crop the screen itself. */
 .sakinahResponsiveShell .qtp-stage{
-  bottom:82px !important;
+  inset:0 !important;
+  bottom:0 !important;
+  padding-bottom:0 !important;
+  scroll-padding-bottom:118px !important;
 }
 .sakinahResponsiveShell .qtp-shell{
-  padding-bottom:24px !important;
+  padding-bottom:0 !important;
 }
 .sakinahResponsiveShell .qtp-bottom{
-  height:24px !important;
-  flex:0 0 24px !important;
+  height:126px !important;
+  min-height:126px !important;
+  flex:0 0 126px !important;
 }
 
 @media(max-width:899px){
+  .sakinahResponsiveShell .qtp-bottom{
+    height:116px !important;
+    min-height:116px !important;
+    flex-basis:116px !important;
+  }
   .sakinahResponsiveShell .qtp-stage{
-    bottom:76px !important;
+    scroll-padding-bottom:116px !important;
   }
 }
 
-@supports (bottom: env(safe-area-inset-bottom)){
-  .sakinahResponsiveShell .qtp-stage{
-    bottom:calc(82px + env(safe-area-inset-bottom)) !important;
+@supports (padding-bottom: env(safe-area-inset-bottom)){
+  .sakinahResponsiveShell .qtp-bottom{
+    height:calc(126px + env(safe-area-inset-bottom)) !important;
+    min-height:calc(126px + env(safe-area-inset-bottom)) !important;
+    flex-basis:calc(126px + env(safe-area-inset-bottom)) !important;
   }
   @media(max-width:899px){
-    .sakinahResponsiveShell .qtp-stage{
-      bottom:calc(76px + env(safe-area-inset-bottom)) !important;
+    .sakinahResponsiveShell .qtp-bottom{
+      height:calc(116px + env(safe-area-inset-bottom)) !important;
+      min-height:calc(116px + env(safe-area-inset-bottom)) !important;
+      flex-basis:calc(116px + env(safe-area-inset-bottom)) !important;
     }
   }
 }
