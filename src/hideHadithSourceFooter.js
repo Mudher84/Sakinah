@@ -1,14 +1,19 @@
 const TEXT_MARKERS=["HadeethEnc.com","HadithEnc.com","المصدر: HadeethEnc","المصدر: HadithEnc"];
+
+function isSourceLeaf(el){
+ if(!el||el.children.length>0)return false;
+ const text=(el.textContent||"").trim();
+ if(!text||text.length>180)return false;
+ return TEXT_MARKERS.some(m=>text.includes(m));
+}
+
 function clean(){
- document.querySelectorAll("section,div,p,small").forEach(el=>{
-  const text=(el.textContent||"").trim();
-  if(!text)return;
-  if(TEXT_MARKERS.some(m=>text.includes(m))&&text.length<220){
-   const parent=el.closest("section")||el;
-   parent.style.display="none";
-  }
+ document.querySelectorAll("p,small,div").forEach(el=>{
+  if(!isSourceLeaf(el))return;
+  el.style.display="none";
  });
 }
+
 export function installHideHadithSourceFooter(){
  clean();
  let queued=false;
