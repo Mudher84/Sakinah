@@ -2,6 +2,7 @@ package com.sakinah.app;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -11,6 +12,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
+import android.provider.Settings;
 import android.webkit.GeolocationPermissions;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
@@ -28,6 +30,8 @@ public class MainActivity extends Activity {
         super.onCreate(state);
         createChannels();
         requestRuntimePermissions();
+        PrayerRefreshWorker.ensureScheduled(this);
+        PrayerRefreshWorker.runSoon(this);
         web = new WebView(this);
         web.setWebViewClient(new WebViewClient());
         web.setWebChromeClient(new WebChromeClient(){
@@ -50,6 +54,13 @@ public class MainActivity extends Activity {
         if(ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION)!=PackageManager.PERMISSION_GRANTED) req.add(Manifest.permission.ACCESS_FINE_LOCATION);
         if(Build.VERSION.SDK_INT>=33 && ActivityCompat.checkSelfPermission(this,Manifest.permission.POST_NOTIFICATIONS)!=PackageManager.PERMISSION_GRANTED) req.add(Manifest.permission.POST_NOTIFICATIONS);
         if(!req.isEmpty()) ActivityCompat.requestPermissions(this,req.toArray(new String[0]),41);
+    }
+
+    private void requestExactAlarmPermission(){
+        if(Build.VERSION.SDK_INT<31)return;
+        AlarmManager am=(AlarmManager)getSystemService(ALARM_SERVICE);
+        if(am.canScheduleExactAlarms())return;
+        try{startActivity(new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM,Uri.parse("package:"+getPackageName())));}catch(Exception ignored){}
     }
 
     private void pickAdhanAudio(String prayer){
@@ -87,9 +98,9 @@ public class MainActivity extends Activity {
     private void createChannels() {
         if (Build.VERSION.SDK_INT >= 26) {
             NotificationManager nm = getSystemService(NotificationManager.class);
-            nm.createNotificationChannel(new NotificationChannel("prayer", "Prayer times", NotificationManager.IMPORTANCE_HIGH));
-            nm.createNotificationChannel(new NotificationChannel("adhan", "Adhan", NotificationManager.IMPORTANCE_HIGH));
-            nm.createNotificationChannel(new NotificationChannel("reminders", "Sakinah reminders", NotificationManager.IMPORTANCE_DEFAULT));
+            nm.createNotificationChannel(new NotificationChannel("prayer", "Muslim Mirror · Prayer times", NotificationManager.IMPORTANCE_HIGH));
+            nm.createNotificationChannel(new NotificationChannel("adhan", "Muslim Mirror · Adhan", NotificationManager.IMPORTANCE_HIGH));
+            nm.createNotificationChannel(new NotificationChannel("reminders", "Muslim Mirror · Reminders", NotificationManager.IMPORTANCE_DEFAULT));
         }
     }
 
@@ -105,15 +116,30 @@ public class MainActivity extends Activity {
                 if(j.has("nextPrayerAt")) e.putLong("next_prayer_at",j.optLong("nextPrayerAt",0L));
                 if(j.has("hijriDate")) e.putString("hijri_date",j.optString("hijriDate",""));
                 if(j.has("widgetTheme")) e.putString("widget_theme",j.optString("widgetTheme","lapis"));
+                JSONObject assets=j.optJSONObject("voiceAssets");
+                if(assets!=null){
+                    java.util.Iterator<String> keys=assets.keys();
+                    while(keys.hasNext()){
+                        String prayer=keys.next();JSONObject v=assets.optJSONObject(prayer);if(v==null)continue;
+                        String asset=v.optString("asset","");if(asset.startsWith("/"))asset=asset.substring(1);
+                        e.putString("adhan_asset_"+prayer,asset);
+                    }
+                }
             }catch(Exception ignored){}
             e.apply();
+            PrayerRefreshWorker.ensureScheduled(context);
         }
         @JavascriptInterface public String loadBridgeState(){ return context.getSharedPreferences("sakinah", MODE_PRIVATE).getString("bridge_state", "{}"); }
         @JavascriptInterface public void schedulePrayer(String id, long epochMillis, String title){ PrayerScheduler.schedule(context,id,epochMillis,title); }
         @JavascriptInterface public void cancelPrayer(String id){ PrayerScheduler.cancel(context,id); }
+        @JavascriptInterface public void refreshPrayerSchedule(){ PrayerRefreshWorker.runSoon(context); }
+        @JavascriptInterface public void ensureExactAlarmPermission(){ runOnUiThread(()->requestExactAlarmPermission()); }
         @JavascriptInterface public void refreshWidget(){ SakinahWidgetProvider.refreshAll(context); }
         @JavascriptInterface public void setAdhanUri(String uri){ context.getSharedPreferences("sakinah",MODE_PRIVATE).edit().putString("adhan_uri",uri==null?"":uri).apply(); }
         @JavascriptInterface public void pickAdhan(String prayer){ runOnUiThread(()->pickAdhanAudio(prayer)); }
         @JavascriptInterface public void clearAdhan(String prayer){ context.getSharedPreferences("sakinah",MODE_PRIVATE).edit().remove("adhan_uri_"+prayer).apply(); }
+        @JavascriptInterface public float magneticDeclination(double lat,double lon,double altitude,long timeMillis){
+            try{return new android.hardware.GeomagneticField((float)lat,(float)lon,(float)altitude,timeMillis).getDeclination();}catch(Exception e){return 0f;}
+        }
     }
 }
