@@ -5,3 +5,7 @@
 .qtp-top{
   display:none !important;
 }
+
+.qtp-shell{
+  padding-top:14px !important;
+}
