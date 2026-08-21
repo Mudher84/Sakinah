@@ -22,6 +22,7 @@ import { installQuranLiveWaveform } from './quranLiveWaveform.js'
 import { installQuranSurahNumberGuard } from './quranSurahNumberGuard.js'
 import { installQuranSurahAutoPlay } from './quranSurahAutoPlay.js'
 import { installQuranReciterSearch } from './quranReciterSearch.js'
+import { installQuranSequentialPlayback } from './quranSequentialPlayback.js'
 import './index.css'
 import './amiriExperiment.css'
 import './bodoniNumbers.css'
@@ -62,6 +63,7 @@ installQuranLiveWaveform()
 installQuranSurahNumberGuard()
 installQuranSurahAutoPlay()
 installQuranReciterSearch()
+installQuranSequentialPlayback()
 
 if ("serviceWorker" in navigator) {
   const localHost=["localhost","127.0.0.1","::1"].includes(window.location.hostname)
