@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import SakinahResponsiveShell from './SakinahResponsiveShell.jsx'
+import DevMobileTest from './DevMobileTest.jsx'
 import { installCelestialArc } from './celestialArc.js'
 import { installHeroAtmosphere } from './heroAtmosphere.js'
 import { installTimeFormatToggle } from './timeFormatToggle.js'
@@ -28,6 +29,7 @@ import './globalScrollbar.css'
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <SakinahResponsiveShell />
+    <DevMobileTest />
   </React.StrictMode>,
 )
 
