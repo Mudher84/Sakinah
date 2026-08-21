@@ -168,9 +168,18 @@ public class MainActivity extends Activity {
                 boolean exact=Build.VERSION.SDK_INT<31||am.canScheduleExactAlarms();
                 PowerManager pm=(PowerManager)context.getSystemService(POWER_SERVICE);
                 boolean battery=Build.VERSION.SDK_INT<23||pm.isIgnoringBatteryOptimizations(context.getPackageName());
+                android.appwidget.AppWidgetManager wm=android.appwidget.AppWidgetManager.getInstance(context);
+                android.content.ComponentName wn=new android.content.ComponentName(context,SakinahWidgetProvider.class);
+                boolean widget=wm.getAppWidgetIds(wn).length>0;
+                boolean adhanAudio=false;
+                for(String prayer:new String[]{"Fajr","Dhuhr","Asr","Maghrib","Isha"}){
+                    if(!p.getString("adhan_uri_"+prayer,"").isBlank()||!p.getString("adhan_asset_"+prayer,"").isBlank()){adhanAudio=true;break;}
+                }
+                long lastRefresh=p.getLong("last_refresh_success",0L);
                 j.put("android",true);j.put("location",location);j.put("notifications",notifications);j.put("exactAlarm",exact);j.put("batteryExempt",battery);
+                j.put("qiblaReady",location);j.put("widgetConfigured",widget);j.put("adhanAudio",adhanAudio);j.put("schedulerReady",lastRefresh>0);
                 j.put("nextPrayer",p.getString("next_prayer",""));j.put("nextPrayerTime",p.getString("next_prayer_time",""));j.put("nextPrayerAt",p.getLong("next_prayer_at",0L));
-                j.put("lastRefreshSuccess",p.getLong("last_refresh_success",0L));j.put("lastRefreshError",p.getString("last_refresh_error",""));
+                j.put("lastRefreshSuccess",lastRefresh);j.put("lastRefreshError",p.getString("last_refresh_error",""));
                 return j.toString();
             }catch(Exception e){return "{\"android\":true,\"error\":\"health\"}";}
         }
