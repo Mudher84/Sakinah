@@ -108,3 +108,8 @@
   .sakinah-seven-base > div:has(.sakinah-profile-avatar[aria-label="تغيير صورة البروفايل"]) > section > div:last-child{grid-template-columns:1fr!important;gap:8px!important}
   .sakinah-seven-base > div:has(.sakinah-profile-avatar[aria-label="تغيير صورة البروفايل"]) > section button{min-height:82px!important}
 }
+
+/* Current Me page is the page itself, not a card inside another surface. */
+.mm-me-page{background:#F7F3EA!important;}
+.mm-me-frame{width:100%!important;max-width:406px!important;padding:0!important;}
+.mm-me-shell{border-radius:0!important;box-shadow:none!important;outline:0!important;}
