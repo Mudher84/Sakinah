@@ -17,6 +17,7 @@ import { installLivingHomeExperience } from './livingHomeExperience.js'
 import { installLivingHomeRotation } from './livingHomeRotation.js'
 import { installAlyamFooter } from './alyamFooter.js'
 import { installBrandIdentity } from './brandIdentity.js'
+import { installGeolocationFallback } from './geolocationFallback.js'
 import { installQuranLiveWaveform } from './quranLiveWaveform.js'
 import { installQuranSurahNumberGuard } from './quranSurahNumberGuard.js'
 import { installQuranSurahAutoPlay } from './quranSurahAutoPlay.js'
@@ -40,6 +41,8 @@ import './quranPlayerControlsPolish.css'
 import './quranDockSafeSpace.css'
 import './dockSlimGlass.css'
 import './globalTypography.css'
+
+installGeolocationFallback()
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
