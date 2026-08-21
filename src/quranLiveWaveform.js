@@ -1,114 +1,52 @@
-let stopCurrent=null;
+const STYLE_ID='mm-quran-wave-motion-style';
 
-function bindWaveform(root){
+function ensureStyle(){
+  if(document.getElementById(STYLE_ID))return;
+  const style=document.createElement('style');
+  style.id=STYLE_ID;
+  style.textContent=`
+    .mm-quran-player .mm-wavebar{
+      transform-origin:50% 100%;
+      will-change:transform;
+      transition:background .12s linear,transform .12s ease;
+    }
+    .mm-quran-player.mm-wave-playing .mm-wavebar{
+      animation:mmQuranWavePulse 760ms ease-in-out infinite alternate !important;
+    }
+    .mm-quran-player.mm-wave-playing .mm-wavebar:nth-child(4n+1){animation-duration:520ms !important;animation-delay:-180ms !important;}
+    .mm-quran-player.mm-wave-playing .mm-wavebar:nth-child(4n+2){animation-duration:690ms !important;animation-delay:-320ms !important;}
+    .mm-quran-player.mm-wave-playing .mm-wavebar:nth-child(4n+3){animation-duration:880ms !important;animation-delay:-110ms !important;}
+    .mm-quran-player.mm-wave-playing .mm-wavebar:nth-child(4n){animation-duration:610ms !important;animation-delay:-260ms !important;}
+    @keyframes mmQuranWavePulse{
+      0%{transform:scaleY(.28)}
+      35%{transform:scaleY(.72)}
+      70%{transform:scaleY(1.14)}
+      100%{transform:scaleY(.46)}
+    }
+    @media (prefers-reduced-motion:reduce){
+      .mm-quran-player.mm-wave-playing .mm-wavebar{animation-duration:1400ms !important;}
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+function bind(root){
   const audio=root.querySelector('audio');
-  const bars=[...root.querySelectorAll('.mm-wavebar')];
-  if(!audio||!bars.length||audio.dataset.mmWaveBound==='1')return;
-  audio.dataset.mmWaveBound='1';
-
-  const baseHeights=bars.map(b=>Math.max(14,parseFloat(getComputedStyle(b).height)||24));
-  let ctx=null,analyser=null,source=null,data=null,raf=0,lastNonZero=0,usingFallback=false;
-
-  const drawFallback=()=>{
-    if(audio.paused||audio.ended){raf=0;return;}
-    const t=audio.currentTime||0;
-    bars.forEach((bar,i)=>{
-      const pulse=(Math.sin(t*5.1+i*.72)+Math.sin(t*2.7+i*1.13)+2)/4;
-      const h=14+pulse*44;
-      bar.style.height=`${h.toFixed(1)}px`;
-    });
-    raf=requestAnimationFrame(drawFallback);
-  };
-
-  const drawAnalyser=()=>{
-    if(audio.paused||audio.ended){raf=0;return;}
-    analyser.getByteFrequencyData(data);
-    let energy=0;
-    for(let i=0;i<data.length;i++)energy+=data[i];
-    energy/=Math.max(1,data.length);
-    if(energy>1.5)lastNonZero=performance.now();
-    if(performance.now()-lastNonZero>1200){
-      usingFallback=true;
-      raf=requestAnimationFrame(drawFallback);
-      return;
-    }
-    const usable=Math.max(1,Math.floor(data.length*.62));
-    bars.forEach((bar,i)=>{
-      const start=Math.floor(i*usable/bars.length);
-      const end=Math.max(start+1,Math.floor((i+1)*usable/bars.length));
-      let sum=0;
-      for(let k=start;k<end;k++)sum+=data[k];
-      const v=sum/(end-start)/255;
-      const shaped=Math.pow(v,.72);
-      const h=12+shaped*48;
-      bar.style.height=`${Math.max(12,Math.min(60,h)).toFixed(1)}px`;
-    });
-    raf=requestAnimationFrame(drawAnalyser);
-  };
-
-  const ensureAnalyser=()=>{
-    if(analyser)return true;
-    try{
-      const AC=window.AudioContext||window.webkitAudioContext;
-      if(!AC)return false;
-      ctx=new AC();
-      analyser=ctx.createAnalyser();
-      analyser.fftSize=256;
-      analyser.smoothingTimeConstant=.72;
-      data=new Uint8Array(analyser.frequencyBinCount);
-      source=ctx.createMediaElementSource(audio);
-      source.connect(analyser);
-      analyser.connect(ctx.destination);
-      lastNonZero=performance.now();
-      return true;
-    }catch(e){
-      analyser=null;
-      return false;
-    }
-  };
-
-  const start=()=>{
-    if(raf)cancelAnimationFrame(raf);
-    usingFallback=false;
-    if(ensureAnalyser()){
-      if(ctx?.state==='suspended')ctx.resume().catch(()=>{});
-      lastNonZero=performance.now();
-      raf=requestAnimationFrame(drawAnalyser);
-    }else{
-      usingFallback=true;
-      raf=requestAnimationFrame(drawFallback);
-    }
-  };
-  const pause=()=>{if(raf){cancelAnimationFrame(raf);raf=0;}};
-  const reset=()=>{
-    pause();
-    bars.forEach((bar,i)=>bar.style.height=`${baseHeights[i]}px`);
-  };
-
-  audio.addEventListener('play',start);
-  audio.addEventListener('pause',pause);
-  audio.addEventListener('ended',reset);
-  audio.addEventListener('emptied',reset);
-  if(!audio.paused)start();
-
-  stopCurrent=()=>{
-    pause();
-    audio.removeEventListener('play',start);
-    audio.removeEventListener('pause',pause);
-    audio.removeEventListener('ended',reset);
-    audio.removeEventListener('emptied',reset);
-    try{source?.disconnect();analyser?.disconnect();ctx?.close();}catch{}
-    delete audio.dataset.mmWaveBound;
-  };
+  if(!audio||audio.dataset.mmWaveMotionBound==='1')return;
+  audio.dataset.mmWaveMotionBound='1';
+  const sync=()=>root.classList.toggle('mm-wave-playing',!audio.paused&&!audio.ended);
+  audio.addEventListener('play',sync);
+  audio.addEventListener('playing',sync);
+  audio.addEventListener('pause',sync);
+  audio.addEventListener('ended',sync);
+  audio.addEventListener('emptied',sync);
+  sync();
 }
 
 export function installQuranLiveWaveform(){
-  const scan=()=>{
-    const root=document.querySelector('.mm-quran-player');
-    if(root)bindWaveform(root);
-  };
+  ensureStyle();
+  const scan=()=>document.querySelectorAll('.mm-quran-player').forEach(bind);
   scan();
   const mo=new MutationObserver(scan);
   mo.observe(document.documentElement,{subtree:true,childList:true});
-  window.addEventListener('beforeunload',()=>{stopCurrent?.();mo.disconnect();},{once:true});
 }
