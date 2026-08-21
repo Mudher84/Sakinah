@@ -4,6 +4,16 @@
 .sakinahResponsiveShell:has(.mm-reference-home) .responsiveAppStage .topbar{display:none!important;height:0!important;min-height:0!important;margin:0!important;padding:0!important;border:0!important;overflow:hidden!important}
 .sakinahResponsiveShell:has(.mm-reference-home) .responsiveAppStage .phone,.sakinahResponsiveShell:has(.mm-reference-home) .responsiveAppStage .screen{padding-top:0!important;margin-top:0!important}
 
+/* Muslim Mirror home must start at the very top. The old app shell used a 62/72px
+   header reservation; neutralize that reservation while the reference home is active. */
+.sakinahResponsiveShell:has(.mm-reference-home) .responsiveAppStage .appShell{padding-top:0!important;margin-top:0!important;align-items:start!important;place-items:start center!important}
+.sakinahResponsiveShell:has(.mm-reference-home) .responsiveAppStage .phone{top:0!important;margin-top:0!important}
+.sakinahResponsiveShell:has(.mm-reference-home) .responsiveAppStage .screen{inset:0!important;padding-top:0!important;top:0!important}
+.sakinahResponsiveShell .mm-reference-home{top:0!important;margin-top:0!important;padding-top:0!important}
+.sakinahResponsiveShell .mm-reference-home .mm-reference-frame{margin-top:0!important;padding-top:0!important;top:0!important}
+.sakinahResponsiveShell .mm-reference-home .mm-reference-sheet{margin-top:0!important;top:0!important}
+.sakinahResponsiveShell .mm-reference-home .mm-reference-sheet>section:first-child{margin-top:0!important}
+
 /* One navigation dock only. All legacy docks stay non-rendering. */
 .sakinahResponsiveShell .sakinah-seven-dock,.sakinahResponsiveShell .global-feature-dock,.sakinahResponsiveShell .responsiveAppStage nav[aria-label="Sakinah primary"]{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important;box-shadow:none!important}
 
