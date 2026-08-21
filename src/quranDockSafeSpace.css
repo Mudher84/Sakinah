@@ -2,45 +2,45 @@
   padding-bottom:170px !important;
 }
 
-/* Quran tools: keep the page full-height and reserve scrollable space above
-   the persistent dock. Do not shorten/crop the screen itself. */
+/* Quran tools: keep the page full-height and reserve a little more scrollable
+   space above the persistent dock so the last rows can clear it comfortably. */
 .sakinahResponsiveShell .qtp-stage{
   inset:0 !important;
   bottom:0 !important;
   padding-bottom:0 !important;
-  scroll-padding-bottom:118px !important;
+  scroll-padding-bottom:164px !important;
 }
 .sakinahResponsiveShell .qtp-shell{
   padding-bottom:0 !important;
 }
 .sakinahResponsiveShell .qtp-bottom{
-  height:126px !important;
-  min-height:126px !important;
-  flex:0 0 126px !important;
+  height:172px !important;
+  min-height:172px !important;
+  flex:0 0 172px !important;
 }
 
 @media(max-width:899px){
   .sakinahResponsiveShell .qtp-bottom{
-    height:116px !important;
-    min-height:116px !important;
-    flex-basis:116px !important;
+    height:160px !important;
+    min-height:160px !important;
+    flex-basis:160px !important;
   }
   .sakinahResponsiveShell .qtp-stage{
-    scroll-padding-bottom:116px !important;
+    scroll-padding-bottom:160px !important;
   }
 }
 
 @supports (padding-bottom: env(safe-area-inset-bottom)){
   .sakinahResponsiveShell .qtp-bottom{
-    height:calc(126px + env(safe-area-inset-bottom)) !important;
-    min-height:calc(126px + env(safe-area-inset-bottom)) !important;
-    flex-basis:calc(126px + env(safe-area-inset-bottom)) !important;
+    height:calc(172px + env(safe-area-inset-bottom)) !important;
+    min-height:calc(172px + env(safe-area-inset-bottom)) !important;
+    flex-basis:calc(172px + env(safe-area-inset-bottom)) !important;
   }
   @media(max-width:899px){
     .sakinahResponsiveShell .qtp-bottom{
-      height:calc(116px + env(safe-area-inset-bottom)) !important;
-      min-height:calc(116px + env(safe-area-inset-bottom)) !important;
-      flex-basis:calc(116px + env(safe-area-inset-bottom)) !important;
+      height:calc(160px + env(safe-area-inset-bottom)) !important;
+      min-height:calc(160px + env(safe-area-inset-bottom)) !important;
+      flex-basis:calc(160px + env(safe-area-inset-bottom)) !important;
     }
   }
 }
