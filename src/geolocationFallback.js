@@ -4,23 +4,38 @@ const FALLBACK_POSITION={
 };
 
 export function installGeolocationFallback(){
- const geo=navigator.geolocation;
- if(!geo)return;
- const original=geo.getCurrentPosition?.bind(geo);
- if(!original)return;
- try{
-  geo.getCurrentPosition=(success,error,options)=>{
-   let settled=false;
-   const ok=position=>{if(settled)return;settled=true;success?.(position)};
-   const fail=err=>{
-    if(settled)return;
-    // The new home must never remain as --:-- just because browser/device
-    // location permission is unavailable. Use Baghdad as a coarse Iraq
-    // fallback; real device coordinates still win whenever permission works.
-    ok({...FALLBACK_POSITION,timestamp:Date.now()});
-    window.dispatchEvent(new CustomEvent('muslimmirror:location-fallback',{detail:{reason:err?.code||'unavailable'}}));
-   };
-   try{original(ok,fail,{...options,timeout:Math.min(options?.timeout||8000,8000)})}catch(err){fail(err)}
+ const nativeGeo=navigator.geolocation;
+ if(!nativeGeo?.getCurrentPosition)return;
+ const original=nativeGeo.getCurrentPosition.bind(nativeGeo);
+ const fallback=reason=>({...FALLBACK_POSITION,timestamp:Date.now(),_mmFallbackReason:reason||'unavailable'});
+ const getCurrentPosition=(success,error,options)=>{
+  let settled=false;
+  const ok=position=>{if(settled)return;settled=true;success?.(position)};
+  const fail=err=>{
+   if(settled)return;
+   const pos=fallback(err?.code);
+   ok(pos);
+   window.dispatchEvent(new CustomEvent('muslimmirror:location-fallback',{detail:{reason:err?.code||'unavailable'}}));
   };
+  const timer=setTimeout(()=>fail({code:'timeout'}),4500);
+  const wrappedOk=position=>{clearTimeout(timer);ok(position)};
+  const wrappedFail=err=>{clearTimeout(timer);fail(err)};
+  try{original(wrappedOk,wrappedFail,{...options,timeout:Math.min(options?.timeout||4000,4000),maximumAge:300000})}catch(err){wrappedFail(err)}
+ };
+ const proxy={
+  getCurrentPosition,
+  watchPosition:(success,error,options)=>nativeGeo.watchPosition?.(success,error,options),
+  clearWatch:id=>nativeGeo.clearWatch?.(id)
+ };
+ let installed=false;
+ try{
+  Object.defineProperty(navigator,'geolocation',{configurable:true,get:()=>proxy});
+  installed=navigator.geolocation===proxy;
  }catch{}
+ if(!installed){
+  try{Object.defineProperty(nativeGeo,'getCurrentPosition',{configurable:true,value:getCurrentPosition});installed=true}catch{}
+ }
+ if(!installed){
+  try{nativeGeo.getCurrentPosition=getCurrentPosition}catch{}
+ }
 }
