@@ -3,8 +3,8 @@
 }
 
 /* Quran tools: the page itself is the scroll container.
-   Do not create a second clipped viewport; keep enough real content space
-   after the last section so every row can be scrolled completely above dock. */
+   Keep a generous real tail after the last section so the entire final group
+   can be pulled clearly above the persistent dock without clipping. */
 .sakinahResponsiveShell .qtp-stage{
   inset:0 !important;
   overflow-y:auto !important;
@@ -31,26 +31,26 @@
 }
 .sakinahResponsiveShell .qtp-bottom{
   display:block !important;
-  height:150px !important;
-  min-height:150px !important;
+  height:230px !important;
+  min-height:230px !important;
 }
 
 @media(max-width:899px){
   .sakinahResponsiveShell .qtp-bottom{
-    height:138px !important;
-    min-height:138px !important;
+    height:210px !important;
+    min-height:210px !important;
   }
 }
 
 @supports (height: env(safe-area-inset-bottom)){
   .sakinahResponsiveShell .qtp-bottom{
-    height:calc(150px + env(safe-area-inset-bottom)) !important;
-    min-height:calc(150px + env(safe-area-inset-bottom)) !important;
+    height:calc(230px + env(safe-area-inset-bottom)) !important;
+    min-height:calc(230px + env(safe-area-inset-bottom)) !important;
   }
   @media(max-width:899px){
     .sakinahResponsiveShell .qtp-bottom{
-      height:calc(138px + env(safe-area-inset-bottom)) !important;
-      min-height:calc(138px + env(safe-area-inset-bottom)) !important;
+      height:calc(210px + env(safe-area-inset-bottom)) !important;
+      min-height:calc(210px + env(safe-area-inset-bottom)) !important;
     }
   }
 }
