@@ -43,6 +43,7 @@ import './quranDockSafeSpace.css'
 import './dockSlimGlass.css'
 import './globalTypography.css'
 import './homeServiceIconCenter.css'
+import './searchCairo.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
