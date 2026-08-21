@@ -2,19 +2,32 @@
   padding-bottom:170px !important;
 }
 
-/* Quran tools screen: reserve real space for the persistent global dock. */
-.qtp-shell{
-  padding-bottom:118px !important;
+/* Quran tools screen: the viewport itself must end above the persistent dock.
+   Padding alone did not solve the overlap because .qtp-stage is position:fixed. */
+.sakinahResponsiveShell .qtp-stage{
+  bottom:82px !important;
 }
-.qtp-bottom{
-  height:118px !important;
-  flex:0 0 118px;
+.sakinahResponsiveShell .qtp-shell{
+  padding-bottom:24px !important;
 }
-@supports (padding-bottom: env(safe-area-inset-bottom)){
-  .qtp-shell{
-    padding-bottom:calc(118px + env(safe-area-inset-bottom)) !important;
+.sakinahResponsiveShell .qtp-bottom{
+  height:24px !important;
+  flex:0 0 24px !important;
+}
+
+@media(max-width:899px){
+  .sakinahResponsiveShell .qtp-stage{
+    bottom:76px !important;
   }
-  .qtp-bottom{
-    height:calc(118px + env(safe-area-inset-bottom)) !important;
+}
+
+@supports (bottom: env(safe-area-inset-bottom)){
+  .sakinahResponsiveShell .qtp-stage{
+    bottom:calc(82px + env(safe-area-inset-bottom)) !important;
+  }
+  @media(max-width:899px){
+    .sakinahResponsiveShell .qtp-stage{
+      bottom:calc(76px + env(safe-area-inset-bottom)) !important;
+    }
   }
 }
