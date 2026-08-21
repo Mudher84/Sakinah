@@ -9,9 +9,6 @@ import { installPreviewToggle } from './previewToggle.js'
 import { installGlobalBackButtons } from './globalBackButtons.js'
 import { installAdhanMomentScreenV2 } from './adhanMomentScreenV2.js'
 import { installHideHadithSourceFooter } from './hideHadithSourceFooter.js'
-import { installModernFamilyIcons } from './modernFamilyIcons.js'
-import { installModernPersonalIcons } from './modernPersonalIcons.js'
-import { installModernSystemIcons } from './modernSystemIcons.js'
 import { installLuxuryDockIcons } from './luxuryDockIcons.js'
 import { installLuxuryAppIcons } from './luxuryAppIcons.js'
 import { installLivingHomeExperience } from './livingHomeExperience.js'
@@ -41,9 +38,6 @@ installPreviewToggle()
 installGlobalBackButtons()
 installAdhanMomentScreenV2()
 installHideHadithSourceFooter()
-installModernFamilyIcons()
-installModernPersonalIcons()
-installModernSystemIcons()
 installLuxuryDockIcons()
 installLuxuryAppIcons()
 installLivingHomeExperience()
