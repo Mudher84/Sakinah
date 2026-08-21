@@ -42,9 +42,24 @@ const PREVIEW_ALIASES={
   night:'night',isha:'night'
 }
 
+const SLIDER_PHASES=[
+  {key:'fajr',label:'الفجر',time:'05:00'},
+  {key:'morning',label:'الصباح',time:'08:00'},
+  {key:'day',label:'الظهر',time:'12:00'},
+  {key:'afternoon',label:'العصر',time:'16:00'},
+  {key:'sunset',label:'الغروب',time:'18:30'},
+  {key:'night',label:'الليل',time:'21:00'}
+]
+
 function previewPhase(){
   const raw=String(document.documentElement.dataset.mmTime||'').trim().toLowerCase()
   return PREVIEW_ALIASES[raw]||null
+}
+
+function currentPhase(){
+  const d=new Date()
+  const hour=d.getHours()+d.getMinutes()/60
+  return previewPhase()||phaseForHour(hour)
 }
 
 function ensureStyle(){
@@ -55,6 +70,14 @@ function ensureStyle(){
   style.textContent=`
     .mm-prayer-hero{transition:background 1400ms ease,box-shadow 1200ms ease!important}
     #mm-dynamic-sky-glow{transition:background 1400ms ease!important}
+    .mm-time-color-slider{position:relative;margin:14px 4px 0;padding:10px 12px;border-radius:18px;background:rgba(249,245,236,.065);border:1px solid rgba(249,245,236,.10);backdrop-filter:blur(10px)}
+    .mm-time-color-slider .mm-slider-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;font-family:'Cairo','Noto Kufi Arabic',sans-serif;font-size:9.5px;color:rgba(249,245,236,.60)}
+    .mm-time-color-slider .mm-slider-current{color:#D4A84E;font-size:10px;white-space:nowrap}
+    .mm-time-color-slider .mm-slider-track{display:flex;gap:5px;margin:0 2px 7px;direction:rtl}
+    .mm-time-color-slider .mm-swatch{flex:1;height:9px;border-radius:999px;opacity:.88;border:1px solid rgba(255,255,255,.11)}
+    .mm-time-color-slider input{width:100%;margin:0;accent-color:#D4A84E;cursor:pointer}
+    .mm-time-color-slider .mm-slider-labels{display:grid;grid-template-columns:repeat(6,1fr);gap:3px;margin-top:3px;font-family:'Cairo','Noto Kufi Arabic',sans-serif;font-size:8.5px;color:rgba(249,245,236,.46);text-align:center}
+    .mm-time-color-slider button{border:0;border-radius:999px;padding:3px 8px;background:rgba(212,168,78,.16);color:#D4A84E;font-family:'Cairo','Noto Kufi Arabic',sans-serif;font-size:9px;cursor:pointer}
   `
   document.head.appendChild(style)
   return style
@@ -76,12 +99,56 @@ function clearOldWholePageTheme(root){
   root.querySelectorAll('section:not(.mm-prayer-hero)').forEach(section=>section.style.removeProperty('background'))
 }
 
+function gradientPreview(theme){
+  return theme.hero
+}
+
+function ensurePreviewSlider(hero,phase){
+  let box=hero.querySelector('.mm-time-color-slider')
+  if(!box){
+    box=document.createElement('div')
+    box.className='mm-time-color-slider'
+    box.dir='rtl'
+    box.innerHTML=`
+      <div class="mm-slider-head"><span>معاينة لون الفترة الزمنية</span><span class="mm-slider-current"></span><button type="button">تلقائي</button></div>
+      <div class="mm-slider-track"></div>
+      <input type="range" min="0" max="5" step="1" aria-label="معاينة لون الفترة الزمنية">
+      <div class="mm-slider-labels"></div>
+    `
+    const track=box.querySelector('.mm-slider-track')
+    const labels=box.querySelector('.mm-slider-labels')
+    SLIDER_PHASES.forEach(item=>{
+      const swatch=document.createElement('i')
+      swatch.className='mm-swatch'
+      swatch.style.background=gradientPreview(THEMES[item.key])
+      track.appendChild(swatch)
+      const label=document.createElement('span')
+      label.textContent=item.label
+      labels.appendChild(label)
+    })
+    box.querySelector('input').addEventListener('input',e=>{
+      const item=SLIDER_PHASES[Number(e.target.value)]||SLIDER_PHASES[0]
+      document.documentElement.dataset.mmTime=item.key
+    })
+    box.querySelector('button').addEventListener('click',()=>{
+      delete document.documentElement.dataset.mmTime
+    })
+  }
+  const footer=hero.querySelector('.mm-hero-footer')
+  if(footer&&box.parentElement!==hero) footer.after(box)
+  const active=SLIDER_PHASES.findIndex(item=>item.key===phase)
+  const safeIndex=active>=0?active:SLIDER_PHASES.length-1
+  const input=box.querySelector('input')
+  const current=box.querySelector('.mm-slider-current')
+  const item=SLIDER_PHASES[safeIndex]
+  if(input&&document.activeElement!==input) input.value=String(safeIndex)
+  if(current) current.textContent=`${item.label} · ${item.time}`
+}
+
 function applyTheme(){
   const root=document.querySelector('.mm-reference-home')
   if(!root)return
-  const d=new Date()
-  const hour=d.getHours()+d.getMinutes()/60
-  const phase=previewPhase()||phaseForHour(hour)
+  const phase=currentPhase()
   const t=THEMES[phase]
   if(!t)return
 
@@ -89,6 +156,7 @@ function applyTheme(){
 
   const hero=root.querySelector('.mm-prayer-hero')
   if(!hero)return
+  ensurePreviewSlider(hero,phase)
   if(hero.dataset.timeTheme===phase)return
   hero.dataset.timeTheme=phase
   hero.style.background=t.hero
