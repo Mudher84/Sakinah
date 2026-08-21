@@ -101,13 +101,30 @@ public final class PrayerRefreshWorker extends Worker {
             }
         }
 
-        String fridayId="FridayReminder@"+dateKey;
-        if(cfg.optBoolean("friday",true)&&date.getDayOfWeek()==java.time.DayOfWeek.FRIDAY){long at=LocalDateTime.of(date,LocalTime.of(9,0)).atZone(zone).toInstant().toEpochMilli();if(at>now+30000L)PrayerScheduler.schedule(context,fridayId,"FridayReminder",at,"تذكير يوم الجمعة");}else PrayerScheduler.cancel(context,fridayId);
+        boolean fridayEnabled=cfg.optBoolean("friday",true);
+        String fridayId="FridayReminder@"+dateKey,fridayPrepId="FridayPrep@"+dateKey;
+        if(fridayEnabled&&date.getDayOfWeek()==java.time.DayOfWeek.FRIDAY){
+            long morning=LocalDateTime.of(date,LocalTime.of(9,0)).atZone(zone).toInstant().toEpochMilli();
+            if(morning>now+30000L)PrayerScheduler.schedule(context,fridayId,"FridayReminder",morning,"الجمعة اليوم · الكهف والصلاة على النبي والاستعداد للصلاة");
+            long prep=LocalDateTime.of(date.minusDays(1),LocalTime.of(20,0)).atZone(zone).toInstant().toEpochMilli();
+            if(prep>now+30000L)PrayerScheduler.schedule(context,fridayPrepId,"FridayReminder",prep,"ليلة الجمعة · ابدأ سورة الكهف وأكثر من الصلاة على النبي ﷺ");
+        }else{PrayerScheduler.cancel(context,fridayId);PrayerScheduler.cancel(context,fridayPrepId);}
 
         JSONObject hijri=data.optJSONObject("date")!=null?data.optJSONObject("date").optJSONObject("hijri"):null;
-        String ramadanId="RamadanReminder@"+dateKey;
         boolean ramadan=cfg.optBoolean("ramadan",true)&&hijri!=null&&hijri.optJSONObject("month")!=null&&hijri.optJSONObject("month").optInt("number",0)==9;
-        if(ramadan){String fajr=clean(timings.optString("Fajr",""));if(!fajr.isBlank()){long at=toEpoch(date,fajr,zone)-30L*60L*1000L;if(at>now+30000L)PrayerScheduler.schedule(context,ramadanId,"RamadanReminder",at,"تذكير رمضان قبل الفجر");}}else PrayerScheduler.cancel(context,ramadanId);
+        String suhoorId="RamadanSuhoor@"+dateKey,iftarId="RamadanIftar@"+dateKey;
+        if(ramadan){
+            String fajr=clean(timings.optString("Fajr",""));
+            if(!fajr.isBlank()){
+                long at=toEpoch(date,fajr,zone)-30L*60L*1000L;
+                if(at>now+30000L)PrayerScheduler.schedule(context,suhoorId,"RamadanReminder",at,"رمضان · تبقى 30 دقيقة على الفجر، وقت السحور والاستعداد للصيام");
+            }
+            String maghrib=clean(timings.optString("Maghrib",""));
+            if(!maghrib.isBlank()){
+                long at=toEpoch(date,maghrib,zone);
+                if(at>now+30000L)PrayerScheduler.schedule(context,iftarId,"RamadanReminder",at,"رمضان · حان وقت الإفطار، تقبل الله صيامكم");
+            }
+        }else{PrayerScheduler.cancel(context,suhoorId);PrayerScheduler.cancel(context,iftarId);}
 
         SharedPreferences p=context.getSharedPreferences("sakinah",Context.MODE_PRIVATE);long storedAt=p.getLong("next_prayer_at",0L);
         boolean shouldUpdate=isToday?nextAt!=Long.MAX_VALUE:(storedAt<=now&&nextAt!=Long.MAX_VALUE);
