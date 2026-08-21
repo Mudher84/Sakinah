@@ -27,6 +27,7 @@ import './dailyCardMotion.css'
 import './profilePagePolish.css'
 import './globalScrollbar.css'
 import './beatlyMirror.css'
+import './quranTopTabsFix.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
