@@ -1,6 +1,7 @@
 package com.sakinah.app;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
 import androidx.work.Constraints;
 import androidx.work.ExistingPeriodicWorkPolicy;
@@ -48,7 +49,8 @@ public final class PrayerRefreshWorker extends Worker {
 
     @NonNull @Override public Result doWork(){
         try{
-            String raw=getApplicationContext().getSharedPreferences("sakinah",Context.MODE_PRIVATE).getString("bridge_state","");
+            Context context=getApplicationContext();
+            String raw=context.getSharedPreferences("sakinah",Context.MODE_PRIVATE).getString("bridge_state","");
             if(raw==null||raw.isBlank())return Result.success();
             JSONObject bridge=new JSONObject(raw);
             double lat=bridge.optDouble("latitude",Double.NaN),lon=bridge.optDouble("longitude",Double.NaN);
@@ -62,39 +64,73 @@ public final class PrayerRefreshWorker extends Worker {
             try{zone=ZoneId.of(bridge.optString("timezone",ZoneId.systemDefault().getId()));}
             catch(Exception e){zone=ZoneId.systemDefault();}
             LocalDate today=LocalDate.now(zone);
-            refreshDate(today,lat,lon,method,school,cfg);
-            refreshDate(today.plusDays(1),lat,lon,method,school,cfg);
+            refreshDate(today,lat,lon,method,school,cfg,true);
+            refreshDate(today.plusDays(1),lat,lon,method,school,cfg,false);
+            SakinahWidgetProvider.refreshAll(context);
             return Result.success();
         }catch(Exception e){return Result.retry();}
     }
 
-    private void refreshDate(LocalDate date,double lat,double lon,int method,int school,JSONObject cfg)throws Exception{
+    private void refreshDate(LocalDate date,double lat,double lon,int method,int school,JSONObject cfg,boolean isToday)throws Exception{
+        Context context=getApplicationContext();
         JSONObject data=fetch(date,lat,lon,method,school);
         JSONObject timings=data.getJSONObject("timings");
         String tz=data.optJSONObject("meta")!=null?data.optJSONObject("meta").optString("timezone",ZoneId.systemDefault().getId()):ZoneId.systemDefault().getId();
         ZoneId zone;try{zone=ZoneId.of(tz);}catch(Exception e){zone=ZoneId.systemDefault();}
         String dateKey=date.toString();
+        long now=System.currentTimeMillis();
+        String nextPrayer="";
+        String nextTime="";
+        long nextAt=Long.MAX_VALUE;
+
         for(String p:PRAYERS){
-            if(!cfg.optBoolean(p,true))continue;
+            String alarmId=p+"@"+dateKey;
+            if(!cfg.optBoolean(p,true)){
+                PrayerScheduler.cancel(context,alarmId);
+                continue;
+            }
             String value=clean(timings.optString(p,""));
             if(value.isBlank())continue;
             long at=toEpoch(date,value,zone);
-            if(at>System.currentTimeMillis()+30000L){
-                String alarmId=p+"@"+dateKey;
-                PrayerScheduler.schedule(getApplicationContext(),alarmId,p,at,"حان وقت صلاة "+ar(p));
+            if(at>now+30000L){
+                PrayerScheduler.schedule(context,alarmId,p,at,"حان وقت صلاة "+ar(p));
+                if(at<nextAt){nextAt=at;nextPrayer=p;nextTime=value;}
             }
         }
+
+        String fridayId="FridayReminder@"+dateKey;
         if(cfg.optBoolean("friday",true)&&date.getDayOfWeek()==java.time.DayOfWeek.FRIDAY){
             long at=LocalDateTime.of(date,LocalTime.of(9,0)).atZone(zone).toInstant().toEpochMilli();
-            if(at>System.currentTimeMillis()+30000L)PrayerScheduler.schedule(getApplicationContext(),"FridayReminder@"+dateKey,"FridayReminder",at,"تذكير يوم الجمعة");
-        }
+            if(at>now+30000L)PrayerScheduler.schedule(context,fridayId,"FridayReminder",at,"تذكير يوم الجمعة");
+        }else PrayerScheduler.cancel(context,fridayId);
+
         JSONObject hijri=data.optJSONObject("date")!=null?data.optJSONObject("date").optJSONObject("hijri"):null;
-        if(cfg.optBoolean("ramadan",true)&&hijri!=null&&hijri.optJSONObject("month")!=null&&hijri.optJSONObject("month").optInt("number",0)==9){
+        String ramadanId="RamadanReminder@"+dateKey;
+        boolean ramadan=cfg.optBoolean("ramadan",true)&&hijri!=null&&hijri.optJSONObject("month")!=null&&hijri.optJSONObject("month").optInt("number",0)==9;
+        if(ramadan){
             String fajr=clean(timings.optString("Fajr",""));
             if(!fajr.isBlank()){
                 long at=toEpoch(date,fajr,zone)-30L*60L*1000L;
-                if(at>System.currentTimeMillis()+30000L)PrayerScheduler.schedule(getApplicationContext(),"RamadanReminder@"+dateKey,"RamadanReminder",at,"تذكير رمضان قبل الفجر");
+                if(at>now+30000L)PrayerScheduler.schedule(context,ramadanId,"RamadanReminder",at,"تذكير رمضان قبل الفجر");
             }
+        }else PrayerScheduler.cancel(context,ramadanId);
+
+        SharedPreferences p=context.getSharedPreferences("sakinah",Context.MODE_PRIVATE);
+        long storedAt=p.getLong("next_prayer_at",0L);
+        boolean shouldUpdate=isToday ? nextAt!=Long.MAX_VALUE : (storedAt<=now&&nextAt!=Long.MAX_VALUE);
+        if(shouldUpdate){
+            SharedPreferences.Editor e=p.edit()
+                .putString("next_prayer",nextPrayer)
+                .putString("next_prayer_time",nextTime)
+                .putLong("next_prayer_at",nextAt);
+            if(hijri!=null){
+                String day=hijri.optString("day","");
+                JSONObject month=hijri.optJSONObject("month");
+                String monthAr=month==null?"":month.optString("ar",month.optString("en",""));
+                String year=hijri.optString("year","");
+                e.putString("hijri_date",(day+" "+monthAr+" "+year).trim());
+            }
+            e.apply();
         }
     }
 
