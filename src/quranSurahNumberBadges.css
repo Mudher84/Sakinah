@@ -1,0 +1,23 @@
+.mm-quran-player .mm-surah-card > span:first-child{
+  width:38px !important;
+  min-width:38px !important;
+  height:38px !important;
+  display:grid !important;
+  place-items:center !important;
+  margin:0 !important;
+  padding:0 !important;
+  border-radius:12px !important;
+  background:#F9F7F1 !important;
+  color:#9B8A64 !important;
+  border:1px solid rgba(185,166,126,.12) !important;
+  box-shadow:0 4px 12px rgba(30,38,42,.04) !important;
+  font-family:'Noto Kufi Arabic',Tahoma,sans-serif !important;
+  font-size:10px !important;
+  font-weight:500 !important;
+  line-height:1 !important;
+  text-align:center !important;
+  overflow:hidden !important;
+}
+.mm-quran-player .mm-surah-card > span:first-child *{
+  display:none !important;
+}
