@@ -542,70 +542,30 @@ function NavDock({ world, go, lang, isDark, nextPrayer, fraction, simple }) {
 /* ════════════════════════════════════════════════════════════════
    TODAY
 ════════════════════════════════════════════════════════════════ */
-function TodayScreen({ lang, stage, hourNow, nextPrayer, remH, remM, moment, go, onScrub, lastRead, qiblaDeg }) {
-  const t = STRINGS[lang];
-  const isDark = stage.dark;
-  const fg = isDark ? COLOR.ivory : COLOR.ink;
-  const rule = isDark ? "rgba(246,243,236,0.16)" : "rgba(16,16,15,0.12)";
-  const remaining = lang === "ar"
-    ? (remH > 0 ? `${nDigits(remH, lang)} س ${nDigits(remM, lang)} د ${t.remaining}` : `${nDigits(remM, lang)} د ${t.remaining}`)
-    : (remH > 0 ? `${remH}h ${remM}m ${t.remaining}` : `${remM}m ${t.remaining}`);
-  const isFriday = moment === "friday";
-
-  let content;
-  if (moment === "ramadan") {
-    content = <div onClick={() => go("adhkar-cat", { cat: "evening" })} style={{ cursor: "pointer" }}>
-      <div className="font-editorial" style={{ fontSize: lang === "ar" ? 22 : 15, opacity: 0.75, marginBottom: 6 }}>{t.ramadanMoment}</div>
-      <div style={{ fontSize: 15, fontWeight: 500, lineHeight: 1.55, maxWidth: 280 }}>{t.iftar} · {fmtHM(H.maghrib, lang)}</div>
-      <div style={{ fontSize: 11, opacity: 0.42, marginTop: 6 }}>{t.ramadanNote}</div>
-    </div>;
-  } else if (moment === "friday") {
-    content = <div onClick={() => go("quran-home")} style={{ cursor: "pointer" }}>
-      <div className="font-editorial" style={{ fontSize: lang === "ar" ? 22 : 15, opacity: 0.75, marginBottom: 6 }}>{t.friday}</div>
-      <div style={{ fontSize: 15, fontWeight: 500, lineHeight: 1.55, maxWidth: 280 }}>{t.fridayLine}</div>
-    </div>;
-  } else if (moment === "travel") {
-    content = <div onClick={() => go("prayer")} style={{ cursor: "pointer" }}>
-      <div className="font-editorial" style={{ fontSize: lang === "ar" ? 22 : 15, opacity: 0.75, marginBottom: 6 }}>{t.travelMoment}</div>
-      <div style={{ fontSize: 15, fontWeight: 500, lineHeight: 1.55, maxWidth: 280 }}>{t.qiblaShort} · {nDigits(Math.round(qiblaDeg), lang)}°</div>
-      <div style={{ fontSize: 11, opacity: 0.42, marginTop: 6 }}>{t.travelNote}</div>
-    </div>;
-  } else if (stage.id === "fajr" || stage.id === "morning") {
-    const s = surahById(lastRead.surahId);
-    content = <div onClick={() => go("reader", { surahId: lastRead.surahId })} style={{ cursor: "pointer", borderInlineStart: `1.4px solid ${COLOR.gold}`, paddingInlineStart: 14 }}>
-      <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", opacity: 0.5, marginBottom: 6 }}>{t.continuing}</div>
-      <div className="font-quran" style={{ fontSize: 19, lineHeight: 1.9, direction: "rtl", opacity: 0.92 }}>{s.verses[Math.min(lastRead.ayah, s.verses.length - 1)].ar}</div>
-      <div style={{ fontSize: 12, opacity: 0.5, marginTop: 4 }}>{s.ar} · {t.verse} {nDigits(lastRead.ayah + 1, lang)}</div>
-    </div>;
-  } else if (stage.id === "dhuhr" || stage.id === "asr") {
-    content = <div onClick={() => go("reader", { surahId: 1 })} style={{ cursor: "pointer", textAlign: "center" }}>
-      <div className="font-quran" style={{ fontSize: 22, lineHeight: 1.85, direction: "rtl" }}>{SURAHS[0].verses[1].ar}</div>
-      <div style={{ fontSize: 12, opacity: 0.5, marginTop: 10 }}>{SURAHS[0].verses[1].en}</div>
-    </div>;
-  } else if (stage.id === "maghrib") {
-    content = <Row lang={lang} first big label={t.evening} sub={t.eveningSub} onClick={() => go("adhkar-cat", { cat: "evening" })} />;
-  } else {
-    content = <Row lang={lang} first big label={t.night} sub={t.nightSub} onClick={() => go("adhkar-cat", { cat: "sleep" })} />;
-  }
-
-  return (
-    <div className="sk-in" style={{ padding: "0 24px", color: fg, height: "100%", display: "flex", flexDirection: "column" }}>
-      {isFriday && <div style={{ paddingTop: 26, fontSize: 12.5, opacity: 0.5, fontWeight: 500 }}>{t.friday}</div>}
-      <div style={{ marginTop: "auto", paddingTop: 30 }}>
-        <div style={{ fontSize: 12, letterSpacing: "0.16em", fontWeight: 600, opacity: 0.55, textTransform: lang === "ar" ? "none" : "uppercase" }}>{NAMES[nextPrayer.id][lang]}</div>
-        <div style={{ fontSize: lang === "ar" ? 60 : 66, lineHeight: 1, margin: "8px 0 4px", fontWeight: lang === "ar" ? 600 : 400, fontFamily: lang === "ar" ? "'IBM Plex Sans Arabic', sans-serif" : "'Fraunces', serif" }}>{fmtHM(nextPrayer.h, lang)}</div>
-        <div style={{ fontSize: 13, opacity: 0.58, fontWeight: 500 }}>{remaining}</div>
-      </div>
-      <div style={{ marginTop: 30 }}><DayArc hourNow={hourNow} lang={lang} compact onScrub={onScrub} isDark={isDark} /></div>
-      <div style={{ borderTop: `1px solid ${rule}`, marginTop: 26, paddingTop: 20 }}>{content}</div>
-      {moment !== "friday" && moment !== "travel" && (
-        <button onClick={() => go("prayer")} style={{ background: "none", border: "none", cursor: "pointer", marginTop: 14, padding: 0, opacity: 0.42, fontSize: 11.5, color: "inherit", textAlign: lang === "ar" ? "right" : "left" }}>
-          {t.qiblaShort} · {nDigits(Math.round(qiblaDeg), lang)}°
-        </button>
-      )}
-      <div style={{ marginBottom: 118 }} />
-    </div>
-  );
+function TodayScreen({ lang, stage, hourNow, nextPrayer, remH, remM, moment, go, onScrub, lastRead, qiblaDeg, prayerTimes }) {
+  const active = [...PRAYER_ONLY].map((id) => ({ id, h: prayerTimes[id] })).filter((x) => x.h <= hourNow).at(-1)?.id || "isha";
+  const remaining = lang === "ar" ? `متبقي ${nDigits(remH, lang)} ساعات و ${nDigits(remM, lang)} دقيقة` : `${remH}h ${remM}m remaining`;
+  const date = new Intl.DateTimeFormat("ar-IQ", { weekday: "long", day: "numeric", month: "long" }).format(new Date());
+  const verse = SURAHS[0].verses[1];
+  return <div dir="rtl" className="sk-warm-home">
+    <style>{`
+      .sk-warm-home{position:absolute;inset:0;z-index:60;overflow:auto;background:#17100c;padding:14px;display:flex;justify-content:center;font-family:'IBM Plex Sans Arabic',sans-serif;color:#fffaf2}
+      .sk-warm-card{width:min(100%,414px);min-height:840px;overflow:hidden;border-radius:34px;background:linear-gradient(178deg,#e0b183 0%,#c08f68 14%,#7c5443 38%,#4b3229 62%,#2b1d18 100%);box-shadow:0 40px 90px -30px rgba(0,0,0,.8)}
+      .sk-warm-preview{margin:16px 16px 0;padding:14px 16px 16px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.14);border-radius:20px}.sk-warm-preview-top{display:flex;justify-content:space-between;color:rgba(58,36,24,.78);font-size:11px}.sk-warm-range{width:100%;margin-top:13px;accent-color:#e2c48c}
+      .sk-warm-header{display:grid;grid-template-columns:40px 1fr 40px;align-items:start;padding:18px 18px 0}.sk-warm-reset{width:40px;height:40px;border-radius:14px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.16);color:rgba(48,29,20,.8);font-size:16px;cursor:pointer}.sk-warm-brand{text-align:center;padding-top:5px}.sk-warm-brand small{display:block;font-size:9px;letter-spacing:.42em;color:rgba(46,28,18,.62)}.sk-warm-brand h1{margin:4px 0 3px;font-size:43px;line-height:1.15}.sk-warm-brand p{margin:0;font-size:11px;color:rgba(52,32,22,.73)}
+      .sk-warm-time{display:flex;flex-direction:column;align-items:center;padding:40px 20px 32px;gap:10px}.sk-warm-pill{padding:5px 14px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(255,255,255,.12);font-size:13px;color:#f6e8d3}.sk-warm-pill i{display:inline-block;width:5px;height:5px;margin-left:8px;border-radius:50%;background:#f0d5a4}.sk-warm-clock{font-size:74px;font-weight:300;line-height:1;letter-spacing:.01em;direction:ltr;font-variant-numeric:tabular-nums}.sk-warm-remaining{font-size:12px;color:rgba(255,246,234,.7)}
+      .sk-warm-verse{margin:0 20px;padding:22px 4px 24px;border-top:1px solid rgba(255,255,255,.12);text-align:center}.sk-warm-verse label{font-size:10px;letter-spacing:.22em;color:rgba(255,244,230,.5)}.sk-warm-verse p{font-family:'Amiri Quran','Amiri',serif;font-size:21px;line-height:2;margin:13px auto 5px;max-width:330px}.sk-warm-verse span{font-size:11px;color:rgba(240,213,164,.8)}
+      .sk-warm-arc{padding:10px 22px 5px}.sk-warm-prayers{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding:14px 12px 20px;border-top:1px solid rgba(255,255,255,.1);margin:8px 12px 0}.sk-warm-prayer{border:1px solid transparent;border-radius:14px;background:transparent;color:rgba(255,246,234,.58);padding:8px 2px;cursor:pointer}.sk-warm-prayer b{font-size:11px;font-weight:400}.sk-warm-prayer span{display:block;margin-top:8px;color:#fdf6ec;font-size:13px;direction:ltr;font-variant-numeric:tabular-nums}.sk-warm-prayer.active{background:rgba(240,213,164,.14);border-color:rgba(240,213,164,.28);color:#f0d5a4}.sk-warm-prayer.active span{color:#f6dcae;font-weight:500}
+    `}</style>
+    <main className="sk-warm-card">
+      <div className="sk-warm-preview"><div className="sk-warm-preview-top"><span>معاينة الوقت · {NAMES[active][lang]}</span><button onClick={() => onScrub(hourNow)} style={{border:0,background:"none",color:"inherit",cursor:"pointer"}}>الآن</button></div><input aria-label="معاينة الوقت" className="sk-warm-range" type="range" min={prayerTimes.fajr} max={prayerTimes.isha} step=".02" value={Math.min(prayerTimes.isha, Math.max(prayerTimes.fajr, hourNow))} onChange={(e) => onScrub(Number(e.target.value))} /></div>
+      <header className="sk-warm-header"><button className="sk-warm-reset" onClick={() => onScrub(hourNow)}>↻</button><div className="sk-warm-brand"><small>SAKINAH</small><h1>سكينة</h1><p>{date}</p></div><div /></header>
+      <section className="sk-warm-time"><div className="sk-warm-pill"><i />{NAMES[active][lang]}</div><div className="sk-warm-clock">{fmtHM(prayerTimes[active], lang)}</div><div className="sk-warm-remaining">{remaining}</div></section>
+      <button className="sk-warm-verse" onClick={() => go("reader", { surahId: 1 })} style={{width:"calc(100% - 40px)",background:"none",borderInline:"none",borderBottom:"none",color:"inherit",cursor:"pointer"}}><label>آية اليوم</label><p>{verse.ar}</p><span>سورة الفاتحة · الآية ٢</span></button>
+      <div className="sk-warm-arc"><DayArc hourNow={hourNow} lang={lang} onScrub={onScrub} isDark prayerTimes={prayerTimes} /></div>
+      <section className="sk-warm-prayers">{[...PRAYER_ONLY].map((id) => <button key={id} className={`sk-warm-prayer ${active === id ? "active" : ""}`} onClick={() => onScrub(prayerTimes[id])}><b>{NAMES[id][lang]}</b><span>{fmtHM(prayerTimes[id], lang)}</span></button>)}</section>
+    </main>
+  </div>;
 }
 
 /* ════════════════════════════════════════════════════════════════
@@ -971,7 +931,7 @@ function QiblaDial({ lang, onDegChange }) {
   );
 }
 
-function PrayerScreen({ lang, hourNow, go, onScrub, onQiblaDeg }) {
+function PrayerScreen({ lang, hourNow, go, onScrub, onQiblaDeg, prayerTimes }) {
   const t = STRINGS[lang];
   const nowH = hourNow < H.fajr ? hourNow + 24 : hourNow;
   return (
@@ -982,7 +942,7 @@ function PrayerScreen({ lang, hourNow, go, onScrub, onQiblaDeg }) {
         <div style={{ width: 26 }} />
       </div>
       <div className="sk-scroll" style={{ flex: 1, overflowY: "auto", padding: "8px 24px 130px" }}>
-        <div style={{ marginTop: 20 }}><DayArc hourNow={hourNow} lang={lang} onScrub={onScrub} isDark={false} /></div>
+        <div style={{ marginTop: 20 }}><DayArc hourNow={hourNow} lang={lang} onScrub={onScrub} isDark={false} prayerTimes={prayerTimes} /></div>
         <div style={{ marginTop: 26 }}>
           {TIMELINE.filter((ev) => PRAYER_ONLY.has(ev.id)).map((ev) => {
             const evH = ev.h < H.fajr ? ev.h + 24 : ev.h, passed = evH < nowH;
@@ -1446,7 +1406,7 @@ function FamilyScreen({ lang, go }) {
   );
 }
 
-function WidgetsScreen({ lang, go, stage, nextPrayer }) {
+function WidgetsScreen({ lang, go, stage, nextPrayer, prayerTimes }) {
   const t = STRINGS[lang];
   const isDark = stage.dark;
   const mini = (title, children) => (
@@ -1463,7 +1423,7 @@ function WidgetsScreen({ lang, go, stage, nextPrayer }) {
       <div style={{ padding: "20px 24px", fontSize: 11.5, opacity: 0.42 }}>{t.conceptPreview}</div>
       <div className="sk-scroll" style={{ display: "flex", gap: 16, overflowX: "auto", padding: "0 24px 130px" }}>
         {mini(t.widgetPrayer, <><div style={{ fontSize: 10, opacity: 0.6 }}>{NAMES[nextPrayer.id][lang]}</div><div style={{ fontFamily: "'Fraunces', serif", fontSize: 24 }}>{fmtHM(nextPrayer.h, lang)}</div></>)}
-        {mini(t.widgetArc, <DayArc hourNow={13} lang={lang} compact isDark={isDark} />)}
+        {mini(t.widgetArc, <DayArc hourNow={13} lang={lang} compact isDark={isDark} prayerTimes={prayerTimes} />)}
         {mini(t.widgetQuran, <><BookOpen size={16} opacity={0.7} /><div style={{ fontSize: 10.5, opacity: 0.7 }}>{t.quranHomeContinue}</div></>)}
       </div>
     </div>
@@ -2014,6 +1974,7 @@ export default function SakinahApp() {
   const [a11y, setA11y] = useState({ quranScale: 1, uiScale: 1, highContrast: false, simplified: false });
   const [travelMode, setTravelMode] = useState(false);
   const [ramadanMode, setRamadanMode] = useState(false);
+  const prayerTimes = H;
 
   const go = (w, p = {}) => { setWorld(w); setParam(p); };
   const toggleBookmark = (key) => setBookmarks((b) => { const n = new Set(b); n.has(key) ? n.delete(key) : n.add(key); return n; });
@@ -2041,13 +2002,13 @@ export default function SakinahApp() {
   const moment = primaryMoment({ isFriday, ramadanMode, travelMode });
 
   const screens = {
-    "today": () => <TodayScreen lang={lang} stage={stage} hourNow={hourNow} nextPrayer={nextPrayer} remH={remH} remM={remM} moment={moment} go={go} onScrub={(h) => setPreview(h)} lastRead={lastRead} qiblaDeg={qiblaDeg} />,
+    "today": () => <TodayScreen lang={lang} stage={stage} hourNow={hourNow} nextPrayer={nextPrayer} remH={remH} remM={remM} moment={moment} go={go} onScrub={(h) => setPreview(h)} lastRead={lastRead} qiblaDeg={qiblaDeg} prayerTimes={prayerTimes} />,
     "quran-home": () => <QuranHome lang={lang} go={go} lastRead={lastRead} bookmarks={bookmarks} />,
     "surah-list": () => <SurahList lang={lang} go={go} />,
     "reader": () => <QuranReader lang={lang} surahId={param.surahId || 1} go={go} lastRead={lastRead} setLastRead={setLastRead} bookmarks={bookmarks} toggleBookmark={toggleBookmark} quranScale={a11y.quranScale} />,
     "memorize": () => <MemorizeScreen lang={lang} go={go} initialSurahId={param.surahId} />,
     "audio": () => <AudioScreen lang={lang} go={go} surahId={param.surahId} />,
-    "prayer": () => <PrayerScreen lang={lang} hourNow={hourNow} go={go} onScrub={(h) => setPreview(h)} onQiblaDeg={setQiblaDeg} />,
+    "prayer": () => <PrayerScreen lang={lang} hourNow={hourNow} go={go} onScrub={(h) => setPreview(h)} onQiblaDeg={setQiblaDeg} prayerTimes={prayerTimes} />,
     "discover": () => <DiscoverScreen lang={lang} go={go} isFriday={isFriday} />,
     "adhkar-home": () => <AdhkarHome lang={lang} go={go} />,
     "adhkar-cat": () => <AdhkarReader lang={lang} go={go} catId={param.cat} />,
@@ -2084,7 +2045,7 @@ export default function SakinahApp() {
     "me-accessibility": () => <AccessibilityScreen lang={lang} go={go} a11y={a11y} setA11y={setA11y} />,
     "me-notifications": () => <NotificationsScreen lang={lang} go={go} />,
     "me-privacy": () => <PrivacyScreen lang={lang} go={go} />,
-    "me-widgets": () => <WidgetsScreen lang={lang} go={go} stage={stage} nextPrayer={nextPrayer} />,
+    "me-widgets": () => <WidgetsScreen lang={lang} go={go} stage={stage} nextPrayer={nextPrayer} prayerTimes={prayerTimes} />,
   };
   const dockDark = world === "today" ? isDark : false;
 
