@@ -1,0 +1,38 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600&display=swap');
+
+/* Global supporting-text typography.
+   Main titles keep their existing face. Quranic text is explicitly protected. */
+:root{--mm-support-font:'Cairo',Tahoma,Arial,sans-serif}
+
+p,
+small,
+h2,
+h3,
+.pageTitle p,
+.sectionLabel,
+.eyebrow,
+.todayMeta,
+.remaining,
+.dependency,
+.readerTop small,
+.rows small,
+.rowStatic small,
+.reciterName,
+.qiblaSpace>small,
+[data-mm-subtitle],
+[data-mm-description],
+[data-mm-explainer]{font-family:var(--mm-support-font)!important}
+
+/* Keep Quran / ayah typography untouched. */
+.quranMini,
+.quranHero,
+.quranAudioText,
+.quranMemo,
+.ayah span,
+.mushaf .ayah span,
+[class*='quran-text'],
+[class*='quranText'],
+[class*='ayah-text'],
+[class*='ayahText']{
+  font-family:'Amiri Quran','Noto Naskh Arabic','Amiri',serif!important;
+}
