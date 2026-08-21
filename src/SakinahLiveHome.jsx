@@ -576,11 +576,11 @@ function TodayScreen({ lang, stage, hourNow, nextPrayer, remH, remM, moment, go,
   })();
   const remaining = lang === "ar" ? `متبقي ${nDigits(remH, lang)} ساعات و ${nDigits(remM, lang)} دقيقة` : `${remH}h ${remM}m remaining`;
   const displayTime = (hour) => {
-    if (clockFormat === "24") return fmtHM(hour, lang);
     const h = Math.floor(hour), minutes = String(Math.round((hour % 1) * 60)).padStart(2, "0");
+    if (clockFormat === "24") return `${String(h).padStart(2, "0")}:${minutes}`;
     const twelve = h % 12 || 12;
-    const marker = h < 12 ? (lang === "ar" ? " ص" : " AM") : (lang === "ar" ? " م" : " PM");
-    return `${nDigits(String(twelve).padStart(2, "0"), lang)}:${nDigits(minutes, lang)}${marker}`;
+    const marker = h < 12 ? " AM" : " PM";
+    return `${String(twelve).padStart(2, "0")}:${minutes}${marker}`;
   };
   const date = new Intl.DateTimeFormat("ar-IQ", { weekday: "long", day: "numeric", month: "long" }).format(new Date());
   const verse = SURAHS[0].verses[1];
