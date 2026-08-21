@@ -31,19 +31,37 @@ function looksSupporting(el){
   if(size<=14&&(op<.9||txt.length>=16))return true;
   return false;
 }
+function setSupportSize(el){
+  if(el.dataset.mmCairoBaseSize)return;
+  const current=parseFloat(getComputedStyle(el).fontSize)||16;
+  el.dataset.mmCairoBaseSize=String(current);
+  el.style.setProperty('--mm-cairo-size',`${Math.max(8,current-4)}px`);
+}
+function clearSupportSize(el){
+  if(!el.dataset.mmCairoBaseSize)return;
+  delete el.dataset.mmCairoBaseSize;
+  el.style.removeProperty('--mm-cairo-size');
+}
 function apply(root=document){
   const nodes=root instanceof Element?[root,...root.querySelectorAll('*')]:[...document.querySelectorAll('*')];
   nodes.forEach(el=>{
     if(!(el instanceof HTMLElement))return;
-    if(isQuran(el)){el.classList.remove(SUPPORT_CLASS);return}
-    if(looksSupporting(el))el.classList.add(SUPPORT_CLASS);
+    if(isQuran(el)){
+      el.classList.remove(SUPPORT_CLASS);
+      clearSupportSize(el);
+      return;
+    }
+    if(looksSupporting(el)){
+      setSupportSize(el);
+      el.classList.add(SUPPORT_CLASS);
+    }
   });
 }
 function ensureStyle(){
   if(document.getElementById('mm-supporting-typography-runtime'))return;
   const s=document.createElement('style');
   s.id='mm-supporting-typography-runtime';
-  s.textContent=`.${SUPPORT_CLASS}{font-family:${CAIRO}!important}.quranMini,.quranHero,.quranAudioText,.quranMemo,.ayah span,.mushaf .ayah span,[class*='quran-text'],[class*='quranText'],[class*='ayah-text'],[class*='ayahText'],[data-quran],[data-ayah]{font-family:'Amiri Quran','Noto Naskh Arabic','Amiri',serif!important}`;
+  s.textContent=`.${SUPPORT_CLASS}{font-family:${CAIRO}!important;font-size:var(--mm-cairo-size)!important}.quranMini,.quranHero,.quranAudioText,.quranMemo,.ayah span,.mushaf .ayah span,[class*='quran-text'],[class*='quranText'],[class*='ayah-text'],[class*='ayahText'],[data-quran],[data-ayah]{font-family:'Amiri Quran','Noto Naskh Arabic','Amiri',serif!important}`;
   document.head.appendChild(s);
 }
 export function installSupportingTypography(){
