@@ -583,9 +583,9 @@ function TodayScreen({ lang, stage, hourNow, nextPrayer, remH, remM, moment, go,
   };
   const date = new Intl.DateTimeFormat("ar-IQ", { weekday: "long", day: "numeric", month: "long" }).format(new Date());
   const verse = SURAHS[0].verses[1];
-  return <div dir="rtl" className="sk-warm-home">
+  return <div dir="rtl" className="sk-warm-home" style={{background:warmSky[1],transition:"background 1.2s linear"}}>
     <style>{`
-      .sk-warm-home{position:absolute;inset:0;z-index:60;overflow:auto;background:#17100c;padding:14px;display:flex;justify-content:center;font-family:'IBM Plex Sans Arabic',sans-serif;color:#fffaf2}
+      .sk-warm-home{position:absolute;inset:0;z-index:60;overflow:auto;padding:14px;display:flex;justify-content:center;font-family:'IBM Plex Sans Arabic',sans-serif;color:#fffaf2}
       .sk-warm-card{width:min(100%,414px);min-height:840px;overflow:hidden;border-radius:0 0 34px 34px;background:linear-gradient(178deg,#e0b183 0%,#c08f68 14%,#7c5443 38%,#4b3229 62%,#2b1d18 100%);box-shadow:0 40px 90px -30px rgba(0,0,0,.8)}
       .sk-preview-toggle,.sk-time-format-toggle{position:absolute;top:16px;z-index:2;border:1px solid rgba(255,255,255,.28);border-radius:999px;padding:7px 11px;background:rgba(64,37,25,.16);color:rgba(255,249,238,.9);font:inherit;font-size:10px;cursor:pointer}.sk-preview-toggle{inset-inline-end:16px}.sk-time-format-toggle{inset-inline-start:16px;letter-spacing:.08em}.sk-warm-preview{margin:16px 16px 0;padding:14px 16px 16px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.14);border-radius:20px;animation:sk-preview-in .2s ease}.sk-warm-preview-top{display:flex;justify-content:space-between;color:rgba(58,36,24,.78);font-size:11px}.sk-warm-range{width:100%;margin-top:13px;direction:ltr;accent-color:#e2c48c;cursor:ew-resize}@keyframes sk-preview-in{from{opacity:0;transform:translateY(-7px)}to{opacity:1;transform:translateY(0)}}
       .sk-warm-header{display:flex;justify-content:center;align-items:start;padding:18px 18px 0}.sk-warm-brand{text-align:center;padding-top:5px}.sk-warm-brand small{display:block;font-size:9px;letter-spacing:.42em;color:rgba(46,28,18,.62)}.sk-warm-brand h1{margin:4px 0 3px;font-size:43px;line-height:1.15}.sk-warm-brand p{margin:0;font-size:11px;color:rgba(52,32,22,.73)}
