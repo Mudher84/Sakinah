@@ -2,9 +2,9 @@
   padding-bottom:170px !important;
 }
 
-/* Quran tools: the page itself is the scroll container.
-   Keep a generous real tail after the last section so the entire final group
-   can be pulled clearly above the persistent dock without clipping. */
+/* Quran tools: make the direct scroll-content box longer.
+   This avoids relying on the inner .qtp-bottom spacer, which can be swallowed by
+   the rounded shell/overflow geometry. The stage stays the single scroll owner. */
 .sakinahResponsiveShell .qtp-stage{
   inset:0 !important;
   overflow-y:auto !important;
@@ -23,6 +23,7 @@
   height:auto !important;
   min-height:100dvh !important;
   overflow:visible !important;
+  padding-bottom:220px !important;
 }
 .sakinahResponsiveShell .qtp-shell{
   height:auto !important;
@@ -31,26 +32,23 @@
 }
 .sakinahResponsiveShell .qtp-bottom{
   display:block !important;
-  height:230px !important;
-  min-height:230px !important;
+  height:24px !important;
+  min-height:24px !important;
 }
 
 @media(max-width:899px){
-  .sakinahResponsiveShell .qtp-bottom{
-    height:210px !important;
-    min-height:210px !important;
+  .sakinahResponsiveShell .qtp-frame{
+    padding-bottom:210px !important;
   }
 }
 
-@supports (height: env(safe-area-inset-bottom)){
-  .sakinahResponsiveShell .qtp-bottom{
-    height:calc(230px + env(safe-area-inset-bottom)) !important;
-    min-height:calc(230px + env(safe-area-inset-bottom)) !important;
+@supports (padding-bottom: env(safe-area-inset-bottom)){
+  .sakinahResponsiveShell .qtp-frame{
+    padding-bottom:calc(220px + env(safe-area-inset-bottom)) !important;
   }
   @media(max-width:899px){
-    .sakinahResponsiveShell .qtp-bottom{
-      height:calc(210px + env(safe-area-inset-bottom)) !important;
-      min-height:calc(210px + env(safe-area-inset-bottom)) !important;
+    .sakinahResponsiveShell .qtp-frame{
+      padding-bottom:calc(210px + env(safe-area-inset-bottom)) !important;
     }
   }
 }
