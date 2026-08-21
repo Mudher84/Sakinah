@@ -30,6 +30,7 @@ import './profilePagePolish.css'
 import './globalScrollbar.css'
 import './beatlyMirror.css'
 import './quranTopTabsFix.css'
+import './quranSurahNumberBadges.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
