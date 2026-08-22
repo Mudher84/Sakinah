@@ -4,4 +4,4 @@
 .sakinah-live-home .sakinah-live-hero>div[style*="grid-template-columns: repeat(5"]>div>div:last-child,
 .sakinah-audio-page input[type="range"]+div span,
 .sakinah-audio-page select,
-.sakinah-audio-page option{font-family:'SakinahBodoniNumbers','Segoe UI',sans-serif!important;font-weight:700;font-variant-numeric:tabular-nums}
+.sakinah-audio-page option{font-family:'Cairo',Tahoma,Arial,sans-serif!important;font-weight:600;font-variant-numeric:tabular-nums}
