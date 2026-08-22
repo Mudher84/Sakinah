@@ -325,9 +325,8 @@ const STRINGS = {
 ════════════════════════════════════════════════════════════════ */
 const GlobalStyle = () => (
   <style>{`
-    @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,340..460&family=Inter:wght@400;500;600&family=Amiri+Quran&family=Aref+Ruqaa:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap');
-    .sakinah-root { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; font-variant-numeric: proportional-nums; }
-    .sakinah-root[dir="rtl"] { font-family: 'IBM Plex Sans Arabic', sans-serif; }
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Amiri+Quran&family=Aref+Ruqaa:wght@400;700&display=swap');
+    .sakinah-root, .sakinah-root[dir="rtl"] { font-family: 'Cairo', sans-serif; -webkit-font-smoothing: antialiased; font-variant-numeric: proportional-nums; }
     .sakinah-root * { box-sizing: border-box; }
     .sakinah-root button { font-family: inherit; }
     .sakinah-root button:focus-visible, .sakinah-root [tabindex]:focus-visible, .sakinah-root input:focus-visible {
@@ -336,9 +335,9 @@ const GlobalStyle = () => (
     @media (prefers-reduced-motion: reduce) {
       .sakinah-root * { animation-duration: .001ms !important; transition-duration: .001ms !important; }
     }
-    .font-editorial { font-family: 'Fraunces', serif; font-optical-sizing: auto; }
-    [dir="rtl"] .font-editorial { font-family: 'Aref Ruqaa', serif; }
+    .font-editorial { font-family: 'Cairo', sans-serif; }
     .font-quran { font-family: 'Amiri Quran', serif; }
+    .font-hadith { font-family: 'Aref Ruqaa', serif; }
     .sk-scroll::-webkit-scrollbar { display: none; }
     .sk-scroll { -ms-overflow-style: none; scrollbar-width: none; }
     @keyframes sk-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
@@ -347,7 +346,7 @@ const GlobalStyle = () => (
     .sk-breathe { animation: sk-breathe 6s ease-in-out infinite; }
     .sk-rail-enter { animation: sk-rail-in .42s cubic-bezier(.22,.61,.36,1) both; }
     @keyframes sk-rail-in { from { transform: translateY(14px); opacity:.4; } to { transform: translateY(0); opacity:1; } }
-    .sk-mono { font-family: 'IBM Plex Sans Arabic', 'Inter', monospace; letter-spacing: .12em; }
+    .sk-mono { font-family: 'Cairo', sans-serif; letter-spacing: .12em; }
     input[type=range].sk-slider { -webkit-appearance: none; height: 2px; background: rgba(16,16,15,0.18); border-radius: 2px; }
     input[type=range].sk-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 13px; height: 13px; border-radius: 50%; background: #B59A62; cursor: pointer; }
     .sk-switch { width: 34px; height: 20px; border-radius: 20px; position: relative; cursor: pointer; transition: background .3s ease; flex-shrink: 0; }
@@ -595,11 +594,11 @@ function TodayScreen({ lang, stage, hourNow, nextPrayer, remH, remM, moment, go,
   const verse = SURAHS[0].verses[1];
   return <div dir="rtl" className="sk-warm-home" style={{...textTheme,background:warmSky[1],transition:"background 1.2s linear"}}>
     <style>{`
-      .sk-warm-home{position:absolute;inset:0;z-index:60;overflow:auto;padding:0;display:flex;justify-content:center;font-family:'IBM Plex Sans Arabic',sans-serif;color:#fffaf2}
+      .sk-warm-home{position:absolute;inset:0;z-index:60;overflow:auto;padding:0;display:flex;justify-content:center;font-family:'Cairo',sans-serif;color:#fffaf2}
       .sk-warm-card{width:100%;min-height:840px;overflow:hidden;border-radius:0 0 34px 34px;background:linear-gradient(178deg,#e0b183 0%,#c08f68 14%,#7c5443 38%,#4b3229 62%,#2b1d18 100%);box-shadow:none}
       .sk-preview-toggle,.sk-time-format-toggle{position:absolute;top:16px;z-index:2;border:1px solid rgba(255,255,255,.28);border-radius:999px;padding:7px 11px;background:rgba(64,37,25,.16);color:rgba(255,249,238,.9);font:inherit;font-size:10px;cursor:pointer}.sk-preview-toggle{inset-inline-end:16px}.sk-time-format-toggle{inset-inline-start:16px;letter-spacing:.08em}.sk-warm-preview{margin:16px 16px 0;padding:14px 16px 16px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.14);border-radius:20px;animation:sk-preview-in .2s ease}.sk-warm-preview-top{display:flex;justify-content:space-between;color:rgba(58,36,24,.78);font-size:11px}.sk-warm-range{width:100%;margin-top:13px;direction:ltr;accent-color:#e2c48c;cursor:ew-resize}@keyframes sk-preview-in{from{opacity:0;transform:translateY(-7px)}to{opacity:1;transform:translateY(0)}}
       .sk-warm-header{display:flex;justify-content:center;align-items:start;padding:18px 18px 0}.sk-warm-brand{text-align:center;padding-top:5px}.sk-warm-brand small{display:block;font-size:9px;letter-spacing:.42em;color:rgba(46,28,18,.62)}.sk-warm-brand h1{margin:4px 0 3px;font-size:43px;line-height:1.15}.sk-warm-brand p{margin:0;font-size:11px;color:rgba(52,32,22,.73)}
-      .sk-warm-time{display:flex;flex-direction:column;align-items:center;padding:40px 20px 32px;gap:10px}.sk-warm-pill{padding:5px 14px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(255,255,255,.12);font-size:13px;color:#f6e8d3}.sk-warm-pill i{display:inline-block;width:5px;height:5px;margin-left:8px;border-radius:50%;background:#f0d5a4}.sk-warm-clock{font-size:74px;font-weight:300;line-height:1;letter-spacing:.01em;direction:ltr;font-variant-numeric:tabular-nums}.sk-time-marker{display:inline-block;margin-left:7px;font:500 17px/1.1 'IBM Plex Sans Arabic',sans-serif;letter-spacing:.04em;vertical-align:middle;color:rgba(255,250,241,.78)}.sk-warm-prayer .sk-time-marker{margin-left:3px;font-size:8px;vertical-align:baseline}.sk-warm-remaining{font-size:12px;color:rgba(255,246,234,.7)}
+      .sk-warm-time{display:flex;flex-direction:column;align-items:center;padding:40px 20px 32px;gap:10px}.sk-warm-pill{padding:5px 14px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(255,255,255,.12);font-size:13px;color:#f6e8d3}.sk-warm-pill i{display:inline-block;width:5px;height:5px;margin-left:8px;border-radius:50%;background:#f0d5a4}.sk-warm-clock{font-size:74px;font-weight:300;line-height:1;letter-spacing:.01em;direction:ltr;font-variant-numeric:tabular-nums}.sk-time-marker{display:inline-block;margin-left:7px;font:500 17px/1.1 'Cairo',sans-serif;letter-spacing:.04em;vertical-align:middle;color:rgba(255,250,241,.78)}.sk-warm-prayer .sk-time-marker{margin-left:3px;font-size:8px;vertical-align:baseline}.sk-warm-remaining{font-size:12px;color:rgba(255,246,234,.7)}
       .sk-warm-verse{margin:0 20px;padding:22px 4px 24px;border-top:1px solid rgba(255,255,255,.12);text-align:center}.sk-warm-verse label{font-size:10px;letter-spacing:.22em;color:rgba(255,244,230,.5)}.sk-warm-verse p{font-family:'Amiri Quran','Amiri',serif;font-size:21px;line-height:2;margin:13px auto 5px;max-width:330px}.sk-warm-verse span{font-size:11px;color:rgba(240,213,164,.8)}
       .sk-warm-arc{padding:10px 22px 5px}.sk-warm-prayers{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding:14px 12px 20px;border-top:1px solid rgba(255,255,255,.1);margin:8px 12px 0}.sk-warm-prayer{border:1px solid transparent;border-radius:14px;background:transparent;color:rgba(255,246,234,.58);padding:8px 2px;cursor:pointer}.sk-warm-prayer b{font-size:11px;font-weight:400}.sk-warm-prayer span{display:block;margin-top:8px;color:#fdf6ec;font-size:13px;direction:ltr;font-variant-numeric:tabular-nums}.sk-warm-prayer.active{background:rgba(240,213,164,.14);border-color:rgba(240,213,164,.28);color:#f0d5a4}.sk-warm-prayer.active span{color:#f6dcae;font-weight:500}
       .sk-warm-home{color:var(--sk-text)}.sk-preview-toggle,.sk-time-format-toggle{color:var(--sk-text);border-color:var(--sk-line)}.sk-warm-preview{border-color:var(--sk-line)}.sk-warm-preview-top,.sk-warm-brand small,.sk-warm-brand p,.sk-warm-remaining,.sk-time-marker,.sk-warm-verse span,.sk-warm-prayer{color:var(--sk-muted)}.sk-warm-pill,.sk-warm-clock,.sk-warm-verse p,.sk-warm-prayer span,.sk-warm-prayer.active,.sk-warm-prayer.active span{color:var(--sk-text)}.sk-warm-verse label{color:var(--sk-soft)}.sk-warm-pill,.sk-warm-verse,.sk-warm-prayers{border-color:var(--sk-line)}
@@ -783,7 +782,7 @@ function QuranReader({ lang, surahId, go, lastRead, setLastRead, bookmarks, togg
           }}>
             <div className="font-quran" style={{ fontSize: 26 * (quranScale || 1), lineHeight: 2.3, direction: "rtl" }}>
               {ayah.ar}
-              <span style={{ fontSize: 12, opacity: bookmarks.has(`${surahId}:${i}`) ? 1 : 0.4, color: bookmarks.has(`${surahId}:${i}`) ? COLOR.goldDeep : "inherit", margin: "0 8px", verticalAlign: "super", fontFamily: "'Inter', sans-serif" }}>{nDigits(i + 1, lang)}</span>
+              <span style={{ fontSize: 12, opacity: bookmarks.has(`${surahId}:${i}`) ? 1 : 0.4, color: bookmarks.has(`${surahId}:${i}`) ? COLOR.goldDeep : "inherit", margin: "0 8px", verticalAlign: "super", fontFamily: "'Cairo', sans-serif" }}>{nDigits(i + 1, lang)}</span>
             </div>
             {showTranslation && <div style={{ fontSize: 12.5, opacity: 0.48, marginTop: 7, lineHeight: 1.65 }}>{ayah.en}</div>}
           </button>
@@ -976,7 +975,7 @@ function QiblaDial({ lang, onDegChange }) {
         </svg>
       </div>
       <div style={{ marginTop: 16, textAlign: "center" }}>
-        <div style={{ fontSize: 26, fontFamily: lang === "ar" ? "'IBM Plex Sans Arabic', sans-serif" : "'Fraunces', serif", color: aligned ? COLOR.goldDeep : "inherit", transition: "color .5s ease" }}>{nDigits(Math.round(norm), lang)}°</div>
+        <div style={{ fontSize: 26, fontFamily: "'Cairo', sans-serif", color: aligned ? COLOR.goldDeep : "inherit", transition: "color .5s ease" }}>{nDigits(Math.round(norm), lang)}°</div>
         <div style={{ fontSize: 11.5, opacity: 0.5, marginTop: 3 }}>
           {mode === "calibrating" ? t.calibrating : aligned ? t.aligned : t.dragToAlign}
         </div>
@@ -1008,7 +1007,7 @@ function PrayerScreen({ lang, hourNow, go, onScrub, onQiblaDeg, prayerTimes }) {
             return (
               <div key={ev.id} style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", padding: isNext ? "14px 0" : "10px 0", opacity: passed ? 0.35 : isNext ? 1 : 0.68, transition: "opacity .5s ease" }}>
                 <span style={{ fontSize: isNext ? 16 : 14, fontWeight: isNext ? 600 : 400, color: isNext ? COLOR.goldDeep : "inherit" }}>{NAMES[ev.id][lang]}</span>
-                <span style={{ fontSize: isNext ? 17 : 14, fontFamily: lang === "ar" ? "'IBM Plex Sans Arabic', sans-serif" : "'Fraunces', serif" }}>{fmtHM(ev.h, lang)}</span>
+                <span style={{ fontSize: isNext ? 17 : 14, fontFamily: "'Cairo', sans-serif" }}>{fmtHM(ev.h, lang)}</span>
               </div>
             );
           })}
@@ -1480,7 +1479,7 @@ function WidgetsScreen({ lang, go, stage, nextPrayer, prayerTimes }) {
       </div>
       <div style={{ padding: "20px 24px", fontSize: 11.5, opacity: 0.42 }}>{t.conceptPreview}</div>
       <div className="sk-scroll" style={{ display: "flex", gap: 16, overflowX: "auto", padding: "0 24px 130px" }}>
-        {mini(t.widgetPrayer, <><div style={{ fontSize: 10, opacity: 0.6 }}>{NAMES[nextPrayer.id][lang]}</div><div style={{ fontFamily: "'Fraunces', serif", fontSize: 24 }}>{fmtHM(nextPrayer.h, lang)}</div></>)}
+        {mini(t.widgetPrayer, <><div style={{ fontSize: 10, opacity: 0.6 }}>{NAMES[nextPrayer.id][lang]}</div><div style={{ fontFamily: "'Cairo', sans-serif", fontSize: 24 }}>{fmtHM(nextPrayer.h, lang)}</div></>)}
         {mini(t.widgetArc, <DayArc hourNow={13} lang={lang} compact isDark={isDark} prayerTimes={prayerTimes} />)}
         {mini(t.widgetQuran, <><BookOpen size={16} opacity={0.7} /><div style={{ fontSize: 10.5, opacity: 0.7 }}>{t.quranHomeContinue}</div></>)}
       </div>
