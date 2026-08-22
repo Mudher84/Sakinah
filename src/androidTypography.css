@@ -39,6 +39,11 @@ html { -webkit-text-size-adjust:100%; text-size-adjust:100%; }
   .mm-me-copy small, .mm-me-sechead span { font-size:15px !important; }
   .app-global-dock button { font-size:15px !important; }
 
+  /* Hadith page: enlarge the short source description beneath its title by four pixels. */
+  #root > div[dir="rtl"] > div[style*="text-align: center"] > div[style*="font-size: 11.5px"] {
+    font-size:15.5px !important;
+  }
+
   /* Quran and Hadith reading faces remain independent of the UI scale. */
   .font-quran, .font-quran *, .quranMini, .quranMini *, .quranHero, .quranHero *,
   .quranAudioText, .quranAudioText *, .quranMemo, .quranMemo *, .ayah span,
