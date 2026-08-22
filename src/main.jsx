@@ -44,6 +44,7 @@ import './dockSlimGlass.css'
 import './globalTypography.css'
 import './homeServiceIconCenter.css'
 import './searchCairo.css'
+import './androidTypography.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
