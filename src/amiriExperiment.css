@@ -1,16 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Amiri+Quran&family=Aref+Ruqaa:wght@400;700&display=swap');
 
-@font-face {
-  font-family: "Sakinah Roznameh";
-  src: local("HT Roznameh Medium"), local("HTRoznamehMedium-Regular");
-  font-style: normal;
-  font-weight: 400 700;
-  font-display: swap;
-}
-
-/* Default app typography. */
+/* Cairo is the application font. Quran and Hadith text are protected below. */
 html, body, #root, #root *, .sakinahResponsiveShell, .sakinahResponsiveShell *, .sakinah-live-home, .sakinah-live-home *, .appShell, .appShell * {
-  font-family: "Sakinah Roznameh", "HT Roznameh Medium", "Amiri", "Noto Naskh Arabic", serif !important;
+  font-family: "Cairo", Tahoma, Arial, sans-serif !important;
 }
 
 /* Supporting text explicitly uses Cairo and must outrank the global rule above. */
@@ -34,6 +26,15 @@ html, body, #root, #root *, .sakinahResponsiveShell, .sakinahResponsiveShell *, 
 #root [data-quran], #root [data-quran] *,
 #root [data-ayah], #root [data-ayah] * {
   font-family:"Amiri Quran", "Noto Naskh Arabic", serif !important;
+}
+
+/* Verified Hadith passages retain their dedicated Arabic reading face. */
+#root .mm-hadith, #root .mm-hadith * {
+  font-family:"Aref Ruqaa", "Amiri", serif !important;
+}
+#root .mm-hadith button, #root .mm-hadith input, #root .mm-hadith small,
+#root .mm-hadith [data-ui] {
+  font-family:"Cairo", Tahoma, Arial, sans-serif !important;
 }
 
 .sakinah-live-home [style*="letterSpacing"], .railBrand small { letter-spacing:normal; }
