@@ -15,7 +15,9 @@ html { -webkit-text-size-adjust:100%; text-size-adjust:100%; }
 
   /* Home: keep the information hierarchy clear on Android widths. */
   .sk-warm-brand h1 { font-size:clamp(32px,10.5vw,43px) !important; }
-  .sk-warm-brand small, .sk-warm-brand p { font-size:15px !important; }
+  .sk-warm-brand small { font-size:11px !important; }
+  .sk-warm-brand p { font-size:15px !important; }
+  .sk-preview-toggle, .sk-time-format-toggle { font-size:11px !important; }
   .sk-warm-pill { font-size:15px !important; }
   .sk-warm-clock { font-size:clamp(56px,17vw,74px) !important; }
   .sk-time-marker { font-size:15px !important; }
