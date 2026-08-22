@@ -4,40 +4,40 @@ html { -webkit-text-size-adjust:100%; text-size-adjust:100%; }
 @media (max-width:600px), (pointer:coarse) {
   #root { font-size:16px; }
   #root button, #root input, #root select, #root textarea { font-size:max(12px,3.25vw) !important; }
-  #root small { font-size:max(10px,2.8vw) !important; line-height:1.55; }
+  #root small { font-size:max(14px,3.8vw) !important; line-height:1.55; }
   #root p { line-height:1.75; }
 
   /* Shared headers, captions and controls. */
   #sakinah-global-back-bar { min-height:44px !important; }
   #sakinah-global-back-bar [id*="title"] { font-size:13px !important; }
-  #sakinah-global-back-bar button { font-size:11px !important; }
+  #sakinah-global-back-bar button { font-size:15px !important; }
   .topbar .brandMark, .pageTitle { font-size:14px !important; }
 
   /* Home: keep the information hierarchy clear on Android widths. */
   .sk-warm-brand h1 { font-size:clamp(32px,10.5vw,43px) !important; }
-  .sk-warm-brand small, .sk-warm-brand p { font-size:11px !important; }
-  .sk-warm-pill { font-size:13px !important; }
+  .sk-warm-brand small, .sk-warm-brand p { font-size:15px !important; }
+  .sk-warm-pill { font-size:15px !important; }
   .sk-warm-clock { font-size:clamp(56px,17vw,74px) !important; }
   .sk-time-marker { font-size:15px !important; }
-  .sk-warm-remaining { font-size:12px !important; }
-  .sk-warm-verse label, .sk-discover-ayah label { font-size:11px !important; }
-  .sk-warm-verse span, .sk-discover-ayah span { font-size:12px !important; }
-  .sk-warm-prayer b { font-size:12px !important; }
-  .sk-warm-prayer span { font-size:13px !important; }
+  .sk-warm-remaining { font-size:16px !important; }
+  .sk-warm-verse label, .sk-discover-ayah label { font-size:15px !important; }
+  .sk-warm-verse span, .sk-discover-ayah span { font-size:16px !important; }
+  .sk-warm-prayer b { font-size:16px !important; }
+  .sk-warm-prayer span { font-size:17px !important; }
   .sk-library-head h2, .sk-discover-title b { font-size:18px !important; }
-  .sk-library-head span, .sk-library-trigger small, .sk-discover-title span { font-size:12px !important; }
+  .sk-library-head span, .sk-library-trigger small, .sk-discover-title span { font-size:16px !important; }
   .sk-library-trigger strong { font-size:17px !important; }
-  .sk-library-service span, .sk-frequent-card b { font-size:13px !important; }
+  .sk-library-service span, .sk-frequent-card b { font-size:17px !important; }
   .sk-library-service em { font-size:19px !important; }
-  .sk-frequent-card small { font-size:11px !important; }
+  .sk-frequent-card small { font-size:15px !important; }
   .sk-discover-search input { font-size:14px !important; }
 
   /* Main app cards and lists. */
   .rows b, .rowStatic b, .exploreGroup b, .focusList b, .searchResults b { font-size:15px !important; }
-  .rows small, .rowStatic small, .exploreGroup small, .focusList small, .searchResults small { font-size:11px !important; }
+  .rows small, .rowStatic small, .exploreGroup small, .focusList small, .searchResults small { font-size:15px !important; }
   .mm-me-copy b, .mm-me-sechead b { font-size:14px !important; }
-  .mm-me-copy small, .mm-me-sechead span { font-size:11px !important; }
-  .app-global-dock button { font-size:11px !important; }
+  .mm-me-copy small, .mm-me-sechead span { font-size:15px !important; }
+  .app-global-dock button { font-size:15px !important; }
 
   /* Quran and Hadith reading faces remain independent of the UI scale. */
   .font-quran, .font-quran *, .quranMini, .quranMini *, .quranHero, .quranHero *,
