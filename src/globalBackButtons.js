@@ -35,7 +35,7 @@ function ensureStyles(){
  #${BAR_TITLE_ID}{min-width:0!important;text-align:center!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;font-family:'Cairo',sans-serif!important;font-size:11px!important;font-weight:300!important;font-synthesis:none!important;line-height:1.2!important;color:#102D43!important;pointer-events:none!important}
  #${BAR_BUTTON_ID}.${HIDDEN_CLASS},#${BAR_SEARCH_ID}.${HIDDEN_CLASS}{visibility:hidden!important;display:inline-flex!important}
  body{padding-top:0!important;box-sizing:border-box!important}
- body.mm-has-global-back-bar{padding-top:calc(42px + 1cm)!important}
+ body.mm-has-global-back-bar{padding-top:calc(42px + 1cm)!important;background:#fff!important}
  .global-feature-shell{box-sizing:border-box!important}
  .qm-reader .qm-top{display:none!important}
  button[aria-label="أنا"],button[aria-label="تغيير صورة البروفايل"],button[aria-label="Change profile image"]{border-radius:50%!important;border:0!important;outline:0!important;box-shadow:none!important;filter:none!important;overflow:hidden!important;padding:0!important}
