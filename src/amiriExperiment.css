@@ -38,3 +38,8 @@ html, body, #root, #root *, .sakinahResponsiveShell, .sakinahResponsiveShell *, 
 }
 
 .sakinah-live-home [style*="letterSpacing"], .railBrand small { letter-spacing:normal; }
+
+/* The global header already supplies the title, back action and search. */
+#root div[style*="grid-template-columns: 34px 1fr 34px"][style*="backdrop-filter"] {
+  display:none !important;
+}
